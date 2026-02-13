@@ -2,6 +2,11 @@
   "name": "personal-finances",
   "private": true,
   "scripts": {
-    "test:frontend": "node --test web/utils.test.js"
+    "test:frontend": "node --test web/utils.test.js web/app.integration.test.js",
+    "test:frontend:unit": "node --test web/utils.test.js",
+    "test:frontend:integration": "node --test web/app.integration.test.js"
+  },
+  "devDependencies": {
+    "jsdom": "^26.1.0"
   }
 }

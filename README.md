@@ -52,7 +52,21 @@ go test ./...
 Run frontend unit tests (Node.js built-in test runner):
 
 ```bash
-npm run test:frontend
+npm run test:frontend:unit
 ```
 
 The frontend tests cover utility behavior used by the UI layer (`normalizeCurrencyInput`, `escapeHtml`, API response parsing).
+
+### Frontend integration tests
+
+Run frontend integration tests (DOM + app script execution with mocked API):
+
+```bash
+npm run test:frontend:integration
+```
+
+To run all frontend tests together:
+
+```bash
+npm run test:frontend
+```

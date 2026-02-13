@@ -56,17 +56,21 @@ func main() {
 	defer db.Close()
 
 	application := app{db: db}
-
-	mux := http.NewServeMux()
-	mux.HandleFunc("/api/health", healthHandler)
-	mux.HandleFunc("/api/currencies", application.currenciesHandler)
-	mux.HandleFunc("/api/currencies/", application.currencyByIDHandler)
-	mux.Handle("/", http.FileServer(http.Dir("web")))
+	mux := application.routes()
 
 	log.Printf("Server is running on http://localhost%s", serverAddress)
 	if err = http.ListenAndServe(serverAddress, mux); err != nil {
 		log.Fatalf("server failed: %v", err)
 	}
+}
+
+func (application app) routes() *http.ServeMux {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/api/health", healthHandler)
+	mux.HandleFunc("/api/currencies", application.currenciesHandler)
+	mux.HandleFunc("/api/currencies/", application.currencyByIDHandler)
+	mux.Handle("/", http.FileServer(http.Dir("web")))
+	return mux
 }
 
 func healthHandler(writer http.ResponseWriter, _ *http.Request) {

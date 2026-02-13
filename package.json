@@ -1,0 +1,7 @@
+{
+  "name": "personal-finances",
+  "private": true,
+  "scripts": {
+    "test:frontend": "node --test web/utils.test.js"
+  }
+}

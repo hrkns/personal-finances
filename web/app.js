@@ -7,6 +7,7 @@ const submitButtonElement = document.getElementById("submit-button");
 const cancelButtonElement = document.getElementById("cancel-button");
 const messageElement = document.getElementById("form-message");
 const currenciesBodyElement = document.getElementById("currencies-body");
+const { normalizeCurrencyInput, escapeHtml, parseApiResponse } = frontendUtils;
 
 let currencies = [];
 
@@ -73,10 +74,7 @@ async function onFormSubmit(event) {
   event.preventDefault();
 
   const id = currencyIdElement.value.trim();
-  const payload = {
-    name: currencyNameElement.value.trim(),
-    code: currencyCodeElement.value.trim().toUpperCase(),
-  };
+  const payload = normalizeCurrencyInput(currencyNameElement.value, currencyCodeElement.value);
 
   try {
     if (id) {
@@ -162,21 +160,5 @@ async function apiRequest(url, options) {
     return null;
   }
 
-  const responseText = await response.text();
-  const body = responseText ? JSON.parse(responseText) : null;
-
-  if (!response.ok) {
-    throw new Error(body?.error?.message || `Request failed: ${response.status}`);
-  }
-
-  return body;
-}
-
-function escapeHtml(value) {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+  return parseApiResponse(response);
 }

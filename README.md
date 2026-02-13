@@ -36,3 +36,23 @@ This keeps schema changes versioned, reviewable, and repeatable without requirin
 - `DELETE /api/currencies/{id}` → `204 No Content` or `404 Not Found`
 
 Validation and failure responses are JSON with an `error` object.
+
+## Tests
+
+### Backend unit tests
+
+Run all Go tests:
+
+```bash
+go test ./...
+```
+
+### Frontend unit tests
+
+Run frontend unit tests (Node.js built-in test runner):
+
+```bash
+npm run test:frontend
+```
+
+The frontend tests cover utility behavior used by the UI layer (`normalizeCurrencyInput`, `escapeHtml`, API response parsing).

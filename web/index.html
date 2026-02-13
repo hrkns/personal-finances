@@ -9,7 +9,46 @@
 <body>
   <main>
     <h1>Personal Finances</h1>
-    <p id="placeholder">Loading frontend placeholder...</p>
+
+    <section>
+      <h2>Status</h2>
+      <p id="health-status">Checking backend...</p>
+    </section>
+
+    <section>
+      <h2>Currency</h2>
+      <form id="currency-form">
+        <input type="hidden" id="currency-id" />
+
+        <label for="currency-name">Name</label>
+        <input id="currency-name" name="name" type="text" required />
+
+        <label for="currency-code">Code</label>
+        <input id="currency-code" name="code" type="text" required maxlength="10" />
+
+        <div class="actions">
+          <button id="submit-button" type="submit">Create</button>
+          <button id="cancel-button" type="button" hidden>Cancel edit</button>
+        </div>
+      </form>
+
+      <p id="form-message" role="status"></p>
+    </section>
+
+    <section>
+      <h2>Currencies</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Code</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="currencies-body"></tbody>
+      </table>
+    </section>
   </main>
 
   <script src="app.js"></script>

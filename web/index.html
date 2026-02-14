@@ -49,6 +49,43 @@
         <tbody id="currencies-body"></tbody>
       </table>
     </section>
+
+    <section>
+      <h2>Bank</h2>
+      <form id="bank-form">
+        <input type="hidden" id="bank-id" />
+
+        <label for="bank-name">Name</label>
+        <input id="bank-name" name="name" type="text" required />
+
+        <label for="bank-country">Country</label>
+        <select id="bank-country" name="country" required>
+          <option value="">Select country</option>
+        </select>
+
+        <div class="actions">
+          <button id="bank-submit-button" type="submit">Create</button>
+          <button id="bank-cancel-button" type="button" hidden>Cancel edit</button>
+        </div>
+      </form>
+
+      <p id="bank-form-message" role="status"></p>
+    </section>
+
+    <section>
+      <h2>Banks</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Country</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="banks-body"></tbody>
+      </table>
+    </section>
   </main>
 
   <script src="utils.js"></script>

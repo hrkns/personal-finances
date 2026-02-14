@@ -23,7 +23,8 @@ label {
   margin: 12px 0 6px;
 }
 
-input {
+input,
+select {
   width: 100%;
   box-sizing: border-box;
   padding: 8px;
@@ -52,7 +53,8 @@ td {
   text-align: left;
 }
 
-#form-message {
+#form-message,
+#bank-form-message {
   min-height: 20px;
 }
 

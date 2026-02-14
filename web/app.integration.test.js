@@ -33,6 +33,8 @@ async function setupFrontendApp() {
 
   let nextId = 1;
   const store = [];
+  let nextBankId = 1;
+  const banksStore = [];
 
   window.fetch = async (url, options = {}) => {
     const method = (options.method || "GET").toUpperCase();
@@ -113,6 +115,78 @@ async function setupFrontendApp() {
       return createResponse(204);
     }
 
+    if (pathname === "/api/banks" && method === "GET") {
+      return createResponse(200, banksStore.map((item) => ({ ...item })));
+    }
+
+    if (pathname === "/api/banks" && method === "POST") {
+      const payload = JSON.parse(options.body || "{}");
+      const normalizedCountry = normalize(payload.country);
+      const duplicate = banksStore.some(
+        (item) => normalize(item.name) === normalize(payload.name) && normalize(item.country) === normalizedCountry
+      );
+      if (duplicate) {
+        return createResponse(409, {
+          error: {
+            code: "duplicate_bank",
+            message: "name and country combination must be unique",
+          },
+        });
+      }
+
+      const created = {
+        id: nextBankId,
+        name: String(payload.name).trim(),
+        country: String(payload.country).trim().toUpperCase(),
+      };
+      nextBankId += 1;
+      banksStore.push(created);
+      return createResponse(201, created);
+    }
+
+    const bankMatch = pathname.match(/^\/api\/banks\/(\d+)$/);
+    if (bankMatch && method === "PUT") {
+      const id = Number(bankMatch[1]);
+      const payload = JSON.parse(options.body || "{}");
+      const index = banksStore.findIndex((item) => item.id === id);
+      if (index === -1) {
+        return createResponse(404, { error: { code: "not_found", message: "bank not found" } });
+      }
+
+      const duplicate = banksStore.some(
+        (item) =>
+          item.id !== id &&
+          normalize(item.name) === normalize(payload.name) &&
+          normalize(item.country) === normalize(payload.country)
+      );
+      if (duplicate) {
+        return createResponse(409, {
+          error: {
+            code: "duplicate_bank",
+            message: "name and country combination must be unique",
+          },
+        });
+      }
+
+      const updated = {
+        id,
+        name: String(payload.name).trim(),
+        country: String(payload.country).trim().toUpperCase(),
+      };
+      banksStore[index] = updated;
+      return createResponse(200, updated);
+    }
+
+    if (bankMatch && method === "DELETE") {
+      const id = Number(bankMatch[1]);
+      const index = banksStore.findIndex((item) => item.id === id);
+      if (index === -1) {
+        return createResponse(404, { error: { code: "not_found", message: "bank not found" } });
+      }
+      banksStore.splice(index, 1);
+      return createResponse(204);
+    }
+
     return createResponse(500, { error: { code: "unhandled", message: "unhandled route in test" } });
   };
 
@@ -130,9 +204,11 @@ test("frontend initializes health and empty currencies state", async () => {
 
   const health = document.getElementById("health-status").textContent;
   const emptyState = document.getElementById("currencies-body").textContent;
+  const emptyBanksState = document.getElementById("banks-body").textContent;
 
   assert.match(health, /Backend status: backend is up/);
   assert.match(emptyState, /No currencies yet/);
+  assert.match(emptyBanksState, /No banks yet/);
 
   dom.window.close();
 });
@@ -222,6 +298,97 @@ test("frontend shows error message on duplicate currency conflict", async () => 
 
   const message = document.getElementById("form-message");
   assert.equal(message.textContent, "name and code must be unique");
+  assert.equal(message.className, "error");
+
+  dom.window.close();
+});
+
+test("frontend can create and list a bank", async () => {
+  const { dom, window, document } = await setupFrontendApp();
+
+  document.getElementById("bank-name").value = "My Bank";
+  document.getElementById("bank-country").value = "US";
+
+  const form = document.getElementById("bank-form");
+  form.dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  const message = document.getElementById("bank-form-message").textContent;
+  const rowsText = document.getElementById("banks-body").textContent;
+
+  assert.equal(message, "Bank created");
+  assert.match(rowsText, /My Bank/);
+  assert.match(rowsText, /US/);
+
+  dom.window.close();
+});
+
+test("frontend supports bank edit and delete actions", async () => {
+  const { dom, window, document } = await setupFrontendApp();
+
+  document.getElementById("bank-name").value = "Edit Bank";
+  document.getElementById("bank-country").value = "CA";
+  document
+    .getElementById("bank-form")
+    .dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  const editButton = document.querySelector('#banks-body button[data-action="edit"]');
+  editButton.dispatchEvent(new window.Event("click", { bubbles: true }));
+
+  assert.equal(document.getElementById("bank-submit-button").textContent, "Update");
+  assert.equal(document.getElementById("bank-name").value, "Edit Bank");
+
+  document.getElementById("bank-name").value = "Edit Bank Updated";
+  document.getElementById("bank-country").value = "GB";
+  document
+    .getElementById("bank-form")
+    .dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  assert.match(document.getElementById("banks-body").textContent, /Edit Bank Updated/);
+  assert.match(document.getElementById("banks-body").textContent, /GB/);
+
+  const deleteButton = document.querySelector('#banks-body button[data-action="delete"]');
+  deleteButton.dispatchEvent(new window.Event("click", { bubbles: true }));
+
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  assert.match(document.getElementById("banks-body").textContent, /No banks yet/);
+
+  dom.window.close();
+});
+
+test("frontend shows error message on duplicate bank conflict", async () => {
+  const { dom, window, document } = await setupFrontendApp();
+
+  document.getElementById("bank-name").value = "Conflict Bank";
+  document.getElementById("bank-country").value = "US";
+  document
+    .getElementById("bank-form")
+    .dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  document.getElementById("bank-name").value = "Conflict Bank";
+  document.getElementById("bank-country").value = "US";
+  document
+    .getElementById("bank-form")
+    .dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  const message = document.getElementById("bank-form-message");
+  assert.equal(message.textContent, "name and country combination must be unique");
   assert.equal(message.className, "error");
 
   dom.window.close();

@@ -10,12 +10,16 @@
   <main>
     <h1>Personal Finances</h1>
 
-    <section>
-      <h2>Status</h2>
-      <p id="health-status">Checking backend...</p>
+    <nav class="tabs" aria-label="Views">
+      <button type="button" class="tab-button" data-route-tab="home">Home</button>
+      <button type="button" class="tab-button" data-route-tab="banks">Banks</button>
+      <button type="button" class="tab-button" data-route-tab="currency">Currency</button>
+    </nav>
+
+    <section id="view-home" class="view" data-view="home">
     </section>
 
-    <section>
+    <section id="view-currency" class="view" data-view="currency" hidden>
       <h2>Currency</h2>
       <form id="currency-form">
         <input type="hidden" id="currency-id" />
@@ -33,9 +37,7 @@
       </form>
 
       <p id="form-message" role="status"></p>
-    </section>
 
-    <section>
       <h2>Currencies</h2>
       <table>
         <thead>
@@ -50,7 +52,7 @@
       </table>
     </section>
 
-    <section>
+    <section id="view-banks" class="view" data-view="banks" hidden>
       <h2>Bank</h2>
       <form id="bank-form">
         <input type="hidden" id="bank-id" />
@@ -70,9 +72,7 @@
       </form>
 
       <p id="bank-form-message" role="status"></p>
-    </section>
 
-    <section>
       <h2>Banks</h2>
       <table>
         <thead>
@@ -89,6 +89,7 @@
   </main>
 
   <script src="utils.js"></script>
+  <script src="router.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

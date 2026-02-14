@@ -21,6 +21,7 @@ function normalize(value) {
 async function setupFrontendApp() {
   const html = fs.readFileSync(path.join(webDir, "index.html"), "utf8");
   const utilsScript = fs.readFileSync(path.join(webDir, "utils.js"), "utf8");
+  const routerScript = fs.readFileSync(path.join(webDir, "router.js"), "utf8");
   const appScript = fs.readFileSync(path.join(webDir, "app.js"), "utf8");
 
   const dom = new JSDOM(html, {
@@ -40,10 +41,6 @@ async function setupFrontendApp() {
     const method = (options.method || "GET").toUpperCase();
     const parsedUrl = new URL(url, "http://localhost:8080");
     const pathname = parsedUrl.pathname;
-
-    if (pathname === "/api/health" && method === "GET") {
-      return createResponse(200, { status: "ok", message: "backend is up" });
-    }
 
     if (pathname === "/api/currencies" && method === "GET") {
       return createResponse(200, store.map((item) => ({ ...item })));
@@ -191,6 +188,7 @@ async function setupFrontendApp() {
   };
 
   window.eval(utilsScript);
+  window.eval(routerScript);
   window.eval(appScript);
 
   await new Promise((resolve) => setTimeout(resolve, 0));
@@ -199,14 +197,21 @@ async function setupFrontendApp() {
   return { dom, window, document };
 }
 
-test("frontend initializes health and empty currencies state", async () => {
+test("frontend initializes at Home route and can route to Currency", async () => {
   const { dom, document } = await setupFrontendApp();
 
-  const health = document.getElementById("health-status").textContent;
+  const homeHidden = document.getElementById("view-home").hidden;
+  const currencyHiddenBefore = document.getElementById("view-currency").hidden;
+
+  document.querySelector('[data-route-tab="currency"]').click();
+
+  const currencyHiddenAfter = document.getElementById("view-currency").hidden;
   const emptyState = document.getElementById("currencies-body").textContent;
   const emptyBanksState = document.getElementById("banks-body").textContent;
 
-  assert.match(health, /Backend status: backend is up/);
+  assert.equal(homeHidden, false);
+  assert.equal(currencyHiddenBefore, true);
+  assert.equal(currencyHiddenAfter, false);
   assert.match(emptyState, /No currencies yet/);
   assert.match(emptyBanksState, /No banks yet/);
 

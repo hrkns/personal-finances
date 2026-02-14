@@ -18,6 +18,25 @@ section {
   margin-top: 24px;
 }
 
+.tabs {
+  margin-top: 16px;
+  display: flex;
+  gap: 8px;
+}
+
+.tab-button {
+  border: 1px solid #ccc;
+  background: #fff;
+}
+
+.tab-button.active {
+  background: #eee;
+}
+
+.view[hidden] {
+  display: none;
+}
+
 label {
   display: block;
   margin: 12px 0 6px;

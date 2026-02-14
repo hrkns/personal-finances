@@ -1,4 +1,3 @@
-const healthStatusElement = document.getElementById("health-status");
 const formElement = document.getElementById("currency-form");
 const currencyIdElement = document.getElementById("currency-id");
 const currencyNameElement = document.getElementById("currency-name");
@@ -16,6 +15,10 @@ const bankSubmitButtonElement = document.getElementById("bank-submit-button");
 const bankCancelButtonElement = document.getElementById("bank-cancel-button");
 const bankMessageElement = document.getElementById("bank-form-message");
 const banksBodyElement = document.getElementById("banks-body");
+const tabButtonElements = document.querySelectorAll("[data-route-tab]");
+const viewHomeElement = document.getElementById("view-home");
+const viewBanksElement = document.getElementById("view-banks");
+const viewCurrencyElement = document.getElementById("view-currency");
 
 const { normalizeCurrencyInput, normalizeBankInput, escapeHtml, parseApiResponse } = frontendUtils;
 
@@ -54,7 +57,19 @@ init();
 
 async function init() {
   populateBankCountryOptions();
-  await Promise.all([loadHealth(), loadCurrencies(), loadBanks()]);
+  const initialRoute = frontendRouter.ensureValidRoute();
+  applyRoute(initialRoute);
+
+  frontendRouter.onRouteChange(applyRoute);
+
+  tabButtonElements.forEach((button) => {
+    button.addEventListener("click", () => {
+      const route = button.getAttribute("data-route-tab");
+      frontendRouter.navigate(route);
+    });
+  });
+
+  await Promise.all([loadCurrencies(), loadBanks()]);
 
   formElement.addEventListener("submit", onFormSubmit);
   cancelButtonElement.addEventListener("click", resetForm);
@@ -62,13 +77,17 @@ async function init() {
   bankCancelButtonElement.addEventListener("click", resetBankForm);
 }
 
-async function loadHealth() {
-  try {
-    const health = await apiRequest("/api/health", { method: "GET" });
-    healthStatusElement.textContent = `Backend status: ${health.message}`;
-  } catch {
-    healthStatusElement.textContent = "Backend status: unavailable";
-  }
+function applyRoute(route) {
+  const activeRoute = route || "home";
+
+  viewHomeElement.hidden = activeRoute !== "home";
+  viewBanksElement.hidden = activeRoute !== "banks";
+  viewCurrencyElement.hidden = activeRoute !== "currency";
+
+  tabButtonElements.forEach((button) => {
+    const tabRoute = button.getAttribute("data-route-tab");
+    button.classList.toggle("active", tabRoute === activeRoute);
+  });
 }
 
 async function loadCurrencies() {

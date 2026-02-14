@@ -14,6 +14,14 @@ Then open:
 - Frontend: http://localhost:8080
 - Backend test endpoint: http://localhost:8080/api/health
 
+Frontend views are tab-based and route through the `view` query parameter:
+
+- Home: `/?view=home` (or `/`)
+- Banks: `/?view=banks`
+- Currency: `/?view=currency`
+
+Invalid `view` values are normalized to Home.
+
 ## Database integration
 
 This app uses SQLite for local development.

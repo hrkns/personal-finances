@@ -13,8 +13,7 @@ test("currency CRUD flow works end-to-end", async ({ page }) => {
   const currencyForm = page.locator("#currency-form");
 
   await page.goto("/");
-
-  await expect(page.getByText("Backend status: backend is up")).toBeVisible();
+  await page.getByRole("button", { name: "Currency" }).click();
 
   await currencyForm.getByLabel("Name").fill(initialName);
   await currencyForm.getByLabel("Code").fill(initialCode);
@@ -49,6 +48,7 @@ test("duplicate currency shows backend conflict message", async ({ page }) => {
   const currencyForm = page.locator("#currency-form");
 
   await page.goto("/");
+  await page.getByRole("button", { name: "Currency" }).click();
 
   await currencyForm.getByLabel("Name").fill(name);
   await currencyForm.getByLabel("Code").fill(code);

@@ -25,6 +25,7 @@ func (application app) routes() *http.ServeMux {
 func (application app) registerAPIRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/api/health", healthHandler)
 	application.registerCurrencyRoutes(mux)
+	application.registerBankRoutes(mux)
 }
 
 func healthHandler(writer http.ResponseWriter, _ *http.Request) {

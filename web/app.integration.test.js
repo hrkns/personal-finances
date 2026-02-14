@@ -198,3 +198,31 @@ test("frontend supports edit and delete actions", async () => {
 
   dom.window.close();
 });
+
+test("frontend shows error message on duplicate currency conflict", async () => {
+  const { dom, window, document } = await setupFrontendApp();
+
+  document.getElementById("currency-name").value = "Euro";
+  document.getElementById("currency-code").value = "eur";
+  document
+    .getElementById("currency-form")
+    .dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  document.getElementById("currency-name").value = "Euro";
+  document.getElementById("currency-code").value = "eur";
+  document
+    .getElementById("currency-form")
+    .dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  const message = document.getElementById("form-message");
+  assert.equal(message.textContent, "name and code must be unique");
+  assert.equal(message.className, "error");
+
+  dom.window.close();
+});

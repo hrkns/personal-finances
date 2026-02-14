@@ -1,34 +1,43 @@
 package main
 
 import (
-	"encoding/json"
+	"database/sql"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
+
+	_ "modernc.org/sqlite"
 )
 
 const serverAddress = ":8080"
 
+type app struct {
+	db *sql.DB
+}
+
 func main() {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/api/health", healthHandler)
-	mux.Handle("/", http.FileServer(http.Dir("web")))
+	databasePath := os.Getenv("DATABASE_PATH")
+	if strings.TrimSpace(databasePath) == "" {
+		databasePath = filepath.Join("data", "personal_finances.db")
+	}
+
+	db, err := setupDatabase(databasePath)
+	if err != nil {
+		log.Fatalf("database setup failed: %v", err)
+	}
+	defer db.Close()
+
+	application := app{db: db}
+	mux := application.routes()
 
 	log.Printf("Server is running on http://localhost%s", serverAddress)
-	if err := http.ListenAndServe(serverAddress, mux); err != nil {
+	if err = http.ListenAndServe(serverAddress, mux); err != nil {
 		log.Fatalf("server failed: %v", err)
 	}
 }
 
-func healthHandler(writer http.ResponseWriter, _ *http.Request) {
-	writer.Header().Set("Content-Type", "application/json")
-	writer.WriteHeader(http.StatusOK)
-
-	response := map[string]string{
-		"status":  "ok",
-		"message": "backend is up",
-	}
-
-	if err := json.NewEncoder(writer).Encode(response); err != nil {
-		http.Error(writer, "failed to encode response", http.StatusInternalServerError)
-	}
+func isUniqueConstraintError(err error) bool {
+	return strings.Contains(strings.ToLower(err.Error()), "unique constraint failed")
 }

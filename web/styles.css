@@ -13,3 +13,53 @@ main {
   border: 1px solid #ddd;
   border-radius: 8px;
 }
+
+section {
+  margin-top: 24px;
+}
+
+label {
+  display: block;
+  margin: 12px 0 6px;
+}
+
+input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px;
+}
+
+.actions {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+}
+
+button {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+#form-message {
+  min-height: 20px;
+}
+
+.error {
+  color: #b00020;
+}
+
+.success {
+  color: #0a7a2d;
+}

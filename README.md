@@ -70,3 +70,19 @@ To run all frontend tests together:
 ```bash
 npm run test:frontend
 ```
+
+### Frontend E2E tests
+
+E2E tests run against the real app (`go run .`) and exercise the UI in a real browser via Playwright.
+
+Install browser binaries (first time only):
+
+```bash
+npx playwright install chromium
+```
+
+Run E2E tests:
+
+```bash
+npm run test:frontend:e2e
+```

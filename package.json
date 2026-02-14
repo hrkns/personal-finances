@@ -4,9 +4,12 @@
   "scripts": {
     "test:frontend": "node --test web/utils.test.js web/app.integration.test.js",
     "test:frontend:unit": "node --test web/utils.test.js",
-    "test:frontend:integration": "node --test web/app.integration.test.js"
+    "test:frontend:integration": "node --test web/app.integration.test.js",
+    "test:frontend:e2e": "playwright test",
+    "test:frontend:e2e:headed": "playwright test --headed"
   },
   "devDependencies": {
+    "@playwright/test": "^1.54.1",
     "jsdom": "^26.1.0"
   }
 }

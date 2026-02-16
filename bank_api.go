@@ -15,34 +15,6 @@ const (
 	bankPathPattern = "/api/banks/%d"
 )
 
-var supportedBankCountries = map[string]struct{}{
-	"AD": {}, "AE": {}, "AF": {}, "AG": {}, "AI": {}, "AL": {}, "AM": {}, "AO": {}, "AQ": {}, "AR": {}, "AS": {}, "AT": {}, "AU": {}, "AW": {}, "AX": {}, "AZ": {},
-	"BA": {}, "BB": {}, "BD": {}, "BE": {}, "BF": {}, "BG": {}, "BH": {}, "BI": {}, "BJ": {}, "BL": {}, "BM": {}, "BN": {}, "BO": {}, "BQ": {}, "BR": {}, "BS": {}, "BT": {}, "BV": {}, "BW": {}, "BY": {}, "BZ": {},
-	"CA": {}, "CC": {}, "CD": {}, "CF": {}, "CG": {}, "CH": {}, "CI": {}, "CK": {}, "CL": {}, "CM": {}, "CN": {}, "CO": {}, "CR": {}, "CU": {}, "CV": {}, "CW": {}, "CX": {}, "CY": {}, "CZ": {},
-	"DE": {}, "DJ": {}, "DK": {}, "DM": {}, "DO": {}, "DZ": {},
-	"EC": {}, "EE": {}, "EG": {}, "EH": {}, "ER": {}, "ES": {}, "ET": {},
-	"FI": {}, "FJ": {}, "FK": {}, "FM": {}, "FO": {}, "FR": {},
-	"GA": {}, "GB": {}, "GD": {}, "GE": {}, "GF": {}, "GG": {}, "GH": {}, "GI": {}, "GL": {}, "GM": {}, "GN": {}, "GP": {}, "GQ": {}, "GR": {}, "GS": {}, "GT": {}, "GU": {}, "GW": {}, "GY": {},
-	"HK": {}, "HM": {}, "HN": {}, "HR": {}, "HT": {}, "HU": {},
-	"ID": {}, "IE": {}, "IL": {}, "IM": {}, "IN": {}, "IO": {}, "IQ": {}, "IR": {}, "IS": {}, "IT": {},
-	"JE": {}, "JM": {}, "JO": {}, "JP": {},
-	"KE": {}, "KG": {}, "KH": {}, "KI": {}, "KM": {}, "KN": {}, "KP": {}, "KR": {}, "KW": {}, "KY": {}, "KZ": {},
-	"LA": {}, "LB": {}, "LC": {}, "LI": {}, "LK": {}, "LR": {}, "LS": {}, "LT": {}, "LU": {}, "LV": {}, "LY": {},
-	"MA": {}, "MC": {}, "MD": {}, "ME": {}, "MF": {}, "MG": {}, "MH": {}, "MK": {}, "ML": {}, "MM": {}, "MN": {}, "MO": {}, "MP": {}, "MQ": {}, "MR": {}, "MS": {}, "MT": {}, "MU": {}, "MV": {}, "MW": {}, "MX": {}, "MY": {}, "MZ": {},
-	"NA": {}, "NC": {}, "NE": {}, "NF": {}, "NG": {}, "NI": {}, "NL": {}, "NO": {}, "NP": {}, "NR": {}, "NU": {}, "NZ": {},
-	"OM": {},
-	"PA": {}, "PE": {}, "PF": {}, "PG": {}, "PH": {}, "PK": {}, "PL": {}, "PM": {}, "PN": {}, "PR": {}, "PS": {}, "PT": {}, "PW": {}, "PY": {},
-	"QA": {},
-	"RE": {}, "RO": {}, "RS": {}, "RU": {}, "RW": {},
-	"SA": {}, "SB": {}, "SC": {}, "SD": {}, "SE": {}, "SG": {}, "SH": {}, "SI": {}, "SJ": {}, "SK": {}, "SL": {}, "SM": {}, "SN": {}, "SO": {}, "SR": {}, "SS": {}, "ST": {}, "SV": {}, "SX": {}, "SY": {}, "SZ": {},
-	"TC": {}, "TD": {}, "TF": {}, "TG": {}, "TH": {}, "TJ": {}, "TK": {}, "TL": {}, "TM": {}, "TN": {}, "TO": {}, "TR": {}, "TT": {}, "TV": {}, "TW": {}, "TZ": {},
-	"UA": {}, "UG": {}, "UM": {}, "US": {}, "UY": {}, "UZ": {},
-	"VA": {}, "VC": {}, "VE": {}, "VG": {}, "VI": {}, "VN": {}, "VU": {},
-	"WF": {}, "WS": {},
-	"YE": {}, "YT": {},
-	"ZA": {}, "ZM": {}, "ZW": {},
-}
-
 type bank struct {
 	ID      int64  `json:"id"`
 	Name    string `json:"name"`
@@ -132,10 +104,24 @@ func (application app) createBank(writer http.ResponseWriter, request *http.Requ
 		return
 	}
 
+	exists, err := application.countryExists(payload.Country)
+	if err != nil {
+		writeError(writer, http.StatusInternalServerError, "internal_error", "failed to validate country")
+		return
+	}
+	if !exists {
+		writeError(writer, http.StatusBadRequest, "invalid_payload", "country must exist")
+		return
+	}
+
 	result, err := application.db.Exec(`INSERT INTO banks(name, country) VALUES (?, ?)`, payload.Name, payload.Country)
 	if err != nil {
 		if isUniqueConstraintError(err) {
 			writeError(writer, http.StatusConflict, "duplicate_bank", "name and country combination must be unique")
+			return
+		}
+		if isForeignKeyConstraintError(err) {
+			writeError(writer, http.StatusBadRequest, "invalid_payload", "country must exist")
 			return
 		}
 		writeError(writer, http.StatusInternalServerError, "internal_error", "failed to create bank")
@@ -160,10 +146,24 @@ func (application app) updateBank(writer http.ResponseWriter, request *http.Requ
 		return
 	}
 
+	exists, err := application.countryExists(payload.Country)
+	if err != nil {
+		writeError(writer, http.StatusInternalServerError, "internal_error", "failed to validate country")
+		return
+	}
+	if !exists {
+		writeError(writer, http.StatusBadRequest, "invalid_payload", "country must exist")
+		return
+	}
+
 	result, err := application.db.Exec(`UPDATE banks SET name = ?, country = ? WHERE id = ?`, payload.Name, payload.Country, id)
 	if err != nil {
 		if isUniqueConstraintError(err) {
 			writeError(writer, http.StatusConflict, "duplicate_bank", "name and country combination must be unique")
+			return
+		}
+		if isForeignKeyConstraintError(err) {
+			writeError(writer, http.StatusBadRequest, "invalid_payload", "country must exist")
 			return
 		}
 		writeError(writer, http.StatusInternalServerError, "internal_error", "failed to update bank")
@@ -221,9 +221,19 @@ func decodeBankPayload(request *http.Request) (bankPayload, error) {
 	if payload.Country == "" {
 		return bankPayload{}, fmt.Errorf("country is required")
 	}
-	if _, ok := supportedBankCountries[payload.Country]; !ok {
-		return bankPayload{}, fmt.Errorf("country must be a supported ISO 3166-1 alpha-2 code")
-	}
 
 	return payload, nil
+}
+
+func (application app) countryExists(code string) (bool, error) {
+	var storedCode string
+	err := application.db.QueryRow(`SELECT code FROM countries WHERE code = ?`, code).Scan(&storedCode)
+	if errors.Is(err, sql.ErrNoRows) {
+		return false, nil
+	}
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
 }

@@ -25,6 +25,10 @@ func setupDatabase(path string) (*sql.DB, error) {
 		return nil, fmt.Errorf("ping db: %w", err)
 	}
 
+	if _, err = db.Exec("PRAGMA foreign_keys = ON"); err != nil {
+		return nil, fmt.Errorf("enable foreign keys: %w", err)
+	}
+
 	if err = applyMigrations(db, "migrations"); err != nil {
 		return nil, fmt.Errorf("apply migrations: %w", err)
 	}

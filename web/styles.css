@@ -18,12 +18,32 @@ section {
   margin-top: 24px;
 }
 
+.tabs {
+  margin-top: 16px;
+  display: flex;
+  gap: 8px;
+}
+
+.tab-button {
+  border: 1px solid #ccc;
+  background: #fff;
+}
+
+.tab-button.active {
+  background: #eee;
+}
+
+.view[hidden] {
+  display: none;
+}
+
 label {
   display: block;
   margin: 12px 0 6px;
 }
 
-input {
+input,
+select {
   width: 100%;
   box-sizing: border-box;
   padding: 8px;
@@ -52,7 +72,8 @@ td {
   text-align: left;
 }
 
-#form-message {
+#form-message,
+#bank-form-message {
   min-height: 20px;
 }
 

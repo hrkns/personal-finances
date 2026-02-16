@@ -10,12 +10,16 @@
   <main>
     <h1>Personal Finances</h1>
 
-    <section>
-      <h2>Status</h2>
-      <p id="health-status">Checking backend...</p>
+    <nav class="tabs" aria-label="Views">
+      <button type="button" class="tab-button" data-route-tab="home">Home</button>
+      <button type="button" class="tab-button" data-route-tab="banks">Banks</button>
+      <button type="button" class="tab-button" data-route-tab="currency">Currency</button>
+    </nav>
+
+    <section id="view-home" class="view" data-view="home">
     </section>
 
-    <section>
+    <section id="view-currency" class="view" data-view="currency" hidden>
       <h2>Currency</h2>
       <form id="currency-form">
         <input type="hidden" id="currency-id" />
@@ -33,9 +37,7 @@
       </form>
 
       <p id="form-message" role="status"></p>
-    </section>
 
-    <section>
       <h2>Currencies</h2>
       <table>
         <thead>
@@ -49,9 +51,45 @@
         <tbody id="currencies-body"></tbody>
       </table>
     </section>
+
+    <section id="view-banks" class="view" data-view="banks" hidden>
+      <h2>Bank</h2>
+      <form id="bank-form">
+        <input type="hidden" id="bank-id" />
+
+        <label for="bank-name">Name</label>
+        <input id="bank-name" name="name" type="text" required />
+
+        <label for="bank-country">Country</label>
+        <select id="bank-country" name="country" required>
+          <option value="">Select country</option>
+        </select>
+
+        <div class="actions">
+          <button id="bank-submit-button" type="submit">Create</button>
+          <button id="bank-cancel-button" type="button" hidden>Cancel edit</button>
+        </div>
+      </form>
+
+      <p id="bank-form-message" role="status"></p>
+
+      <h2>Banks</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Country</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="banks-body"></tbody>
+      </table>
+    </section>
   </main>
 
   <script src="utils.js"></script>
+  <script src="router.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

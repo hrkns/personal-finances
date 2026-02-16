@@ -1,4 +1,3 @@
-const healthStatusElement = document.getElementById("health-status");
 const formElement = document.getElementById("currency-form");
 const currencyIdElement = document.getElementById("currency-id");
 const currencyNameElement = document.getElementById("currency-name");
@@ -7,26 +6,70 @@ const submitButtonElement = document.getElementById("submit-button");
 const cancelButtonElement = document.getElementById("cancel-button");
 const messageElement = document.getElementById("form-message");
 const currenciesBodyElement = document.getElementById("currencies-body");
-const { normalizeCurrencyInput, escapeHtml, parseApiResponse } = frontendUtils;
+
+const bankFormElement = document.getElementById("bank-form");
+const bankIdElement = document.getElementById("bank-id");
+const bankNameElement = document.getElementById("bank-name");
+const bankCountryElement = document.getElementById("bank-country");
+const bankSubmitButtonElement = document.getElementById("bank-submit-button");
+const bankCancelButtonElement = document.getElementById("bank-cancel-button");
+const bankMessageElement = document.getElementById("bank-form-message");
+const banksBodyElement = document.getElementById("banks-body");
+const tabButtonElements = document.querySelectorAll("[data-route-tab]");
+const viewHomeElement = document.getElementById("view-home");
+const viewBanksElement = document.getElementById("view-banks");
+const viewCurrencyElement = document.getElementById("view-currency");
+
+const { normalizeCurrencyInput, normalizeBankInput, escapeHtml, parseApiResponse } = frontendUtils;
+
 
 let currencies = [];
+let banks = [];
 
 init();
 
 async function init() {
-  await Promise.all([loadHealth(), loadCurrencies()]);
+  await loadCountryOptions();
+  const initialRoute = frontendRouter.ensureValidRoute();
+  applyRoute(initialRoute);
+
+  frontendRouter.onRouteChange(applyRoute);
+
+  tabButtonElements.forEach((button) => {
+    button.addEventListener("click", () => {
+      const route = button.getAttribute("data-route-tab");
+      frontendRouter.navigate(route);
+    });
+  });
+
+  await Promise.all([loadCurrencies(), loadBanks()]);
 
   formElement.addEventListener("submit", onFormSubmit);
   cancelButtonElement.addEventListener("click", resetForm);
+  bankFormElement.addEventListener("submit", onBankFormSubmit);
+  bankCancelButtonElement.addEventListener("click", resetBankForm);
 }
 
-async function loadHealth() {
+async function loadCountryOptions() {
   try {
-    const health = await apiRequest("/api/health", { method: "GET" });
-    healthStatusElement.textContent = `Backend status: ${health.message}`;
-  } catch {
-    healthStatusElement.textContent = "Backend status: unavailable";
+    const countries = await apiRequest("/api/countries", { method: "GET" });
+    populateBankCountryOptions(countries);
+  } catch (error) {
+    setBankMessage(error.message, true);
   }
+}
+
+function applyRoute(route) {
+  const activeRoute = route || "home";
+
+  viewHomeElement.hidden = activeRoute !== "home";
+  viewBanksElement.hidden = activeRoute !== "banks";
+  viewCurrencyElement.hidden = activeRoute !== "currency";
+
+  tabButtonElements.forEach((button) => {
+    const tabRoute = button.getAttribute("data-route-tab");
+    button.classList.toggle("active", tabRoute === activeRoute);
+  });
 }
 
 async function loadCurrencies() {
@@ -35,6 +78,15 @@ async function loadCurrencies() {
     renderCurrencies();
   } catch (error) {
     setMessage(error.message, true);
+  }
+}
+
+async function loadBanks() {
+  try {
+    banks = await apiRequest("/api/banks", { method: "GET" });
+    renderBanks();
+  } catch (error) {
+    setBankMessage(error.message, true);
   }
 }
 
@@ -70,6 +122,38 @@ function renderCurrencies() {
   });
 }
 
+function renderBanks() {
+  banksBodyElement.innerHTML = "";
+
+  if (banks.length === 0) {
+    const row = document.createElement("tr");
+    const cell = document.createElement("td");
+    cell.colSpan = 4;
+    cell.textContent = "No banks yet";
+    row.appendChild(cell);
+    banksBodyElement.appendChild(row);
+    return;
+  }
+
+  for (const bank of banks) {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${bank.id}</td>
+      <td>${escapeHtml(bank.name)}</td>
+      <td>${escapeHtml(bank.country)}</td>
+      <td>
+        <button type="button" data-action="edit" data-id="${bank.id}">Edit</button>
+        <button type="button" data-action="delete" data-id="${bank.id}">Delete</button>
+      </td>
+    `;
+    banksBodyElement.appendChild(row);
+  }
+
+  banksBodyElement.querySelectorAll("button").forEach((button) => {
+    button.addEventListener("click", onBankRowAction);
+  });
+}
+
 async function onFormSubmit(event) {
   event.preventDefault();
 
@@ -95,6 +179,34 @@ async function onFormSubmit(event) {
     await loadCurrencies();
   } catch (error) {
     setMessage(error.message, true);
+  }
+}
+
+async function onBankFormSubmit(event) {
+  event.preventDefault();
+
+  const id = bankIdElement.value.trim();
+  const payload = normalizeBankInput(bankNameElement.value, bankCountryElement.value);
+
+  try {
+    if (id) {
+      await apiRequest(`/api/banks/${id}`, {
+        method: "PUT",
+        body: JSON.stringify(payload),
+      });
+      setBankMessage("Bank updated", false);
+    } else {
+      await apiRequest("/api/banks", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+      setBankMessage("Bank created", false);
+    }
+
+    resetBankForm();
+    await loadBanks();
+  } catch (error) {
+    setBankMessage(error.message, true);
   }
 }
 
@@ -125,6 +237,33 @@ function onRowAction(event) {
   }
 }
 
+function onBankRowAction(event) {
+  const action = event.target.getAttribute("data-action");
+  const id = event.target.getAttribute("data-id");
+  if (!id) {
+    return;
+  }
+
+  const bank = banks.find((item) => String(item.id) === id);
+  if (!bank) {
+    return;
+  }
+
+  if (action === "edit") {
+    bankIdElement.value = String(bank.id);
+    bankNameElement.value = bank.name;
+    bankCountryElement.value = bank.country;
+    bankSubmitButtonElement.textContent = "Update";
+    bankCancelButtonElement.hidden = false;
+    setBankMessage(`Editing bank #${bank.id}`, false);
+    return;
+  }
+
+  if (action === "delete") {
+    deleteBank(bank.id);
+  }
+}
+
 async function deleteCurrency(id) {
   try {
     await apiRequest(`/api/currencies/${id}`, { method: "DELETE" });
@@ -136,6 +275,17 @@ async function deleteCurrency(id) {
   }
 }
 
+async function deleteBank(id) {
+  try {
+    await apiRequest(`/api/banks/${id}`, { method: "DELETE" });
+    setBankMessage("Bank deleted", false);
+    resetBankForm();
+    await loadBanks();
+  } catch (error) {
+    setBankMessage(error.message, true);
+  }
+}
+
 function resetForm() {
   formElement.reset();
   currencyIdElement.value = "";
@@ -143,9 +293,21 @@ function resetForm() {
   cancelButtonElement.hidden = true;
 }
 
+function resetBankForm() {
+  bankFormElement.reset();
+  bankIdElement.value = "";
+  bankSubmitButtonElement.textContent = "Create";
+  bankCancelButtonElement.hidden = true;
+}
+
 function setMessage(message, isError) {
   messageElement.textContent = message;
   messageElement.className = isError ? "error" : "success";
+}
+
+function setBankMessage(message, isError) {
+  bankMessageElement.textContent = message;
+  bankMessageElement.className = isError ? "error" : "success";
 }
 
 async function apiRequest(url, options) {
@@ -161,4 +323,15 @@ async function apiRequest(url, options) {
   }
 
   return parseApiResponse(response);
+}
+
+function populateBankCountryOptions(countries) {
+  const orderedCountries = [...countries].sort((left, right) => left.code.localeCompare(right.code));
+
+  for (const country of orderedCountries) {
+    const option = document.createElement("option");
+    option.value = country.code;
+    option.textContent = `${country.code} - ${country.name}`;
+    bankCountryElement.appendChild(option);
+  }
 }

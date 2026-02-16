@@ -6,6 +6,13 @@
     };
   }
 
+  function normalizeBankInput(name, country) {
+    return {
+      name: String(name ?? "").trim(),
+      country: String(country ?? "").trim().toUpperCase(),
+    };
+  }
+
   function escapeHtml(value) {
     return String(value)
       .replaceAll("&", "&amp;")
@@ -32,6 +39,7 @@
 
   const exported = {
     normalizeCurrencyInput,
+    normalizeBankInput,
     escapeHtml,
     parseApiResponse,
   };

@@ -8,49 +8,56 @@ test("currency CRUD flow works end-to-end", async ({ page }) => {
   const suffix = uniqueSuffix();
   const initialName = `Currency ${suffix}`;
   const updatedName = `Currency Updated ${suffix}`;
+  const initialCode = `C${String(Date.now()).slice(-5)}`;
+  const updatedCode = `U${String(Date.now() + 1).slice(-5)}`;
+  const currencyForm = page.locator("#currency-form");
 
   await page.goto("/");
+  await page.getByRole("button", { name: "Currency" }).click();
 
-  await expect(page.getByText("Backend status: backend is up")).toBeVisible();
-
-  await page.getByLabel("Name").fill(initialName);
-  await page.getByLabel("Code").fill("abc");
-  await page.getByRole("button", { name: "Create" }).click();
+  await currencyForm.getByLabel("Name").fill(initialName);
+  await currencyForm.getByLabel("Code").fill(initialCode);
+  await currencyForm.getByRole("button", { name: "Create" }).click();
 
   await expect(page.locator("#form-message")).toHaveText("Currency created");
   await expect(page.locator("#currencies-body")).toContainText(initialName);
-  await expect(page.locator("#currencies-body")).toContainText("ABC");
+  await expect(page.locator("#currencies-body")).toContainText(initialCode);
 
-  await page.locator('button[data-action="edit"]').first().click();
+  const initialRow = page.locator("#currencies-body tr", { hasText: initialName });
+  await initialRow.locator('button[data-action="edit"]').click();
   await expect(page.locator("#submit-button")).toHaveText("Update");
 
-  await page.getByLabel("Name").fill(updatedName);
-  await page.getByLabel("Code").fill("xyz");
-  await page.getByRole("button", { name: "Update" }).click();
+  await currencyForm.getByLabel("Name").fill(updatedName);
+  await currencyForm.getByLabel("Code").fill(updatedCode);
+  await currencyForm.getByRole("button", { name: "Update" }).click();
 
   await expect(page.locator("#form-message")).toHaveText("Currency updated");
   await expect(page.locator("#currencies-body")).toContainText(updatedName);
-  await expect(page.locator("#currencies-body")).toContainText("XYZ");
+  await expect(page.locator("#currencies-body")).toContainText(updatedCode);
 
-  await page.locator('button[data-action="delete"]').first().click();
+  const updatedRow = page.locator("#currencies-body tr", { hasText: updatedName });
+  await updatedRow.locator('button[data-action="delete"]').click();
   await expect(page.locator("#form-message")).toHaveText("Currency deleted");
-  await expect(page.locator("#currencies-body")).toContainText("No currencies yet");
+  await expect(page.locator("#currencies-body")).not.toContainText(updatedName);
 });
 
 test("duplicate currency shows backend conflict message", async ({ page }) => {
   const suffix = uniqueSuffix();
   const name = `Duplicate ${suffix}`;
+  const code = `D${String(Date.now()).slice(-5)}`;
+  const currencyForm = page.locator("#currency-form");
 
   await page.goto("/");
+  await page.getByRole("button", { name: "Currency" }).click();
 
-  await page.getByLabel("Name").fill(name);
-  await page.getByLabel("Code").fill("dup");
-  await page.getByRole("button", { name: "Create" }).click();
+  await currencyForm.getByLabel("Name").fill(name);
+  await currencyForm.getByLabel("Code").fill(code);
+  await currencyForm.getByRole("button", { name: "Create" }).click();
   await expect(page.locator("#form-message")).toHaveText("Currency created");
 
-  await page.getByLabel("Name").fill(name);
-  await page.getByLabel("Code").fill("dup");
-  await page.getByRole("button", { name: "Create" }).click();
+  await currencyForm.getByLabel("Name").fill(name);
+  await currencyForm.getByLabel("Code").fill(code);
+  await currencyForm.getByRole("button", { name: "Create" }).click();
 
   await expect(page.locator("#form-message")).toHaveText("name and code must be unique");
   await expect(page.locator("#form-message")).toHaveClass(/error/);

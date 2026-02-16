@@ -14,7 +14,7 @@ module.exports = defineConfig({
   webServer: {
     command: "go run .",
     url: "http://127.0.0.1:8080/api/health",
-    reuseExistingServer: true,
+    reuseExistingServer: false,
     timeout: 120_000,
     env: {
       DATABASE_PATH: e2eDbPath,

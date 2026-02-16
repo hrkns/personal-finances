@@ -73,7 +73,8 @@ td {
 }
 
 #form-message,
-#bank-form-message {
+#bank-form-message,
+#bank-account-form-message {
   min-height: 20px;
 }
 

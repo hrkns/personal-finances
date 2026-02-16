@@ -36,6 +36,8 @@ async function setupFrontendApp() {
   const store = [];
   let nextBankId = 1;
   const banksStore = [];
+  let nextBankAccountId = 1;
+  const bankAccountsStore = [];
   const countriesStore = [
     { code: "CA", name: "Canada" },
     { code: "GB", name: "United Kingdom" },
@@ -150,6 +152,39 @@ async function setupFrontendApp() {
       return createResponse(201, created);
     }
 
+    if (pathname === "/api/bank-accounts" && method === "GET") {
+      return createResponse(200, bankAccountsStore.map((item) => ({ ...item })));
+    }
+
+    if (pathname === "/api/bank-accounts" && method === "POST") {
+      const payload = JSON.parse(options.body || "{}");
+      const duplicate = bankAccountsStore.some(
+        (item) =>
+          item.bank_id === payload.bank_id &&
+          item.currency_id === payload.currency_id &&
+          item.account_number === payload.account_number
+      );
+      if (duplicate) {
+        return createResponse(409, {
+          error: {
+            code: "duplicate_bank_account",
+            message: "bank, currency and account number combination must be unique",
+          },
+        });
+      }
+
+      const created = {
+        id: nextBankAccountId,
+        bank_id: Number(payload.bank_id),
+        currency_id: Number(payload.currency_id),
+        account_number: String(payload.account_number).trim(),
+        balance: Number(payload.balance),
+      };
+      nextBankAccountId += 1;
+      bankAccountsStore.push(created);
+      return createResponse(201, created);
+    }
+
     const bankMatch = pathname.match(/^\/api\/banks\/(\d+)$/);
     if (bankMatch && method === "PUT") {
       const id = Number(bankMatch[1]);
@@ -193,6 +228,52 @@ async function setupFrontendApp() {
       return createResponse(204);
     }
 
+    const bankAccountMatch = pathname.match(/^\/api\/bank-accounts\/(\d+)$/);
+    if (bankAccountMatch && method === "PUT") {
+      const id = Number(bankAccountMatch[1]);
+      const payload = JSON.parse(options.body || "{}");
+      const index = bankAccountsStore.findIndex((item) => item.id === id);
+      if (index === -1) {
+        return createResponse(404, { error: { code: "not_found", message: "bank account not found" } });
+      }
+
+      const duplicate = bankAccountsStore.some(
+        (item) =>
+          item.id !== id &&
+          item.bank_id === Number(payload.bank_id) &&
+          item.currency_id === Number(payload.currency_id) &&
+          item.account_number === String(payload.account_number).trim()
+      );
+      if (duplicate) {
+        return createResponse(409, {
+          error: {
+            code: "duplicate_bank_account",
+            message: "bank, currency and account number combination must be unique",
+          },
+        });
+      }
+
+      const updated = {
+        id,
+        bank_id: Number(payload.bank_id),
+        currency_id: Number(payload.currency_id),
+        account_number: String(payload.account_number).trim(),
+        balance: Number(payload.balance),
+      };
+      bankAccountsStore[index] = updated;
+      return createResponse(200, updated);
+    }
+
+    if (bankAccountMatch && method === "DELETE") {
+      const id = Number(bankAccountMatch[1]);
+      const index = bankAccountsStore.findIndex((item) => item.id === id);
+      if (index === -1) {
+        return createResponse(404, { error: { code: "not_found", message: "bank account not found" } });
+      }
+      bankAccountsStore.splice(index, 1);
+      return createResponse(204);
+    }
+
     return createResponse(500, { error: { code: "unhandled", message: "unhandled route in test" } });
   };
 
@@ -210,6 +291,7 @@ test("frontend initializes at Home route and can route to Currency", async () =>
   const { dom, document } = await setupFrontendApp();
 
   const homeHidden = document.getElementById("view-home").hidden;
+  const bankAccountsHiddenBefore = document.getElementById("view-bank-accounts").hidden;
   const currencyHiddenBefore = document.getElementById("view-currency").hidden;
 
   document.querySelector('[data-route-tab="currency"]').click();
@@ -217,14 +299,19 @@ test("frontend initializes at Home route and can route to Currency", async () =>
   const currencyHiddenAfter = document.getElementById("view-currency").hidden;
   const emptyState = document.getElementById("currencies-body").textContent;
   const emptyBanksState = document.getElementById("banks-body").textContent;
+  const emptyBankAccountsState = document.getElementById("bank-accounts-body").textContent;
   const countryOptions = document.getElementById("bank-country").textContent;
+  const bankAccountCurrencyOptions = document.getElementById("bank-account-currency-id").textContent;
 
   assert.equal(homeHidden, false);
+  assert.equal(bankAccountsHiddenBefore, true);
   assert.equal(currencyHiddenBefore, true);
   assert.equal(currencyHiddenAfter, false);
   assert.match(emptyState, /No currencies yet/);
   assert.match(emptyBanksState, /No banks yet/);
+  assert.match(emptyBankAccountsState, /No bank accounts yet/);
   assert.match(countryOptions, /US - United States/);
+  assert.match(bankAccountCurrencyOptions, /Select currency/);
 
   dom.window.close();
 });
@@ -405,6 +492,155 @@ test("frontend shows error message on duplicate bank conflict", async () => {
 
   const message = document.getElementById("bank-form-message");
   assert.equal(message.textContent, "name and country combination must be unique");
+  assert.equal(message.className, "error");
+
+  dom.window.close();
+});
+
+test("frontend can create and list a bank account", async () => {
+  const { dom, window, document } = await setupFrontendApp();
+
+  document.querySelector('[data-route-tab="bank-accounts"]').click();
+
+  document.getElementById("currency-name").value = "US Dollar";
+  document.getElementById("currency-code").value = "usd";
+  document
+    .getElementById("currency-form")
+    .dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+
+  document.getElementById("bank-name").value = "Home Bank";
+  document.getElementById("bank-country").value = "US";
+  document
+    .getElementById("bank-form")
+    .dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  document.getElementById("bank-account-bank-id").value = "1";
+  document.getElementById("bank-account-currency-id").value = "1";
+  document.getElementById("bank-account-number").value = "ACC-123";
+  document.getElementById("bank-account-balance").value = "12.34";
+  document
+    .getElementById("bank-account-form")
+    .dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  const message = document.getElementById("bank-account-form-message").textContent;
+  const rowsText = document.getElementById("bank-accounts-body").textContent;
+
+  assert.equal(message, "Bank account created");
+  assert.match(rowsText, /Home Bank/);
+  assert.match(rowsText, /USD/);
+  assert.match(rowsText, /ACC-123/);
+
+  dom.window.close();
+});
+
+test("frontend supports bank account edit and delete actions", async () => {
+  const { dom, window, document } = await setupFrontendApp();
+
+  document.querySelector('[data-route-tab="bank-accounts"]').click();
+
+  document.getElementById("currency-name").value = "US Dollar";
+  document.getElementById("currency-code").value = "usd";
+  document
+    .getElementById("currency-form")
+    .dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+
+  document.getElementById("bank-name").value = "Edit Account Bank";
+  document.getElementById("bank-country").value = "US";
+  document
+    .getElementById("bank-form")
+    .dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  document.getElementById("bank-account-bank-id").value = "1";
+  document.getElementById("bank-account-currency-id").value = "1";
+  document.getElementById("bank-account-number").value = "EDIT-1";
+  document.getElementById("bank-account-balance").value = "10";
+  document
+    .getElementById("bank-account-form")
+    .dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  const editButton = document.querySelector('#bank-accounts-body button[data-action="edit"]');
+  editButton.dispatchEvent(new window.Event("click", { bubbles: true }));
+
+  assert.equal(document.getElementById("bank-account-submit-button").textContent, "Update");
+
+  document.getElementById("bank-account-number").value = "EDIT-2";
+  document.getElementById("bank-account-balance").value = "20.55";
+  document
+    .getElementById("bank-account-form")
+    .dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  assert.match(document.getElementById("bank-accounts-body").textContent, /EDIT-2/);
+
+  const deleteButton = document.querySelector('#bank-accounts-body button[data-action="delete"]');
+  deleteButton.dispatchEvent(new window.Event("click", { bubbles: true }));
+
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  assert.match(document.getElementById("bank-accounts-body").textContent, /No bank accounts yet/);
+
+  dom.window.close();
+});
+
+test("frontend shows error message on duplicate bank account conflict", async () => {
+  const { dom, window, document } = await setupFrontendApp();
+
+  document.querySelector('[data-route-tab="bank-accounts"]').click();
+
+  document.getElementById("currency-name").value = "US Dollar";
+  document.getElementById("currency-code").value = "usd";
+  document
+    .getElementById("currency-form")
+    .dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+
+  document.getElementById("bank-name").value = "Conflict Account Bank";
+  document.getElementById("bank-country").value = "US";
+  document
+    .getElementById("bank-form")
+    .dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  document.getElementById("bank-account-bank-id").value = "1";
+  document.getElementById("bank-account-currency-id").value = "1";
+  document.getElementById("bank-account-number").value = "DUP-1";
+  document.getElementById("bank-account-balance").value = "10";
+  document
+    .getElementById("bank-account-form")
+    .dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  document.getElementById("bank-account-bank-id").value = "1";
+  document.getElementById("bank-account-currency-id").value = "1";
+  document.getElementById("bank-account-number").value = "DUP-1";
+  document.getElementById("bank-account-balance").value = "11";
+  document
+    .getElementById("bank-account-form")
+    .dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  const message = document.getElementById("bank-account-form-message");
+  assert.equal(message.textContent, "bank, currency and account number combination must be unique");
   assert.equal(message.className, "error");
 
   dom.window.close();

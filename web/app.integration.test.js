@@ -36,11 +36,20 @@ async function setupFrontendApp() {
   const store = [];
   let nextBankId = 1;
   const banksStore = [];
+  const countriesStore = [
+    { code: "CA", name: "Canada" },
+    { code: "GB", name: "United Kingdom" },
+    { code: "US", name: "United States" },
+  ];
 
   window.fetch = async (url, options = {}) => {
     const method = (options.method || "GET").toUpperCase();
     const parsedUrl = new URL(url, "http://localhost:8080");
     const pathname = parsedUrl.pathname;
+
+    if (pathname === "/api/countries" && method === "GET") {
+      return createResponse(200, countriesStore.map((item) => ({ ...item })));
+    }
 
     if (pathname === "/api/currencies" && method === "GET") {
       return createResponse(200, store.map((item) => ({ ...item })));
@@ -208,12 +217,14 @@ test("frontend initializes at Home route and can route to Currency", async () =>
   const currencyHiddenAfter = document.getElementById("view-currency").hidden;
   const emptyState = document.getElementById("currencies-body").textContent;
   const emptyBanksState = document.getElementById("banks-body").textContent;
+  const countryOptions = document.getElementById("bank-country").textContent;
 
   assert.equal(homeHidden, false);
   assert.equal(currencyHiddenBefore, true);
   assert.equal(currencyHiddenAfter, false);
   assert.match(emptyState, /No currencies yet/);
   assert.match(emptyBanksState, /No banks yet/);
+  assert.match(countryOptions, /US - United States/);
 
   dom.window.close();
 });

@@ -1,0 +1,16 @@
+CREATE TABLE IF NOT EXISTS bank_accounts (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  bank_id INTEGER NOT NULL,
+  currency_id INTEGER NOT NULL,
+  account_number TEXT NOT NULL,
+  balance REAL NOT NULL DEFAULT 0,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(bank_id, currency_id, account_number),
+  FOREIGN KEY (bank_id) REFERENCES banks(id)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT,
+  FOREIGN KEY (currency_id) REFERENCES currencies(id)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT
+);

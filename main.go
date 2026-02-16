@@ -41,3 +41,7 @@ func main() {
 func isUniqueConstraintError(err error) bool {
 	return strings.Contains(strings.ToLower(err.Error()), "unique constraint failed")
 }
+
+func isForeignKeyConstraintError(err error) bool {
+	return strings.Contains(strings.ToLower(err.Error()), "foreign key constraint failed")
+}

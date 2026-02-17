@@ -2,9 +2,9 @@
   "name": "personal-finances",
   "private": true,
   "scripts": {
-    "test:frontend": "node --test web/utils.test.js web/routing.integration.test.js web/currency.integration.test.js web/banks.integration.test.js web/bank-accounts.integration.test.js",
+    "test:frontend": "node --test web/utils.test.js web/routing.integration.test.js web/people.integration.test.js web/currency.integration.test.js web/banks.integration.test.js web/bank-accounts.integration.test.js",
     "test:frontend:unit": "node --test web/utils.test.js",
-    "test:frontend:integration": "node --test web/routing.integration.test.js web/currency.integration.test.js web/banks.integration.test.js web/bank-accounts.integration.test.js",
+    "test:frontend:integration": "node --test web/routing.integration.test.js web/people.integration.test.js web/currency.integration.test.js web/banks.integration.test.js web/bank-accounts.integration.test.js",
     "test:frontend:e2e": "playwright test",
     "test:frontend:e2e:headed": "playwright test --headed"
   },

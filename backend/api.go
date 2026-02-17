@@ -1,4 +1,4 @@
-package main
+package backend
 
 import (
 	"encoding/json"
@@ -27,6 +27,7 @@ func (application app) registerAPIRoutes(mux *http.ServeMux) {
 	application.registerCurrencyRoutes(mux)
 	application.registerCountryRoutes(mux)
 	application.registerBankRoutes(mux)
+	application.registerBankAccountRoutes(mux)
 }
 
 func healthHandler(writer http.ResponseWriter, _ *http.Request) {

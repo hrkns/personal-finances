@@ -13,6 +13,15 @@
     };
   }
 
+  function normalizeBankAccountInput(bankId, currencyId, accountNumber, balance) {
+    return {
+      bank_id: Number.parseInt(String(bankId ?? ""), 10),
+      currency_id: Number.parseInt(String(currencyId ?? ""), 10),
+      account_number: String(accountNumber ?? "").trim(),
+      balance: Number.parseFloat(String(balance ?? "0")),
+    };
+  }
+
   function escapeHtml(value) {
     return String(value)
       .replaceAll("&", "&amp;")
@@ -40,6 +49,7 @@
   const exported = {
     normalizeCurrencyInput,
     normalizeBankInput,
+    normalizeBankAccountInput,
     escapeHtml,
     parseApiResponse,
   };

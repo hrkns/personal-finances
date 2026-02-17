@@ -22,8 +22,11 @@ Covered areas include:
 - Health endpoint behavior
 - Currency CRUD and validations
 - Bank CRUD and validations
+- Bank Account CRUD and validations
 - Countries endpoint behavior
 - Migration-backed test setup through temp SQLite DB
+
+Backend files live under `backend/` (entrypoint remains in `main.go`).
 
 ## Frontend Unit Tests
 
@@ -54,8 +57,17 @@ These tests execute `index.html` + scripts in JSDOM with a mocked `fetch`, valid
 - Router and view switching basics
 - Currency form/table flows
 - Bank form/table flows
+- Bank Account form/table flows
 - Error handling on duplicate constraints
 - Country options loaded from `/api/countries`
+
+Integration files are split by concern:
+
+- `web/integration-test-setup.js`
+- `web/routing.integration.test.js`
+- `web/currency.integration.test.js`
+- `web/banks.integration.test.js`
+- `web/bank-accounts.integration.test.js`
 
 ## Frontend Combined (Unit + Integration)
 
@@ -83,7 +95,7 @@ E2E details:
 
 - Spins up app with `go run .`
 - Uses isolated sqlite database via `DATABASE_PATH`
-- Covers browser-level Currency and Bank flows
+- Covers browser-level Currency, Bank, and Bank Account flows
 - Verifies conflict scenarios and UI messages
 
 ## Typical Local Validation Order

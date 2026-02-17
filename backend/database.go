@@ -1,4 +1,4 @@
-package main
+package backend
 
 import (
 	"database/sql"
@@ -9,9 +9,11 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+
+	_ "modernc.org/sqlite"
 )
 
-func setupDatabase(path string) (*sql.DB, error) {
+func SetupDatabase(path string) (*sql.DB, error) {
 	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 		return nil, fmt.Errorf("create db directory: %w", err)
 	}
@@ -29,11 +31,25 @@ func setupDatabase(path string) (*sql.DB, error) {
 		return nil, fmt.Errorf("enable foreign keys: %w", err)
 	}
 
-	if err = applyMigrations(db, "migrations"); err != nil {
+	migrationsDir := resolveMigrationsDir()
+	if err = applyMigrations(db, migrationsDir); err != nil {
 		return nil, fmt.Errorf("apply migrations: %w", err)
 	}
 
 	return db, nil
+}
+
+func resolveMigrationsDir() string {
+	if info, err := os.Stat("migrations"); err == nil && info.IsDir() {
+		return "migrations"
+	}
+
+	fallback := filepath.Join("..", "migrations")
+	if info, err := os.Stat(fallback); err == nil && info.IsDir() {
+		return fallback
+	}
+
+	return "migrations"
 }
 
 func applyMigrations(db *sql.DB, migrationsDir string) error {

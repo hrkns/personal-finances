@@ -1,5 +1,5 @@
 (function initFrontendRouter(globalScope) {
-  const validRoutes = new Set(["home", "banks", "currency"]);
+  const validRoutes = new Set(["home", "bank-accounts", "banks", "currency"]);
 
   function normalizeRoute(route) {
     return String(route ?? "").trim().toLowerCase();

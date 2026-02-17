@@ -12,11 +12,56 @@
 
     <nav class="tabs" aria-label="Views">
       <button type="button" class="tab-button" data-route-tab="home">Home</button>
+      <button type="button" class="tab-button" data-route-tab="bank-accounts">Bank Accounts</button>
       <button type="button" class="tab-button" data-route-tab="banks">Banks</button>
       <button type="button" class="tab-button" data-route-tab="currency">Currency</button>
     </nav>
 
     <section id="view-home" class="view" data-view="home">
+    </section>
+
+    <section id="view-bank-accounts" class="view" data-view="bank-accounts" hidden>
+      <h2>Bank Accounts</h2>
+      <form id="bank-account-form">
+        <input type="hidden" id="bank-account-id" />
+
+        <label for="bank-account-bank-id">Bank</label>
+        <select id="bank-account-bank-id" name="bank_id" required>
+          <option value="">Select bank</option>
+        </select>
+
+        <label for="bank-account-currency-id">Currency</label>
+        <select id="bank-account-currency-id" name="currency_id" required>
+          <option value="">Select currency</option>
+        </select>
+
+        <label for="bank-account-number">Account Number</label>
+        <input id="bank-account-number" name="account_number" type="text" required />
+
+        <label for="bank-account-balance">Balance</label>
+        <input id="bank-account-balance" name="balance" type="number" step="0.01" required />
+
+        <div class="actions">
+          <button id="bank-account-submit-button" type="submit">Create</button>
+          <button id="bank-account-cancel-button" type="button" hidden>Cancel edit</button>
+        </div>
+      </form>
+
+      <p id="bank-account-form-message" role="status"></p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Bank</th>
+            <th>Currency</th>
+            <th>Account Number</th>
+            <th>Balance</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="bank-accounts-body"></tbody>
+      </table>
     </section>
 
     <section id="view-currency" class="view" data-view="currency" hidden>
@@ -90,6 +135,9 @@
 
   <script src="utils.js"></script>
   <script src="router.js"></script>
+  <script src="currencies-module.js"></script>
+  <script src="banks-module.js"></script>
+  <script src="bank-accounts-module.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

@@ -4,6 +4,7 @@ const assert = require("node:assert/strict");
 const {
   normalizeCurrencyInput,
   normalizeBankInput,
+  normalizeBankAccountInput,
   escapeHtml,
   parseApiResponse,
 } = require("./utils.js");
@@ -23,6 +24,17 @@ test("normalizeBankInput trims and uppercases country", () => {
   assert.deepEqual(payload, {
     name: "My Bank",
     country: "US",
+  });
+});
+
+test("normalizeBankAccountInput parses ids and balance", () => {
+  const payload = normalizeBankAccountInput(" 2 ", " 4 ", " ACC-01 ", " 10.25 ");
+
+  assert.deepEqual(payload, {
+    bank_id: 2,
+    currency_id: 4,
+    account_number: "ACC-01",
+    balance: 10.25,
   });
 });
 

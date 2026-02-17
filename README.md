@@ -17,6 +17,7 @@ Then open:
 Frontend views are tab-based and route through the `view` query parameter:
 
 - Home: `/?view=home` (or `/`)
+- People: `/?view=people`
 - Bank Accounts: `/?view=bank-accounts`
 - Banks: `/?view=banks`
 - Currency: `/?view=currency`

@@ -5,6 +5,7 @@ const {
   normalizeCurrencyInput,
   normalizeBankInput,
   normalizePersonInput,
+  normalizeTransactionCategoryInput,
   normalizeBankAccountInput,
   escapeHtml,
   parseApiResponse,
@@ -33,6 +34,20 @@ test("normalizePersonInput trims name", () => {
 
   assert.deepEqual(payload, {
     name: "John Doe",
+  });
+});
+
+test("normalizeTransactionCategoryInput trims name and parses optional parent id", () => {
+  const withParent = normalizeTransactionCategoryInput("  Job 1  ", " 2 ");
+  assert.deepEqual(withParent, {
+    name: "Job 1",
+    parent_id: 2,
+  });
+
+  const withoutParent = normalizeTransactionCategoryInput(" Salary ", "");
+  assert.deepEqual(withoutParent, {
+    name: "Salary",
+    parent_id: null,
   });
 });
 

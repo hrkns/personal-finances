@@ -12,12 +12,42 @@
 
     <nav class="tabs" aria-label="Views">
       <button type="button" class="tab-button" data-route-tab="home">Home</button>
+      <button type="button" class="tab-button" data-route-tab="people">People</button>
       <button type="button" class="tab-button" data-route-tab="bank-accounts">Bank Accounts</button>
       <button type="button" class="tab-button" data-route-tab="banks">Banks</button>
       <button type="button" class="tab-button" data-route-tab="currency">Currency</button>
     </nav>
 
     <section id="view-home" class="view" data-view="home">
+    </section>
+
+    <section id="view-people" class="view" data-view="people" hidden>
+      <h2>People</h2>
+      <form id="people-form">
+        <input type="hidden" id="person-id" />
+
+        <label for="person-name">Name</label>
+        <input id="person-name" name="name" type="text" required />
+
+        <div class="actions">
+          <button id="person-submit-button" type="submit">Create</button>
+          <button id="person-cancel-button" type="button" hidden>Cancel edit</button>
+        </div>
+      </form>
+
+      <p id="person-form-message" role="status"></p>
+
+      <h2>People</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="people-body"></tbody>
+      </table>
     </section>
 
     <section id="view-bank-accounts" class="view" data-view="bank-accounts" hidden>
@@ -49,6 +79,7 @@
 
       <p id="bank-account-form-message" role="status"></p>
 
+      <h2>Bank Accounts</h2>
       <table>
         <thead>
           <tr>
@@ -135,6 +166,7 @@
 
   <script src="utils.js"></script>
   <script src="router.js"></script>
+  <script src="people-module.js"></script>
   <script src="currencies-module.js"></script>
   <script src="banks-module.js"></script>
   <script src="bank-accounts-module.js"></script>

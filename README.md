@@ -17,6 +17,7 @@ Then open:
 Frontend views are tab-based and route through the `view` query parameter:
 
 - Home: `/?view=home` (or `/`)
+- People: `/?view=people`
 - Bank Accounts: `/?view=bank-accounts`
 - Banks: `/?view=banks`
 - Currency: `/?view=currency`
@@ -52,5 +53,6 @@ This keeps schema changes versioned, reviewable, and repeatable without requirin
 
 ## Documentation
 
-- REST API documentation: [docs/API.md](docs/API.md)
+- REST API documentation index: [docs/API.md](docs/API.md)
+- Split API resource docs: [docs/api/](docs/api)
 - Tests documentation: [docs/TESTS.md](docs/TESTS.md)

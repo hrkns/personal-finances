@@ -16,6 +16,14 @@ const bankCancelButtonElement = document.getElementById("bank-cancel-button");
 const bankMessageElement = document.getElementById("bank-form-message");
 const banksBodyElement = document.getElementById("banks-body");
 
+const peopleFormElement = document.getElementById("people-form");
+const personIdElement = document.getElementById("person-id");
+const personNameElement = document.getElementById("person-name");
+const personSubmitButtonElement = document.getElementById("person-submit-button");
+const personCancelButtonElement = document.getElementById("person-cancel-button");
+const personMessageElement = document.getElementById("person-form-message");
+const peopleBodyElement = document.getElementById("people-body");
+
 const bankAccountFormElement = document.getElementById("bank-account-form");
 const bankAccountIdElement = document.getElementById("bank-account-id");
 const bankAccountBankIdElement = document.getElementById("bank-account-bank-id");
@@ -29,15 +37,36 @@ const bankAccountsBodyElement = document.getElementById("bank-accounts-body");
 
 const tabButtonElements = document.querySelectorAll("[data-route-tab]");
 const viewHomeElement = document.getElementById("view-home");
+const viewPeopleElement = document.getElementById("view-people");
 const viewBankAccountsElement = document.getElementById("view-bank-accounts");
 const viewBanksElement = document.getElementById("view-banks");
 const viewCurrencyElement = document.getElementById("view-currency");
 
-const { normalizeCurrencyInput, normalizeBankInput, normalizeBankAccountInput, escapeHtml, parseApiResponse } = frontendUtils;
+const { normalizeCurrencyInput, normalizeBankInput, normalizePersonInput, normalizeBankAccountInput, escapeHtml, parseApiResponse } = frontendUtils;
 
 let currencies = [];
 let banks = [];
+let people = [];
 let bankAccounts = [];
+
+const peopleModule = createPeopleModule({
+  elements: {
+    formElement: peopleFormElement,
+    idElement: personIdElement,
+    nameElement: personNameElement,
+    submitButtonElement: personSubmitButtonElement,
+    cancelButtonElement: personCancelButtonElement,
+    messageElement: personMessageElement,
+    bodyElement: peopleBodyElement,
+  },
+  apiRequest,
+  normalizePersonInput,
+  escapeHtml,
+  getPeople: () => people,
+  setPeople: (items) => {
+    people = items;
+  },
+});
 
 const bankAccountsModule = createBankAccountsModule({
   elements: {
@@ -127,7 +156,10 @@ async function init() {
     });
   });
 
-  await Promise.all([currenciesModule.load(), banksModule.load(), bankAccountsModule.load()]);
+  await Promise.all([peopleModule.load(), currenciesModule.load(), banksModule.load(), bankAccountsModule.load()]);
+
+  peopleFormElement.addEventListener("submit", peopleModule.onSubmit);
+  personCancelButtonElement.addEventListener("click", peopleModule.resetForm);
 
   currencyFormElement.addEventListener("submit", currenciesModule.onSubmit);
   currencyCancelButtonElement.addEventListener("click", currenciesModule.resetForm);
@@ -143,6 +175,7 @@ function applyRoute(route) {
   const activeRoute = route || "home";
 
   viewHomeElement.hidden = activeRoute !== "home";
+  viewPeopleElement.hidden = activeRoute !== "people";
   viewBankAccountsElement.hidden = activeRoute !== "bank-accounts";
   viewBanksElement.hidden = activeRoute !== "banks";
   viewCurrencyElement.hidden = activeRoute !== "currency";

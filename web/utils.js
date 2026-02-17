@@ -13,6 +13,12 @@
     };
   }
 
+  function normalizePersonInput(name) {
+    return {
+      name: String(name ?? "").trim(),
+    };
+  }
+
   function normalizeBankAccountInput(bankId, currencyId, accountNumber, balance) {
     return {
       bank_id: Number.parseInt(String(bankId ?? ""), 10),
@@ -49,6 +55,7 @@
   const exported = {
     normalizeCurrencyInput,
     normalizeBankInput,
+    normalizePersonInput,
     normalizeBankAccountInput,
     escapeHtml,
     parseApiResponse,

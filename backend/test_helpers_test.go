@@ -1,4 +1,4 @@
-package main
+package backend
 
 import (
 	"bytes"
@@ -11,7 +11,7 @@ import (
 func newTestApplication(t *testing.T) app {
 	t.Helper()
 	dbPath := filepath.Join(t.TempDir(), "test.db")
-	db, err := setupDatabase(dbPath)
+	db, err := SetupDatabase(dbPath)
 	if err != nil {
 		t.Fatalf("setup database: %v", err)
 	}

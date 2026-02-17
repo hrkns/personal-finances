@@ -26,6 +26,8 @@ Covered areas include:
 - Countries endpoint behavior
 - Migration-backed test setup through temp SQLite DB
 
+Backend files live under `backend/` (entrypoint remains in `main.go`).
+
 ## Frontend Unit Tests
 
 Run:
@@ -58,6 +60,14 @@ These tests execute `index.html` + scripts in JSDOM with a mocked `fetch`, valid
 - Bank Account form/table flows
 - Error handling on duplicate constraints
 - Country options loaded from `/api/countries`
+
+Integration files are split by concern:
+
+- `web/integration-test-setup.js`
+- `web/routing.integration.test.js`
+- `web/currency.integration.test.js`
+- `web/banks.integration.test.js`
+- `web/bank-accounts.integration.test.js`
 
 ## Frontend Combined (Unit + Integration)
 

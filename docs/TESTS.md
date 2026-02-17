@@ -21,6 +21,7 @@ Covered areas include:
 
 - Health endpoint behavior
 - People CRUD and validations
+- Transaction Category CRUD and validations
 - Currency CRUD and validations
 - Bank CRUD and validations
 - Bank Account CRUD and validations
@@ -41,6 +42,7 @@ Current focus:
 
 - Utility functions in `web/utils.js`
   - `normalizePersonInput`
+  - `normalizeTransactionCategoryInput`
   - `normalizeCurrencyInput`
   - `normalizeBankInput`
   - `escapeHtml`
@@ -57,6 +59,7 @@ npm run test:frontend:integration
 These tests execute `index.html` + scripts in JSDOM with a mocked `fetch`, validating:
 
 - Router and view switching basics
+- Transaction Category form/table flows
 - People form/table flows
 - Currency form/table flows
 - Bank form/table flows
@@ -69,6 +72,7 @@ Integration files are split by concern:
 - `web/integration-test-setup.js`
 - `web/routing.integration.test.js`
 - `web/people.integration.test.js`
+- `web/transaction-categories.integration.test.js`
 - `web/currency.integration.test.js`
 - `web/banks.integration.test.js`
 - `web/bank-accounts.integration.test.js`
@@ -99,7 +103,7 @@ E2E details:
 
 - Spins up app with `go run .`
 - Uses isolated sqlite database via `DATABASE_PATH`
-- Covers browser-level People, Currency, Bank, and Bank Account flows
+- Covers browser-level Transaction Category, People, Currency, Bank, and Bank Account flows
 - Verifies conflict scenarios and UI messages
 
 ## Typical Local Validation Order

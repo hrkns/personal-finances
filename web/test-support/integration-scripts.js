@@ -4,6 +4,7 @@ const path = require("node:path");
 const scriptFileNames = [
   "utils.js",
   "router.js",
+  "transaction-categories-module.js",
   "currencies-module.js",
   "banks-module.js",
   "people-module.js",

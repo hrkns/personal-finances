@@ -45,6 +45,8 @@ function upperTrimmedValue(value) {
 
 function createStores() {
   return {
+    nextTransactionCategoryID: 1,
+    transactionCategoriesStore: [],
     nextCurrencyId: 1,
     currenciesStore: [],
     nextPersonId: 1,

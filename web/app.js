@@ -24,6 +24,15 @@ const personCancelButtonElement = document.getElementById("person-cancel-button"
 const personMessageElement = document.getElementById("person-form-message");
 const peopleBodyElement = document.getElementById("people-body");
 
+const transactionCategoryFormElement = document.getElementById("transaction-category-form");
+const transactionCategoryIdElement = document.getElementById("transaction-category-id");
+const transactionCategoryNameElement = document.getElementById("transaction-category-name");
+const transactionCategoryParentIdElement = document.getElementById("transaction-category-parent-id");
+const transactionCategorySubmitButtonElement = document.getElementById("transaction-category-submit-button");
+const transactionCategoryCancelButtonElement = document.getElementById("transaction-category-cancel-button");
+const transactionCategoryMessageElement = document.getElementById("transaction-category-form-message");
+const transactionCategoriesBodyElement = document.getElementById("transaction-categories-body");
+
 const bankAccountFormElement = document.getElementById("bank-account-form");
 const bankAccountIdElement = document.getElementById("bank-account-id");
 const bankAccountBankIdElement = document.getElementById("bank-account-bank-id");
@@ -37,17 +46,47 @@ const bankAccountsBodyElement = document.getElementById("bank-accounts-body");
 
 const tabButtonElements = document.querySelectorAll("[data-route-tab]");
 const viewHomeElement = document.getElementById("view-home");
+const viewTransactionCategoriesElement = document.getElementById("view-transaction-categories");
 const viewPeopleElement = document.getElementById("view-people");
 const viewBankAccountsElement = document.getElementById("view-bank-accounts");
 const viewBanksElement = document.getElementById("view-banks");
 const viewCurrencyElement = document.getElementById("view-currency");
 
-const { normalizeCurrencyInput, normalizeBankInput, normalizePersonInput, normalizeBankAccountInput, escapeHtml, parseApiResponse } = frontendUtils;
+const {
+  normalizeCurrencyInput,
+  normalizeBankInput,
+  normalizePersonInput,
+  normalizeTransactionCategoryInput,
+  normalizeBankAccountInput,
+  escapeHtml,
+  parseApiResponse,
+} = frontendUtils;
 
 let currencies = [];
 let banks = [];
 let people = [];
+let transactionCategories = [];
 let bankAccounts = [];
+
+const transactionCategoriesModule = createTransactionCategoriesModule({
+  elements: {
+    formElement: transactionCategoryFormElement,
+    idElement: transactionCategoryIdElement,
+    nameElement: transactionCategoryNameElement,
+    parentIdElement: transactionCategoryParentIdElement,
+    submitButtonElement: transactionCategorySubmitButtonElement,
+    cancelButtonElement: transactionCategoryCancelButtonElement,
+    messageElement: transactionCategoryMessageElement,
+    bodyElement: transactionCategoriesBodyElement,
+  },
+  apiRequest,
+  normalizeTransactionCategoryInput,
+  escapeHtml,
+  getTransactionCategories: () => transactionCategories,
+  setTransactionCategories: (items) => {
+    transactionCategories = items;
+  },
+});
 
 const peopleModule = createPeopleModule({
   elements: {
@@ -156,7 +195,16 @@ async function init() {
     });
   });
 
-  await Promise.all([peopleModule.load(), currenciesModule.load(), banksModule.load(), bankAccountsModule.load()]);
+  await Promise.all([
+    transactionCategoriesModule.load(),
+    peopleModule.load(),
+    currenciesModule.load(),
+    banksModule.load(),
+    bankAccountsModule.load(),
+  ]);
+
+  transactionCategoryFormElement.addEventListener("submit", transactionCategoriesModule.onSubmit);
+  transactionCategoryCancelButtonElement.addEventListener("click", transactionCategoriesModule.resetForm);
 
   peopleFormElement.addEventListener("submit", peopleModule.onSubmit);
   personCancelButtonElement.addEventListener("click", peopleModule.resetForm);
@@ -175,6 +223,7 @@ function applyRoute(route) {
   const activeRoute = route || "home";
 
   viewHomeElement.hidden = activeRoute !== "home";
+  viewTransactionCategoriesElement.hidden = activeRoute !== "transaction-categories";
   viewPeopleElement.hidden = activeRoute !== "people";
   viewBankAccountsElement.hidden = activeRoute !== "bank-accounts";
   viewBanksElement.hidden = activeRoute !== "banks";

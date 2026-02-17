@@ -22,6 +22,7 @@ async function setupFrontendApp() {
   const routerScript = fs.readFileSync(path.join(webDir, "router.js"), "utf8");
   const currenciesModuleScript = fs.readFileSync(path.join(webDir, "currencies-module.js"), "utf8");
   const banksModuleScript = fs.readFileSync(path.join(webDir, "banks-module.js"), "utf8");
+  const peopleModuleScript = fs.readFileSync(path.join(webDir, "people-module.js"), "utf8");
   const bankAccountsModuleScript = fs.readFileSync(path.join(webDir, "bank-accounts-module.js"), "utf8");
   const appScript = fs.readFileSync(path.join(webDir, "app.js"), "utf8");
 
@@ -35,6 +36,8 @@ async function setupFrontendApp() {
 
   let nextId = 1;
   const store = [];
+  let nextPersonId = 1;
+  const peopleStore = [];
   let nextBankId = 1;
   const banksStore = [];
   let nextBankAccountId = 1;
@@ -82,6 +85,31 @@ async function setupFrontendApp() {
       return createResponse(201, created);
     }
 
+    if (pathname === "/api/people" && method === "GET") {
+      return createResponse(200, peopleStore.map((item) => ({ ...item })));
+    }
+
+    if (pathname === "/api/people" && method === "POST") {
+      const payload = JSON.parse(options.body || "{}");
+      const name = String(payload.name || "").trim();
+      if (!name) {
+        return createResponse(400, {
+          error: {
+            code: "invalid_payload",
+            message: "name is required",
+          },
+        });
+      }
+
+      const created = {
+        id: nextPersonId,
+        name,
+      };
+      nextPersonId += 1;
+      peopleStore.push(created);
+      return createResponse(201, created);
+    }
+
     const currencyMatch = pathname.match(/^\/api\/currencies\/(\d+)$/);
     if (currencyMatch && method === "PUT") {
       const id = Number(currencyMatch[1]);
@@ -121,6 +149,43 @@ async function setupFrontendApp() {
         return createResponse(404, { error: { code: "not_found", message: "currency not found" } });
       }
       store.splice(index, 1);
+      return createResponse(204);
+    }
+
+    const personMatch = pathname.match(/^\/api\/people\/(\d+)$/);
+    if (personMatch && method === "PUT") {
+      const id = Number(personMatch[1]);
+      const payload = JSON.parse(options.body || "{}");
+      const name = String(payload.name || "").trim();
+      if (!name) {
+        return createResponse(400, {
+          error: {
+            code: "invalid_payload",
+            message: "name is required",
+          },
+        });
+      }
+
+      const index = peopleStore.findIndex((item) => item.id === id);
+      if (index === -1) {
+        return createResponse(404, { error: { code: "not_found", message: "person not found" } });
+      }
+
+      const updated = {
+        id,
+        name,
+      };
+      peopleStore[index] = updated;
+      return createResponse(200, updated);
+    }
+
+    if (personMatch && method === "DELETE") {
+      const id = Number(personMatch[1]);
+      const index = peopleStore.findIndex((item) => item.id === id);
+      if (index === -1) {
+        return createResponse(404, { error: { code: "not_found", message: "person not found" } });
+      }
+      peopleStore.splice(index, 1);
       return createResponse(204);
     }
 
@@ -282,6 +347,7 @@ async function setupFrontendApp() {
   window.eval(routerScript);
   window.eval(currenciesModuleScript);
   window.eval(banksModuleScript);
+  window.eval(peopleModuleScript);
   window.eval(bankAccountsModuleScript);
   window.eval(appScript);
 

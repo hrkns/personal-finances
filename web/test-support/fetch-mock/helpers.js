@@ -63,6 +63,19 @@ function createStores() {
   };
 }
 
+function parseParentID(value) {
+  if (value === null || value === undefined || value === "") {
+    return null;
+  }
+
+  const parsed = Number(value);
+  if (!Number.isInteger(parsed) || parsed <= 0) {
+    return NaN;
+  }
+
+  return parsed;
+}
+
 module.exports = {
   parseBody,
   cloneItems,
@@ -72,4 +85,5 @@ module.exports = {
   trimmedValue,
   upperTrimmedValue,
   createStores,
+  parseParentID,
 };

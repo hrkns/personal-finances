@@ -1,18 +1,5 @@
 const { createResponse, normalize } = require("../../integration-http.js");
-const { parseBody, invalidPayload, notFound, conflict, trimmedValue } = require("../helpers.js");
-
-function parseParentID(value) {
-  if (value === null || value === undefined || value === "") {
-    return null;
-  }
-
-  const parsed = Number(value);
-  if (!Number.isInteger(parsed) || parsed <= 0) {
-    return NaN;
-  }
-
-  return parsed;
-}
+const { parseBody, invalidPayload, notFound, conflict, trimmedValue, parseParentID } = require("../helpers.js");
 
 function buildCategoryOutput(category, categoriesStore) {
   const parent = category.parent_id ? categoriesStore.find((item) => item.id === category.parent_id) : null;

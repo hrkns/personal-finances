@@ -1,18 +1,5 @@
 const { createResponse, normalize } = require("../../integration-http.js");
-const { parseBody, cloneItems, invalidPayload, conflict, trimmedValue } = require("../helpers.js");
-
-function parseParentID(value) {
-  if (value === null || value === undefined || value === "") {
-    return null;
-  }
-
-  const parsed = Number(value);
-  if (!Number.isInteger(parsed) || parsed <= 0) {
-    return NaN;
-  }
-
-  return parsed;
-}
+const { parseBody, cloneItems, invalidPayload, conflict, trimmedValue, parseParentID } = require("../helpers.js");
 
 function parentExists(store, parentID) {
   return store.some((item) => item.id === parentID);

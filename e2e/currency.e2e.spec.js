@@ -4,6 +4,11 @@ function uniqueSuffix() {
   return `${Date.now()}_${Math.floor(Math.random() * 100000)}`;
 }
 
+async function openSettingsSection(page, sectionName) {
+  await page.getByRole("button", { name: "Settings" }).click();
+  await page.getByRole("button", { name: sectionName }).click();
+}
+
 test("currency CRUD flow works end-to-end", async ({ page }) => {
   const suffix = uniqueSuffix();
   const initialName = `Currency ${suffix}`;
@@ -13,7 +18,7 @@ test("currency CRUD flow works end-to-end", async ({ page }) => {
   const currencyForm = page.locator("#currency-form");
 
   await page.goto("/");
-  await page.getByRole("button", { name: "Currency" }).click();
+  await openSettingsSection(page, "Currency");
 
   await currencyForm.getByLabel("Name").fill(initialName);
   await currencyForm.getByLabel("Code").fill(initialCode);
@@ -48,7 +53,7 @@ test("duplicate currency shows backend conflict message", async ({ page }) => {
   const currencyForm = page.locator("#currency-form");
 
   await page.goto("/");
-  await page.getByRole("button", { name: "Currency" }).click();
+  await openSettingsSection(page, "Currency");
 
   await currencyForm.getByLabel("Name").fill(name);
   await currencyForm.getByLabel("Code").fill(code);

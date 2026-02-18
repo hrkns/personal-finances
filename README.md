@@ -18,11 +18,15 @@ Frontend views are tab-based and route through the `view` query parameter:
 
 - Home: `/?view=home` (or `/`)
 - Transactions: `/?view=transactions`
-- Transaction Categories: `/?view=transaction-categories`
-- People: `/?view=people`
-- Bank Accounts: `/?view=bank-accounts`
-- Banks: `/?view=banks`
-- Currency: `/?view=currency`
+- Settings: `/?view=settings`
+
+Within Settings, `settings` query parameter controls which management section is open:
+
+- Transaction Categories: `/?view=settings&settings=transaction-categories`
+- People: `/?view=settings&settings=people`
+- Bank Accounts: `/?view=settings&settings=bank-accounts`
+- Banks: `/?view=settings&settings=banks`
+- Currency: `/?view=settings&settings=currency`
 
 Invalid `view` values are normalized to Home.
 

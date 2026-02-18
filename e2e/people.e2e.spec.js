@@ -4,6 +4,11 @@ function uniqueSuffix() {
   return `${Date.now()}_${Math.floor(Math.random() * 100000)}`;
 }
 
+async function openSettingsSection(page, sectionName) {
+  await page.getByRole("button", { name: "Settings" }).click();
+  await page.getByRole("button", { name: sectionName }).click();
+}
+
 test("people CRUD flow works end-to-end", async ({ page }) => {
   const suffix = uniqueSuffix();
   const initialName = `Person ${suffix}`;
@@ -11,7 +16,7 @@ test("people CRUD flow works end-to-end", async ({ page }) => {
   const personForm = page.locator("#people-form");
 
   await page.goto("/");
-  await page.getByRole("button", { name: "People" }).click();
+  await openSettingsSection(page, "People");
 
   await personForm.getByLabel("Name").fill(initialName);
   await personForm.getByRole("button", { name: "Create" }).click();
@@ -39,7 +44,7 @@ test("blank person name shows validation message", async ({ page }) => {
   const personForm = page.locator("#people-form");
 
   await page.goto("/");
-  await page.getByRole("button", { name: "People" }).click();
+  await openSettingsSection(page, "People");
 
   await personForm.getByLabel("Name").fill("    ");
   await personForm.getByRole("button", { name: "Create" }).click();

@@ -8,6 +8,11 @@ async function waitForAppReady(page) {
   await page.waitForFunction(() => typeof window.frontendRouter !== "undefined");
 }
 
+async function openSettingsSection(page, sectionName) {
+  await page.getByRole("button", { name: "Settings" }).click();
+  await page.getByRole("button", { name: sectionName }).click();
+}
+
 test("bank account CRUD flow works end-to-end", async ({ page }) => {
   const suffix = uniqueSuffix();
   const currencyName = `Account Currency ${suffix}`;
@@ -19,21 +24,21 @@ test("bank account CRUD flow works end-to-end", async ({ page }) => {
   await page.goto("/");
   await waitForAppReady(page);
 
-  await page.getByRole("button", { name: "Currency" }).click();
+  await openSettingsSection(page, "Currency");
   const currencyForm = page.locator("#currency-form");
   await currencyForm.getByLabel("Name").fill(currencyName);
   await currencyForm.getByLabel("Code").fill(currencyCode);
   await currencyForm.getByRole("button", { name: "Create" }).click();
   await expect(page.locator("#form-message")).toHaveText("Currency created");
 
-  await page.getByRole("button", { name: "Banks" }).click();
+  await openSettingsSection(page, "Banks");
   const bankForm = page.locator("#bank-form");
   await bankForm.getByLabel("Name").fill(bankName);
   await bankForm.getByLabel("Country").selectOption("US");
   await bankForm.getByRole("button", { name: "Create" }).click();
   await expect(page.locator("#bank-form-message")).toHaveText("Bank created");
 
-  await page.getByRole("button", { name: "Bank Accounts" }).click();
+  await openSettingsSection(page, "Bank Accounts");
   const bankAccountForm = page.locator("#bank-account-form");
 
   await bankAccountForm.getByLabel("Bank").selectOption({ label: `${bankName} (US)` });
@@ -72,21 +77,21 @@ test("duplicate bank account shows backend conflict message", async ({ page }) =
   await page.goto("/");
   await waitForAppReady(page);
 
-  await page.getByRole("button", { name: "Currency" }).click();
+  await openSettingsSection(page, "Currency");
   const currencyForm = page.locator("#currency-form");
   await currencyForm.getByLabel("Name").fill(currencyName);
   await currencyForm.getByLabel("Code").fill(currencyCode);
   await currencyForm.getByRole("button", { name: "Create" }).click();
   await expect(page.locator("#form-message")).toHaveText("Currency created");
 
-  await page.getByRole("button", { name: "Banks" }).click();
+  await openSettingsSection(page, "Banks");
   const bankForm = page.locator("#bank-form");
   await bankForm.getByLabel("Name").fill(bankName);
   await bankForm.getByLabel("Country").selectOption("US");
   await bankForm.getByRole("button", { name: "Create" }).click();
   await expect(page.locator("#bank-form-message")).toHaveText("Bank created");
 
-  await page.getByRole("button", { name: "Bank Accounts" }).click();
+  await openSettingsSection(page, "Bank Accounts");
   const bankAccountForm = page.locator("#bank-account-form");
 
   await bankAccountForm.getByLabel("Bank").selectOption({ label: `${bankName} (US)` });

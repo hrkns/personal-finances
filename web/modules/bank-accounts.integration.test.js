@@ -6,7 +6,8 @@ const { setupFrontendApp } = require("../integration-test-setup.js");
 test("frontend can create and list a bank account", async () => {
   const { dom, window, document } = await setupFrontendApp();
 
-  document.querySelector('[data-route-tab="bank-accounts"]').click();
+  document.querySelector('[data-route-tab="settings"]').click();
+  document.querySelector('[data-settings-tab="bank-accounts"]').click();
 
   document.getElementById("currency-name").value = "US Dollar";
   document.getElementById("currency-code").value = "usd";
@@ -48,7 +49,8 @@ test("frontend can create and list a bank account", async () => {
 test("frontend supports bank account edit and delete actions", async () => {
   const { dom, window, document } = await setupFrontendApp();
 
-  document.querySelector('[data-route-tab="bank-accounts"]').click();
+  document.querySelector('[data-route-tab="settings"]').click();
+  document.querySelector('[data-settings-tab="bank-accounts"]').click();
 
   document.getElementById("currency-name").value = "US Dollar";
   document.getElementById("currency-code").value = "usd";
@@ -106,7 +108,8 @@ test("frontend supports bank account edit and delete actions", async () => {
 test("frontend shows error message on duplicate bank account conflict", async () => {
   const { dom, window, document } = await setupFrontendApp();
 
-  document.querySelector('[data-route-tab="bank-accounts"]').click();
+  document.querySelector('[data-route-tab="settings"]').click();
+  document.querySelector('[data-settings-tab="bank-accounts"]').click();
 
   document.getElementById("currency-name").value = "US Dollar";
   document.getElementById("currency-code").value = "usd";

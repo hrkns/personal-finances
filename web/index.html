@@ -13,49 +13,10 @@
     <nav class="tabs" aria-label="Views">
       <button type="button" class="tab-button" data-route-tab="home">Home</button>
       <button type="button" class="tab-button" data-route-tab="transactions">Transactions</button>
-      <button type="button" class="tab-button" data-route-tab="transaction-categories">Transaction Categories</button>
-      <button type="button" class="tab-button" data-route-tab="people">People</button>
-      <button type="button" class="tab-button" data-route-tab="bank-accounts">Bank Accounts</button>
-      <button type="button" class="tab-button" data-route-tab="banks">Banks</button>
-      <button type="button" class="tab-button" data-route-tab="currency">Currency</button>
+      <button type="button" class="tab-button" data-route-tab="settings">Settings</button>
     </nav>
 
     <section id="view-home" class="view" data-view="home">
-    </section>
-
-    <section id="view-transaction-categories" class="view" data-view="transaction-categories" hidden>
-      <h2>Transaction Categories</h2>
-      <form id="transaction-category-form">
-        <input type="hidden" id="transaction-category-id" />
-
-        <label for="transaction-category-name">Name</label>
-        <input id="transaction-category-name" name="name" type="text" required />
-
-        <label for="transaction-category-parent-id">Parent Category</label>
-        <select id="transaction-category-parent-id" name="parent_id">
-          <option value="">No parent</option>
-        </select>
-
-        <div class="actions">
-          <button id="transaction-category-submit-button" type="submit">Create</button>
-          <button id="transaction-category-cancel-button" type="button" hidden>Cancel edit</button>
-        </div>
-      </form>
-
-      <p id="transaction-category-form-message" role="status"></p>
-
-      <h2>Transaction Categories</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Parent</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="transaction-categories-body"></tbody>
-      </table>
     </section>
 
     <section id="view-transactions" class="view" data-view="transactions" hidden>
@@ -122,7 +83,54 @@
       </table>
     </section>
 
-    <section id="view-people" class="view" data-view="people" hidden>
+    <section id="view-settings" class="view" data-view="settings" hidden>
+      <h2>Settings</h2>
+      <p id="settings-selection-message">Select a settings section to continue.</p>
+      <nav class="tabs" aria-label="Settings Views">
+        <button type="button" class="tab-button" data-settings-tab="transaction-categories">Transaction Categories</button>
+        <button type="button" class="tab-button" data-settings-tab="people">People</button>
+        <button type="button" class="tab-button" data-settings-tab="bank-accounts">Bank Accounts</button>
+        <button type="button" class="tab-button" data-settings-tab="banks">Banks</button>
+        <button type="button" class="tab-button" data-settings-tab="currency">Currency</button>
+      </nav>
+    </section>
+
+    <section id="view-transaction-categories" class="settings-view" hidden>
+      <h2>Transaction Categories</h2>
+      <form id="transaction-category-form">
+        <input type="hidden" id="transaction-category-id" />
+
+        <label for="transaction-category-name">Name</label>
+        <input id="transaction-category-name" name="name" type="text" required />
+
+        <label for="transaction-category-parent-id">Parent Category</label>
+        <select id="transaction-category-parent-id" name="parent_id">
+          <option value="">No parent</option>
+        </select>
+
+        <div class="actions">
+          <button id="transaction-category-submit-button" type="submit">Create</button>
+          <button id="transaction-category-cancel-button" type="button" hidden>Cancel edit</button>
+        </div>
+      </form>
+
+      <p id="transaction-category-form-message" role="status"></p>
+
+      <h2>Transaction Categories</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Parent</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="transaction-categories-body"></tbody>
+      </table>
+    </section>
+
+    <section id="view-people" class="settings-view" hidden>
       <h2>People</h2>
       <form id="people-form">
         <input type="hidden" id="person-id" />
@@ -151,7 +159,7 @@
       </table>
     </section>
 
-    <section id="view-bank-accounts" class="view" data-view="bank-accounts" hidden>
+    <section id="view-bank-accounts" class="settings-view" hidden>
       <h2>Bank Accounts</h2>
       <form id="bank-account-form">
         <input type="hidden" id="bank-account-id" />
@@ -196,7 +204,7 @@
       </table>
     </section>
 
-    <section id="view-currency" class="view" data-view="currency" hidden>
+    <section id="view-currency" class="settings-view" hidden>
       <h2>Currency</h2>
       <form id="currency-form">
         <input type="hidden" id="currency-id" />
@@ -229,7 +237,7 @@
       </table>
     </section>
 
-    <section id="view-banks" class="view" data-view="banks" hidden>
+    <section id="view-banks" class="settings-view" hidden>
       <h2>Bank</h2>
       <form id="bank-form">
         <input type="hidden" id="bank-id" />

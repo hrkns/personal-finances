@@ -71,11 +71,11 @@ Integration files are split by concern:
 
 - `web/integration-test-setup.js`
 - `web/routing.integration.test.js`
-- `web/people.integration.test.js`
-- `web/transaction-categories.integration.test.js`
-- `web/currency.integration.test.js`
-- `web/banks.integration.test.js`
-- `web/bank-accounts.integration.test.js`
+- `web/modules/people.integration.test.js`
+- `web/modules/transaction-categories.integration.test.js`
+- `web/modules/currencies.integration.test.js`
+- `web/modules/banks.integration.test.js`
+- `web/modules/bank-accounts.integration.test.js`
 
 ## Frontend Combined (Unit + Integration)
 

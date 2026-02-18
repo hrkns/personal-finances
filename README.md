@@ -1,6 +1,29 @@
 # Personal Finances
 Web application for managing personal finances.
 
+## Motivation and technology choices
+
+This project starts from a recurring real-life activity: tracking incomes and expenses in a spreadsheet.
+The goal is to translate that manual workflow into a lightweight web app that is easier to use day to day,
+while also serving as a hands-on learning space.
+
+### Why Go
+
+Go is used in the backend mainly as a learning choice: the project is an opportunity to practice a new
+technology in a practical context (HTTP APIs, database integration, routing, and testing).
+
+### Why vanilla JavaScript (and no UI library for now)
+
+The frontend intentionally uses vanilla JavaScript to keep the first iteration simple and lightweight.
+For the moment, no UI library/framework is used for the same reason: reduce abstraction, keep control of
+the fundamentals, and avoid unnecessary complexity while the core product is being shaped.
+
+### AI agent as development helper
+
+Another core goal is to learn and iterate with AI-assisted development.
+An AI coding agent is used as a helper to speed up implementation, review code, suggest improvements,
+and provide continuous feedback during development.
+
 ## Run the app
 
 From the project root, run:

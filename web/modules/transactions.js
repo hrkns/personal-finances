@@ -44,12 +44,34 @@
     }
 
     function formatCategoryLabel(categoryID) {
-      const category = getTransactionCategories().find((item) => item.id === categoryID);
+      const categories = getTransactionCategories();
+      const category = categories.find((item) => item.id === categoryID);
+
       if (!category) {
         return `#${categoryID}`;
       }
 
-      return category.name;
+      const categoryByID = new Map(categories.map((item) => [item.id, item]));
+      const path = [];
+      const visitedIDs = new Set();
+
+      let currentCategory = category;
+      while (currentCategory) {
+        if (visitedIDs.has(currentCategory.id)) {
+          break;
+        }
+
+        path.push(currentCategory.name);
+        visitedIDs.add(currentCategory.id);
+
+        if (!currentCategory.parent_id) {
+          break;
+        }
+
+        currentCategory = categoryByID.get(currentCategory.parent_id);
+      }
+
+      return path.reverse().join(" - ");
     }
 
     function resetForm() {
@@ -151,7 +173,7 @@
       for (const category of getTransactionCategories()) {
         const option = document.createElement("option");
         option.value = String(category.id);
-        option.textContent = `${category.name} (#${category.id})`;
+        option.textContent = formatCategoryLabel(category.id);
         elements.categoryIdElement.appendChild(option);
       }
 

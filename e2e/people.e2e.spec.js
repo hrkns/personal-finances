@@ -1,12 +1,8 @@
 const { test, expect } = require("@playwright/test");
+const { openSettingsSection } = require("./helpers");
 
 function uniqueSuffix() {
   return `${Date.now()}_${Math.floor(Math.random() * 100000)}`;
-}
-
-async function openSettingsSection(page, sectionName) {
-  await page.getByRole("button", { name: "Settings" }).click();
-  await page.getByRole("button", { name: sectionName }).click();
 }
 
 test("people CRUD flow works end-to-end", async ({ page }) => {

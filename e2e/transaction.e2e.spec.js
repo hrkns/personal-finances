@@ -1,4 +1,5 @@
 const { test, expect } = require("@playwright/test");
+const { openSettingsSection } = require("./helpers");
 
 function uniqueSuffix() {
   return `${Date.now()}_${Math.floor(Math.random() * 100000)}`;
@@ -6,11 +7,6 @@ function uniqueSuffix() {
 
 async function waitForAppReady(page) {
   await page.waitForFunction(() => typeof window.frontendRouter !== "undefined");
-}
-
-async function openSettingsSection(page, sectionName) {
-  await page.getByRole("button", { name: "Settings" }).click();
-  await page.getByRole("button", { name: sectionName }).click();
 }
 
 async function selectOptionContaining(selectLocator, expectedText) {

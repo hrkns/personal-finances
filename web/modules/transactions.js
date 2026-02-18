@@ -6,6 +6,8 @@
       normalizeTransactionInput,
       escapeHtml,
       getPeople,
+      getBanks,
+      getCurrencies,
       getBankAccounts,
       getTransactionCategories,
       getTransactions,
@@ -32,7 +34,13 @@
         return `#${bankAccountID}`;
       }
 
-      return `${bankAccount.account_number} (#${bankAccount.id})`;
+      const bank = getBanks().find((item) => item.id === bankAccount.bank_id);
+      const currency = getCurrencies().find((item) => item.id === bankAccount.currency_id);
+
+      const bankLabel = bank ? bank.name : `Bank #${bankAccount.bank_id}`;
+      const currencyLabel = currency ? currency.code : `Currency #${bankAccount.currency_id}`;
+
+      return `${bankLabel} - ${currencyLabel} - ${bankAccount.account_number}`;
     }
 
     function formatCategoryLabel(categoryID) {
@@ -124,7 +132,7 @@
       for (const bankAccount of getBankAccounts()) {
         const option = document.createElement("option");
         option.value = String(bankAccount.id);
-        option.textContent = `${bankAccount.account_number} (#${bankAccount.id})`;
+        option.textContent = formatBankAccountLabel(bankAccount.id);
         elements.bankAccountIdElement.appendChild(option);
       }
 

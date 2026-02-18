@@ -46,6 +46,10 @@
       onCurrenciesChanged: () => {
         bankAccountsModule.populateCurrencyOptions();
         bankAccountsModule.render();
+        if (transactionsModule) {
+          transactionsModule.populateBankAccountOptions();
+          transactionsModule.render();
+        }
       },
     });
 
@@ -59,6 +63,10 @@
       onBanksChanged: () => {
         bankAccountsModule.populateBankOptions();
         bankAccountsModule.render();
+        if (transactionsModule) {
+          transactionsModule.populateBankAccountOptions();
+          transactionsModule.render();
+        }
       },
     });
 
@@ -98,6 +106,8 @@
       normalizeTransactionInput,
       escapeHtml,
       getPeople: state.getPeople,
+      getBanks: state.getBanks,
+      getCurrencies: state.getCurrencies,
       getBankAccounts: state.getBankAccounts,
       getTransactionCategories: state.getTransactionCategories,
       getTransactions: state.getTransactions,

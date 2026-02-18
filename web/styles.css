@@ -75,6 +75,7 @@ td {
 #form-message,
 #bank-form-message,
 #bank-account-form-message,
+#transaction-category-form-message,
 #person-form-message {
   min-height: 20px;
 }

@@ -4,6 +4,10 @@ function uniqueSuffix() {
   return `${Date.now()}_${Math.floor(Math.random() * 100000)}`;
 }
 
+async function waitForAppReady(page) {
+  await page.waitForFunction(() => typeof window.frontendRouter !== "undefined");
+}
+
 test("bank account CRUD flow works end-to-end", async ({ page }) => {
   const suffix = uniqueSuffix();
   const currencyName = `Account Currency ${suffix}`;
@@ -13,6 +17,7 @@ test("bank account CRUD flow works end-to-end", async ({ page }) => {
   const updatedAccountNumber = `ACC-U-${suffix}`;
 
   await page.goto("/");
+  await waitForAppReady(page);
 
   await page.getByRole("button", { name: "Currency" }).click();
   const currencyForm = page.locator("#currency-form");
@@ -65,6 +70,7 @@ test("duplicate bank account shows backend conflict message", async ({ page }) =
   const accountNumber = `DUP-${suffix}`;
 
   await page.goto("/");
+  await waitForAppReady(page);
 
   await page.getByRole("button", { name: "Currency" }).click();
   const currencyForm = page.locator("#currency-form");

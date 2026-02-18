@@ -19,6 +19,15 @@
     };
   }
 
+  function normalizeTransactionCategoryInput(name, parentId) {
+    const parsedParentID = Number(String(parentId ?? "").trim());
+
+    return {
+      name: String(name ?? "").trim(),
+      parent_id: Number.isInteger(parsedParentID) && parsedParentID > 0 ? parsedParentID : null,
+    };
+  }
+
   function normalizeBankAccountInput(bankId, currencyId, accountNumber, balance) {
     return {
       bank_id: Number.parseInt(String(bankId ?? ""), 10),
@@ -56,6 +65,7 @@
     normalizeCurrencyInput,
     normalizeBankInput,
     normalizePersonInput,
+    normalizeTransactionCategoryInput,
     normalizeBankAccountInput,
     escapeHtml,
     parseApiResponse,

@@ -1,5 +1,7 @@
 const { createResponse } = require("./integration-http.js");
 const { createStores } = require("./fetch-mock/helpers.js");
+const { handleTransactionCategoriesCollection } = require("./fetch-mock/handlers/handle-transaction-categories-collection.js");
+const { handleTransactionCategoriesByID } = require("./fetch-mock/handlers/handle-transaction-categories-by-id.js");
 const { handleCountries } = require("./fetch-mock/handlers/handle-countries.js");
 const { handleCurrenciesCollection } = require("./fetch-mock/handlers/handle-currencies-collection.js");
 const { handleCurrenciesByID } = require("./fetch-mock/handlers/handle-currencies-by-id.js");
@@ -11,6 +13,8 @@ const { handleBankAccountsCollection } = require("./fetch-mock/handlers/handle-b
 const { handleBankAccountsByID } = require("./fetch-mock/handlers/handle-bank-accounts-by-id.js");
 
 const handlers = [
+  handleTransactionCategoriesCollection,
+  handleTransactionCategoriesByID,
   handleCountries,
   handleCurrenciesCollection,
   handleCurrenciesByID,

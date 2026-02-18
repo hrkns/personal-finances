@@ -45,6 +45,8 @@ function upperTrimmedValue(value) {
 
 function createStores() {
   return {
+    nextTransactionCategoryID: 1,
+    transactionCategoriesStore: [],
     nextCurrencyId: 1,
     currenciesStore: [],
     nextPersonId: 1,
@@ -61,6 +63,19 @@ function createStores() {
   };
 }
 
+function parseParentID(value) {
+  if (value === null || value === undefined || value === "") {
+    return null;
+  }
+
+  const parsed = Number(value);
+  if (!Number.isInteger(parsed) || parsed <= 0) {
+    return NaN;
+  }
+
+  return parsed;
+}
+
 module.exports = {
   parseBody,
   cloneItems,
@@ -70,4 +85,5 @@ module.exports = {
   trimmedValue,
   upperTrimmedValue,
   createStores,
+  parseParentID,
 };

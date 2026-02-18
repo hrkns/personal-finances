@@ -11,3 +11,4 @@ This API documentation is split by topic for easier navigation and maintenance.
 - [Currencies](api/04-currencies.md)
 - [Banks](api/05-banks.md)
 - [Bank Accounts](api/06-bank-accounts.md)
+- [Transaction Categories](api/07-transaction-categories.md)

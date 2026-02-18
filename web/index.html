@@ -12,6 +12,7 @@
 
     <nav class="tabs" aria-label="Views">
       <button type="button" class="tab-button" data-route-tab="home">Home</button>
+      <button type="button" class="tab-button" data-route-tab="transaction-categories">Transaction Categories</button>
       <button type="button" class="tab-button" data-route-tab="people">People</button>
       <button type="button" class="tab-button" data-route-tab="bank-accounts">Bank Accounts</button>
       <button type="button" class="tab-button" data-route-tab="banks">Banks</button>
@@ -19,6 +20,41 @@
     </nav>
 
     <section id="view-home" class="view" data-view="home">
+    </section>
+
+    <section id="view-transaction-categories" class="view" data-view="transaction-categories" hidden>
+      <h2>Transaction Categories</h2>
+      <form id="transaction-category-form">
+        <input type="hidden" id="transaction-category-id" />
+
+        <label for="transaction-category-name">Name</label>
+        <input id="transaction-category-name" name="name" type="text" required />
+
+        <label for="transaction-category-parent-id">Parent Category</label>
+        <select id="transaction-category-parent-id" name="parent_id">
+          <option value="">No parent</option>
+        </select>
+
+        <div class="actions">
+          <button id="transaction-category-submit-button" type="submit">Create</button>
+          <button id="transaction-category-cancel-button" type="button" hidden>Cancel edit</button>
+        </div>
+      </form>
+
+      <p id="transaction-category-form-message" role="status"></p>
+
+      <h2>Transaction Categories</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Parent</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="transaction-categories-body"></tbody>
+      </table>
     </section>
 
     <section id="view-people" class="view" data-view="people" hidden>
@@ -166,10 +202,16 @@
 
   <script src="utils.js"></script>
   <script src="router.js"></script>
-  <script src="people-module.js"></script>
-  <script src="currencies-module.js"></script>
-  <script src="banks-module.js"></script>
-  <script src="bank-accounts-module.js"></script>
-  <script src="app.js"></script>
+  <script src="app/dom.js"></script>
+  <script src="app/state.js"></script>
+  <script src="app/api.js"></script>
+  <script src="app/routing.js"></script>
+  <script src="app/modules.js"></script>
+  <script src="modules/transaction-categories.js"></script>
+  <script src="modules/people.js"></script>
+  <script src="modules/currencies.js"></script>
+  <script src="modules/banks.js"></script>
+  <script src="modules/bank-accounts.js"></script>
+  <script src="app/index.js"></script>
 </body>
 </html>

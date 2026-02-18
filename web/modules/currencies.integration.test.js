@@ -1,7 +1,7 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 
-const { setupFrontendApp } = require("./integration-test-setup.js");
+const { setupFrontendApp } = require("../integration-test-setup.js");
 
 test("frontend can create and list a currency", async () => {
   const { dom, window, document } = await setupFrontendApp();

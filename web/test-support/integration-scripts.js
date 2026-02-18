@@ -4,12 +4,17 @@ const path = require("node:path");
 const scriptFileNames = [
   "utils.js",
   "router.js",
-  "transaction-categories-module.js",
-  "currencies-module.js",
-  "banks-module.js",
-  "people-module.js",
-  "bank-accounts-module.js",
-  "app.js",
+  "app/dom.js",
+  "app/state.js",
+  "app/api.js",
+  "app/routing.js",
+  "app/modules.js",
+  "modules/transaction-categories.js",
+  "modules/currencies.js",
+  "modules/banks.js",
+  "modules/people.js",
+  "modules/bank-accounts.js",
+  "app/index.js",
 ];
 
 function readAppHtml(webDir) {

@@ -7,6 +7,7 @@
       escapeHtml,
       getPeople,
       setPeople,
+      onPeopleChanged,
     } = config;
 
     function setMessage(message, isError) {
@@ -58,6 +59,9 @@
         const people = await apiRequest("/api/people", { method: "GET" });
         setPeople(people);
         render();
+        if (onPeopleChanged) {
+          onPeopleChanged();
+        }
       } catch (error) {
         setMessage(error.message, true);
       }

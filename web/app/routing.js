@@ -11,6 +11,7 @@
 
       views.home.hidden = activeRoute !== "home";
       views.transactionCategories.hidden = activeRoute !== "transaction-categories";
+      views.transactions.hidden = activeRoute !== "transactions";
       views.people.hidden = activeRoute !== "people";
       views.bankAccounts.hidden = activeRoute !== "bank-accounts";
       views.banks.hidden = activeRoute !== "banks";

@@ -5,6 +5,7 @@
     let people = [];
     let transactionCategories = [];
     let bankAccounts = [];
+    let transactions = [];
 
     return {
       getCurrencies: () => currencies,
@@ -26,6 +27,10 @@
       getBankAccounts: () => bankAccounts,
       setBankAccounts: (items) => {
         bankAccounts = items;
+      },
+      getTransactions: () => transactions,
+      setTransactions: (items) => {
+        transactions = items;
       },
     };
   }

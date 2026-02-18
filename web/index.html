@@ -12,6 +12,7 @@
 
     <nav class="tabs" aria-label="Views">
       <button type="button" class="tab-button" data-route-tab="home">Home</button>
+      <button type="button" class="tab-button" data-route-tab="transactions">Transactions</button>
       <button type="button" class="tab-button" data-route-tab="transaction-categories">Transaction Categories</button>
       <button type="button" class="tab-button" data-route-tab="people">People</button>
       <button type="button" class="tab-button" data-route-tab="bank-accounts">Bank Accounts</button>
@@ -54,6 +55,68 @@
           </tr>
         </thead>
         <tbody id="transaction-categories-body"></tbody>
+      </table>
+    </section>
+
+    <section id="view-transactions" class="view" data-view="transactions" hidden>
+      <h2>Transactions</h2>
+      <form id="transaction-form">
+        <input type="hidden" id="transaction-id" />
+
+        <label for="transaction-date">Date</label>
+        <input id="transaction-date" name="transaction_date" type="date" required />
+
+        <label for="transaction-type">Type</label>
+        <select id="transaction-type" name="type" required>
+          <option value="income">Income</option>
+          <option value="expense">Expense</option>
+        </select>
+
+        <label for="transaction-amount">Amount</label>
+        <input id="transaction-amount" name="amount" type="number" step="0.01" min="0.01" required />
+
+        <label for="transaction-person-id">Person</label>
+        <select id="transaction-person-id" name="person_id" required>
+          <option value="">Select person</option>
+        </select>
+
+        <label for="transaction-bank-account-id">Bank Account</label>
+        <select id="transaction-bank-account-id" name="bank_account_id" required>
+          <option value="">Select bank account</option>
+        </select>
+
+        <label for="transaction-category-id-input">Category</label>
+        <select id="transaction-category-id-input" name="category_id" required>
+          <option value="">Select category</option>
+        </select>
+
+        <label for="transaction-notes">Notes</label>
+        <textarea id="transaction-notes" name="notes" rows="3" placeholder="Optional"></textarea>
+
+        <div class="actions">
+          <button id="transaction-submit-button" type="submit">Create</button>
+          <button id="transaction-cancel-button" type="button" hidden>Cancel edit</button>
+        </div>
+      </form>
+
+      <p id="transaction-form-message" role="status"></p>
+
+      <h2>Transactions</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Amount</th>
+            <th>Person</th>
+            <th>Bank Account</th>
+            <th>Category</th>
+            <th>Notes</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="transactions-body"></tbody>
       </table>
     </section>
 
@@ -208,6 +271,7 @@
   <script src="app/routing.js"></script>
   <script src="app/modules.js"></script>
   <script src="modules/transaction-categories.js"></script>
+  <script src="modules/transactions.js"></script>
   <script src="modules/people.js"></script>
   <script src="modules/currencies.js"></script>
   <script src="modules/banks.js"></script>

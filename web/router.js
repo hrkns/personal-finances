@@ -97,8 +97,10 @@
       return navigate("settings", { replace: true });
     }
 
-    if (readRawRouteFromURL() === "transaction-categories") {
-      return navigate("settings", { replace: true, settingsSection: "transaction-categories" });
+    const rawRoute = readRawRouteFromURL();
+
+    if (validSettingsSections.has(rawRoute)) {
+      return navigate("settings", { replace: true, settingsSection: rawRoute });
     }
 
     return navigate("home", { replace: true });

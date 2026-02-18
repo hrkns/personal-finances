@@ -3,6 +3,7 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   background: #f5f5f5;
   color: #222;
+  padding-bottom: 56px;
 }
 
 main {
@@ -88,4 +89,21 @@ td {
 
 .success {
   color: #0a7a2d;
+}
+
+.creator-credit {
+  position: fixed;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.creator-credit a {
+  color: inherit;
 }

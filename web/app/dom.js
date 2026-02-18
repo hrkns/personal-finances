@@ -67,11 +67,16 @@
         messageElement: documentRef.getElementById("bank-account-form-message"),
         bodyElement: documentRef.getElementById("bank-accounts-body"),
       },
+      settingsSelectionMessageElement: documentRef.getElementById("settings-selection-message"),
       tabButtonElements: documentRef.querySelectorAll("[data-route-tab]"),
+      settingsTabButtonElements: documentRef.querySelectorAll("[data-settings-tab]"),
       views: {
         home: documentRef.getElementById("view-home"),
-        transactionCategories: documentRef.getElementById("view-transaction-categories"),
         transactions: documentRef.getElementById("view-transactions"),
+        settings: documentRef.getElementById("view-settings"),
+      },
+      settingsViews: {
+        transactionCategories: documentRef.getElementById("view-transaction-categories"),
         people: documentRef.getElementById("view-people"),
         bankAccounts: documentRef.getElementById("view-bank-accounts"),
         banks: documentRef.getElementById("view-banks"),

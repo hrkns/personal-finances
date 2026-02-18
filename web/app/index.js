@@ -11,7 +11,10 @@ const appModules = createAppModules({
 
 const appRouting = createAppRouting({
   tabButtonElements: appDom.tabButtonElements,
+  settingsTabButtonElements: appDom.settingsTabButtonElements,
+  settingsSelectionMessageElement: appDom.settingsSelectionMessageElement,
   views: appDom.views,
+  settingsViews: appDom.settingsViews,
   frontendRouter,
 });
 

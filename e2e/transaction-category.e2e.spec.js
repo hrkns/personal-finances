@@ -1,4 +1,5 @@
 const { test, expect } = require("@playwright/test");
+const { openSettingsSection } = require("./helpers");
 
 function uniqueSuffix() {
   return `${Date.now()}_${Math.floor(Math.random() * 100000)}`;
@@ -12,7 +13,7 @@ test("transaction category CRUD flow works end-to-end", async ({ page }) => {
   const form = page.locator("#transaction-category-form");
 
   await page.goto("/");
-  await page.getByRole("button", { name: "Transaction Categories" }).click();
+  await openSettingsSection(page, "Transaction Categories");
 
   await form.getByLabel("Name").fill(rootName);
   await form.getByRole("button", { name: "Create" }).click();
@@ -20,6 +21,8 @@ test("transaction category CRUD flow works end-to-end", async ({ page }) => {
   await expect(page.locator("#transaction-categories-body")).toContainText(rootName);
 
   await form.getByLabel("Name").fill(childName);
+  const parentSelectForFirstChild = form.getByLabel("Parent Category");
+  await expect(parentSelectForFirstChild).toContainText(rootName);
   const parentValueForFirstChild = await form.getByLabel("Parent Category").evaluate((select, targetName) => {
     const option = [...select.options].find((item) => item.textContent.includes(targetName));
     return option ? option.value : "";
@@ -60,13 +63,15 @@ test("transaction category with child cannot be deleted", async ({ page }) => {
   const form = page.locator("#transaction-category-form");
 
   await page.goto("/");
-  await page.getByRole("button", { name: "Transaction Categories" }).click();
+  await openSettingsSection(page, "Transaction Categories");
 
   await form.getByLabel("Name").fill(rootName);
   await form.getByRole("button", { name: "Create" }).click();
   await expect(page.locator("#transaction-category-form-message")).toHaveText("Transaction category created");
 
   await form.getByLabel("Name").fill(childName);
+  const parentSelectForSecondChild = form.getByLabel("Parent Category");
+  await expect(parentSelectForSecondChild).toContainText(rootName);
   const parentValueForSecondTest = await form.getByLabel("Parent Category").evaluate((select, targetName) => {
     const option = [...select.options].find((item) => item.textContent.includes(targetName));
     return option ? option.value : "";

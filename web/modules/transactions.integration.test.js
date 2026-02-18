@@ -9,31 +9,36 @@ async function flush() {
 }
 
 async function seedTransactionDependencies(window, document) {
-  document.querySelector('[data-route-tab="people"]').click();
+  document.querySelector('[data-route-tab="settings"]').click();
+  document.querySelector('[data-settings-tab="people"]').click();
   document.getElementById("person-name").value = "Jane Doe";
   document.getElementById("people-form").dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
   await flush();
 
-  document.querySelector('[data-route-tab="transaction-categories"]').click();
+  document.querySelector('[data-route-tab="settings"]').click();
+  document.querySelector('[data-settings-tab="transaction-categories"]').click();
   document.getElementById("transaction-category-name").value = "Salary";
   document
     .getElementById("transaction-category-form")
     .dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
   await flush();
 
-  document.querySelector('[data-route-tab="currency"]').click();
+  document.querySelector('[data-route-tab="settings"]').click();
+  document.querySelector('[data-settings-tab="currency"]').click();
   document.getElementById("currency-name").value = "US Dollar";
   document.getElementById("currency-code").value = "USD";
   document.getElementById("currency-form").dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
   await flush();
 
-  document.querySelector('[data-route-tab="banks"]').click();
+  document.querySelector('[data-route-tab="settings"]').click();
+  document.querySelector('[data-settings-tab="banks"]').click();
   document.getElementById("bank-name").value = "Bank One";
   document.getElementById("bank-country").value = "US";
   document.getElementById("bank-form").dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
   await flush();
 
-  document.querySelector('[data-route-tab="bank-accounts"]').click();
+  document.querySelector('[data-route-tab="settings"]').click();
+  document.querySelector('[data-settings-tab="bank-accounts"]').click();
   document.getElementById("bank-account-bank-id").value = "1";
   document.getElementById("bank-account-currency-id").value = "1";
   document.getElementById("bank-account-number").value = "ACC-001";

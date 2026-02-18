@@ -1,4 +1,5 @@
 const { test, expect } = require("@playwright/test");
+const { openSettingsSection } = require("./helpers");
 
 function uniqueSuffix() {
   return `${Date.now()}_${Math.floor(Math.random() * 100000)}`;
@@ -30,33 +31,33 @@ test("transaction CRUD flow works end-to-end", async ({ page }) => {
   await page.goto("/");
   await waitForAppReady(page);
 
-  await page.getByRole("button", { name: "People" }).click();
+  await openSettingsSection(page, "People");
   const peopleForm = page.locator("#people-form");
   await peopleForm.getByLabel("Name").fill(personName);
   await peopleForm.getByRole("button", { name: "Create" }).click();
   await expect(page.locator("#person-form-message")).toHaveText("Person created");
 
-  await page.getByRole("button", { name: "Transaction Categories" }).click();
+  await openSettingsSection(page, "Transaction Categories");
   const categoryForm = page.locator("#transaction-category-form");
   await categoryForm.getByLabel("Name").fill(categoryName);
   await categoryForm.getByRole("button", { name: "Create" }).click();
   await expect(page.locator("#transaction-category-form-message")).toHaveText("Transaction category created");
 
-  await page.getByRole("button", { name: "Currency" }).click();
+  await openSettingsSection(page, "Currency");
   const currencyForm = page.locator("#currency-form");
   await currencyForm.getByLabel("Name").fill(currencyName);
   await currencyForm.getByLabel("Code").fill(currencyCode);
   await currencyForm.getByRole("button", { name: "Create" }).click();
   await expect(page.locator("#form-message")).toHaveText("Currency created");
 
-  await page.getByRole("button", { name: "Banks" }).click();
+  await openSettingsSection(page, "Banks");
   const bankForm = page.locator("#bank-form");
   await bankForm.getByLabel("Name").fill(bankName);
   await bankForm.getByLabel("Country").selectOption("US");
   await bankForm.getByRole("button", { name: "Create" }).click();
   await expect(page.locator("#bank-form-message")).toHaveText("Bank created");
 
-  await page.getByRole("button", { name: "Bank Accounts" }).click();
+  await openSettingsSection(page, "Bank Accounts");
   const bankAccountForm = page.locator("#bank-account-form");
   await bankAccountForm.getByLabel("Bank").selectOption({ label: `${bankName} (US)` });
   await bankAccountForm.getByLabel("Currency").selectOption({ label: `${currencyCode} - ${currencyName}` });

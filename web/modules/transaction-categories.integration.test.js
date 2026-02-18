@@ -6,7 +6,8 @@ const { setupFrontendApp } = require("../integration-test-setup.js");
 test("frontend can create and list a root transaction category", async () => {
   const { dom, window, document } = await setupFrontendApp();
 
-  document.querySelector('[data-route-tab="transaction-categories"]').click();
+  document.querySelector('[data-route-tab="settings"]').click();
+  document.querySelector('[data-settings-tab="transaction-categories"]').click();
   document.getElementById("transaction-category-name").value = "Salary";
 
   document
@@ -28,7 +29,8 @@ test("frontend can create and list a root transaction category", async () => {
 test("frontend supports parent category, edit and delete actions", async () => {
   const { dom, window, document } = await setupFrontendApp();
 
-  document.querySelector('[data-route-tab="transaction-categories"]').click();
+  document.querySelector('[data-route-tab="settings"]').click();
+  document.querySelector('[data-settings-tab="transaction-categories"]').click();
 
   document.getElementById("transaction-category-name").value = "Salary";
   document
@@ -91,7 +93,8 @@ test("frontend supports parent category, edit and delete actions", async () => {
 test("frontend shows validation error for blank transaction category name", async () => {
   const { dom, window, document } = await setupFrontendApp();
 
-  document.querySelector('[data-route-tab="transaction-categories"]').click();
+  document.querySelector('[data-route-tab="settings"]').click();
+  document.querySelector('[data-settings-tab="transaction-categories"]').click();
   document.getElementById("transaction-category-name").value = "   ";
 
   document

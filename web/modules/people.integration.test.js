@@ -6,7 +6,8 @@ const { setupFrontendApp } = require("../integration-test-setup.js");
 test("frontend can create and list a person", async () => {
   const { dom, window, document } = await setupFrontendApp();
 
-  document.querySelector('[data-route-tab="people"]').click();
+  document.querySelector('[data-route-tab="settings"]').click();
+  document.querySelector('[data-settings-tab="people"]').click();
   document.getElementById("person-name").value = "John Doe";
 
   const form = document.getElementById("people-form");
@@ -27,7 +28,8 @@ test("frontend can create and list a person", async () => {
 test("frontend supports person edit and delete actions", async () => {
   const { dom, window, document } = await setupFrontendApp();
 
-  document.querySelector('[data-route-tab="people"]').click();
+  document.querySelector('[data-route-tab="settings"]').click();
+  document.querySelector('[data-settings-tab="people"]').click();
   document.getElementById("person-name").value = "Jane Doe";
   document
     .getElementById("people-form")
@@ -66,7 +68,8 @@ test("frontend supports person edit and delete actions", async () => {
 test("frontend shows validation error for blank person name", async () => {
   const { dom, window, document } = await setupFrontendApp();
 
-  document.querySelector('[data-route-tab="people"]').click();
+  document.querySelector('[data-route-tab="settings"]').click();
+  document.querySelector('[data-settings-tab="people"]').click();
   document.getElementById("person-name").value = "   ";
   document
     .getElementById("people-form")

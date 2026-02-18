@@ -1,4 +1,5 @@
 const { test, expect } = require("@playwright/test");
+const { openSettingsSection } = require("./helpers");
 
 function uniqueSuffix() {
   return `${Date.now()}_${Math.floor(Math.random() * 100000)}`;
@@ -11,7 +12,7 @@ test("bank CRUD flow works end-to-end", async ({ page }) => {
   const bankForm = page.locator("#bank-form");
 
   await page.goto("/");
-  await page.getByRole("button", { name: "Banks" }).click();
+  await openSettingsSection(page, "Banks");
 
   await bankForm.getByLabel("Name").fill(initialName);
   await bankForm.getByLabel("Country").selectOption("US");
@@ -45,7 +46,7 @@ test("duplicate bank per country shows backend conflict message", async ({ page 
   const bankForm = page.locator("#bank-form");
 
   await page.goto("/");
-  await page.getByRole("button", { name: "Banks" }).click();
+  await openSettingsSection(page, "Banks");
 
   await bankForm.getByLabel("Name").fill(name);
   await bankForm.getByLabel("Country").selectOption("US");

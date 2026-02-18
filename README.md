@@ -17,6 +17,7 @@ Then open:
 Frontend views are tab-based and route through the `view` query parameter:
 
 - Home: `/?view=home` (or `/`)
+- Transactions: `/?view=transactions`
 - Transaction Categories: `/?view=transaction-categories`
 - People: `/?view=people`
 - Bank Accounts: `/?view=bank-accounts`
@@ -54,6 +55,7 @@ This keeps schema changes versioned, reviewable, and repeatable without requirin
 
 ## Documentation
 
+- AI entity implementation guide: [docs/AI_ENTITY_IMPLEMENTATION_GUIDE.md](docs/AI_ENTITY_IMPLEMENTATION_GUIDE.md)
 - REST API documentation index: [docs/API.md](docs/API.md)
 - Split API resource docs: [docs/api/](docs/api)
 - Tests documentation: [docs/TESTS.md](docs/TESTS.md)

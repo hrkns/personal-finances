@@ -7,6 +7,7 @@
       escapeHtml,
       getTransactionCategories,
       setTransactionCategories,
+      onTransactionCategoriesChanged,
     } = config;
 
     function setMessage(message, isError) {
@@ -85,6 +86,9 @@
         setTransactionCategories(categories);
         populateParentOptions();
         render();
+        if (onTransactionCategoriesChanged) {
+          onTransactionCategoriesChanged();
+        }
       } catch (error) {
         setMessage(error.message, true);
       }

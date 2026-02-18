@@ -55,6 +55,8 @@ function createStores() {
     banksStore: [],
     nextBankAccountId: 1,
     bankAccountsStore: [],
+    nextTransactionId: 1,
+    transactionsStore: [],
     countriesStore: [
       { code: "CA", name: "Canada" },
       { code: "GB", name: "United Kingdom" },

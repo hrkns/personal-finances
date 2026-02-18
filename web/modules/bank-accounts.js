@@ -9,6 +9,7 @@
       getCurrencies,
       getBankAccounts,
       setBankAccounts,
+      onBankAccountsChanged,
     } = config;
 
     function setMessage(message, isError) {
@@ -81,6 +82,9 @@
         const bankAccounts = await apiRequest("/api/bank-accounts", { method: "GET" });
         setBankAccounts(bankAccounts);
         render();
+        if (onBankAccountsChanged) {
+          onBankAccountsChanged();
+        }
       } catch (error) {
         setMessage(error.message, true);
       }

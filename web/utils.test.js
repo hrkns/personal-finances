@@ -7,6 +7,7 @@ const {
   normalizePersonInput,
   normalizeTransactionCategoryInput,
   normalizeBankAccountInput,
+  normalizeTransactionInput,
   escapeHtml,
   parseApiResponse,
 } = require("./utils.js");
@@ -78,6 +79,23 @@ test("normalizeBankAccountInput parses ids and balance", () => {
     account_number: "ACC-01",
     balance: 10.25,
   });
+});
+
+test("normalizeTransactionInput normalizes type, amount, ids and nullable notes", () => {
+  const payload = normalizeTransactionInput(" 2026-02-18 ", " Income ", " 123.45 ", "  Salary  ", " 3 ", " 4 ", " 5 ");
+
+  assert.deepEqual(payload, {
+    transaction_date: "2026-02-18",
+    type: "income",
+    amount: 123.45,
+    notes: "Salary",
+    person_id: 3,
+    bank_account_id: 4,
+    category_id: 5,
+  });
+
+  const emptyNotes = normalizeTransactionInput("2026-02-18", "expense", "10", "   ", "1", "2", "3");
+  assert.equal(emptyNotes.notes, null);
 });
 
 test("escapeHtml escapes unsafe characters", () => {

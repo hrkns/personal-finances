@@ -37,6 +37,20 @@
     };
   }
 
+  function normalizeTransactionInput(transactionDate, type, amount, notes, personId, bankAccountId, categoryId) {
+    const normalizedNotes = String(notes ?? "").trim();
+
+    return {
+      transaction_date: String(transactionDate ?? "").trim(),
+      type: String(type ?? "").trim().toLowerCase(),
+      amount: Number.parseFloat(String(amount ?? "0")),
+      notes: normalizedNotes ? normalizedNotes : null,
+      person_id: Number.parseInt(String(personId ?? ""), 10),
+      bank_account_id: Number.parseInt(String(bankAccountId ?? ""), 10),
+      category_id: Number.parseInt(String(categoryId ?? ""), 10),
+    };
+  }
+
   function escapeHtml(value) {
     return String(value)
       .replaceAll("&", "&amp;")
@@ -67,6 +81,7 @@
     normalizePersonInput,
     normalizeTransactionCategoryInput,
     normalizeBankAccountInput,
+    normalizeTransactionInput,
     escapeHtml,
     parseApiResponse,
   };

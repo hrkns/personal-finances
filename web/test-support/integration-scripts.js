@@ -10,6 +10,7 @@ const scriptFileNames = [
   "app/routing.js",
   "app/modules.js",
   "modules/transaction-categories.js",
+  "modules/transactions.js",
   "modules/people.js",
   "modules/currencies.js",
   "modules/banks.js",

@@ -12,9 +12,12 @@
       normalizeBankInput,
       normalizePersonInput,
       normalizeTransactionCategoryInput,
+      normalizeTransactionInput,
       normalizeBankAccountInput,
       escapeHtml,
     } = frontendUtils;
+
+    let transactionsModule = null;
 
     const bankAccountsModule = createBankAccountsModule({
       elements: dom.bankAccounts,
@@ -25,6 +28,12 @@
       getCurrencies: state.getCurrencies,
       getBankAccounts: state.getBankAccounts,
       setBankAccounts: state.setBankAccounts,
+      onBankAccountsChanged: () => {
+        if (transactionsModule) {
+          transactionsModule.populateBankAccountOptions();
+          transactionsModule.render();
+        }
+      },
     });
 
     const currenciesModule = createCurrenciesModule({
@@ -37,6 +46,10 @@
       onCurrenciesChanged: () => {
         bankAccountsModule.populateCurrencyOptions();
         bankAccountsModule.render();
+        if (transactionsModule) {
+          transactionsModule.populateBankAccountOptions();
+          transactionsModule.render();
+        }
       },
     });
 
@@ -50,6 +63,10 @@
       onBanksChanged: () => {
         bankAccountsModule.populateBankOptions();
         bankAccountsModule.render();
+        if (transactionsModule) {
+          transactionsModule.populateBankAccountOptions();
+          transactionsModule.render();
+        }
       },
     });
 
@@ -60,6 +77,12 @@
       escapeHtml,
       getPeople: state.getPeople,
       setPeople: state.setPeople,
+      onPeopleChanged: () => {
+        if (transactionsModule) {
+          transactionsModule.populatePersonOptions();
+          transactionsModule.render();
+        }
+      },
     });
 
     const transactionCategoriesModule = createTransactionCategoriesModule({
@@ -69,10 +92,31 @@
       escapeHtml,
       getTransactionCategories: state.getTransactionCategories,
       setTransactionCategories: state.setTransactionCategories,
+      onTransactionCategoriesChanged: () => {
+        if (transactionsModule) {
+          transactionsModule.populateCategoryOptions();
+          transactionsModule.render();
+        }
+      },
+    });
+
+    transactionsModule = createTransactionsModule({
+      elements: dom.transactions,
+      apiRequest,
+      normalizeTransactionInput,
+      escapeHtml,
+      getPeople: state.getPeople,
+      getBanks: state.getBanks,
+      getCurrencies: state.getCurrencies,
+      getBankAccounts: state.getBankAccounts,
+      getTransactionCategories: state.getTransactionCategories,
+      getTransactions: state.getTransactions,
+      setTransactions: state.setTransactions,
     });
 
     return {
       transactionCategoriesModule,
+      transactionsModule,
       peopleModule,
       currenciesModule,
       banksModule,

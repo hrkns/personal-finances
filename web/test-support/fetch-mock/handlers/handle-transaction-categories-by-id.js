@@ -68,7 +68,8 @@ function handleTransactionCategoriesByID(pathname, method, options, stores) {
     }
 
     const hasChildren = stores.transactionCategoriesStore.some((item) => item.parent_id === id);
-    if (hasChildren) {
+    const hasTransactions = stores.transactionsStore.some((item) => item.category_id === id);
+    if (hasChildren || hasTransactions) {
       return conflict("category_in_use", "transaction category is in use");
     }
 

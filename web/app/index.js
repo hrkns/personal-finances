@@ -28,6 +28,7 @@ async function init() {
 
   await Promise.all([
     appModules.transactionCategoriesModule.load(),
+    appModules.transactionsModule.load(),
     appModules.peopleModule.load(),
     appModules.currenciesModule.load(),
     appModules.banksModule.load(),
@@ -39,6 +40,9 @@ async function init() {
     "click",
     appModules.transactionCategoriesModule.resetForm
   );
+
+  appDom.transactions.formElement.addEventListener("submit", appModules.transactionsModule.onSubmit);
+  appDom.transactions.cancelButtonElement.addEventListener("click", appModules.transactionsModule.resetForm);
 
   appDom.people.formElement.addEventListener("submit", appModules.peopleModule.onSubmit);
   appDom.people.cancelButtonElement.addEventListener("click", appModules.peopleModule.resetForm);

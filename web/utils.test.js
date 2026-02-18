@@ -37,7 +37,7 @@ test("normalizePersonInput trims name", () => {
   });
 });
 
-test("normalizeTransactionCategoryInput trims name and parses optional parent id", () => {
+test("normalizeTransactionCategoryInput trims name and only accepts positive integer parent id", () => {
   const withParent = normalizeTransactionCategoryInput("  Job 1  ", " 2 ");
   assert.deepEqual(withParent, {
     name: "Job 1",
@@ -46,6 +46,24 @@ test("normalizeTransactionCategoryInput trims name and parses optional parent id
 
   const withoutParent = normalizeTransactionCategoryInput(" Salary ", "");
   assert.deepEqual(withoutParent, {
+    name: "Salary",
+    parent_id: null,
+  });
+
+  const invalidDecimal = normalizeTransactionCategoryInput("Salary", "2.5");
+  assert.deepEqual(invalidDecimal, {
+    name: "Salary",
+    parent_id: null,
+  });
+
+  const invalidAlphaSuffix = normalizeTransactionCategoryInput("Salary", "2abc");
+  assert.deepEqual(invalidAlphaSuffix, {
+    name: "Salary",
+    parent_id: null,
+  });
+
+  const invalidZero = normalizeTransactionCategoryInput("Salary", "0");
+  assert.deepEqual(invalidZero, {
     name: "Salary",
     parent_id: null,
   });

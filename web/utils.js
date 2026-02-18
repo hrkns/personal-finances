@@ -20,11 +20,11 @@
   }
 
   function normalizeTransactionCategoryInput(name, parentId) {
-    const parsedParentID = Number.parseInt(String(parentId ?? ""), 10);
+    const parsedParentID = Number(String(parentId ?? "").trim());
 
     return {
       name: String(name ?? "").trim(),
-      parent_id: Number.isNaN(parsedParentID) ? null : parsedParentID,
+      parent_id: Number.isInteger(parsedParentID) && parsedParentID > 0 ? parsedParentID : null,
     };
   }
 

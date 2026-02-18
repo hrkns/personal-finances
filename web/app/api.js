@@ -8,10 +8,6 @@
         ...options,
       });
 
-      if (response.status === 204) {
-        return null;
-      }
-
       return parseApiResponse(response);
     };
   }

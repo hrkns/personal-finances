@@ -34,7 +34,8 @@ section {
   background: #eee;
 }
 
-.view[hidden] {
+.view[hidden],
+.settings-view[hidden] {
   display: none;
 }
 

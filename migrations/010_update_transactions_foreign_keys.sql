@@ -1,4 +1,6 @@
-CREATE TABLE IF NOT EXISTS transactions (
+ALTER TABLE transactions RENAME TO transactions_old;
+
+CREATE TABLE transactions (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   transaction_date TEXT NOT NULL,
   type TEXT NOT NULL CHECK(type IN ('income', 'expense')),
@@ -13,6 +15,33 @@ CREATE TABLE IF NOT EXISTS transactions (
   FOREIGN KEY(bank_account_id) REFERENCES bank_accounts(id) ON DELETE RESTRICT ON UPDATE CASCADE,
   FOREIGN KEY(category_id) REFERENCES transaction_categories(id) ON DELETE RESTRICT ON UPDATE CASCADE
 );
+
+INSERT INTO transactions (
+  id,
+  transaction_date,
+  type,
+  amount,
+  notes,
+  person_id,
+  bank_account_id,
+  category_id,
+  created_at,
+  updated_at
+)
+SELECT
+  id,
+  transaction_date,
+  type,
+  amount,
+  notes,
+  person_id,
+  bank_account_id,
+  category_id,
+  created_at,
+  updated_at
+FROM transactions_old;
+
+DROP TABLE transactions_old;
 
 CREATE INDEX IF NOT EXISTS idx_transactions_transaction_date
 ON transactions(transaction_date);

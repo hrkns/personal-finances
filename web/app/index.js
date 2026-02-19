@@ -36,6 +36,7 @@ async function init() {
     appModules.currenciesModule.load(),
     appModules.banksModule.load(),
     appModules.bankAccountsModule.load(),
+    appModules.creditCardsModule.load(),
   ]);
 
   appDom.transactionCategories.formElement.addEventListener("submit", appModules.transactionCategoriesModule.onSubmit);
@@ -58,4 +59,7 @@ async function init() {
 
   appDom.bankAccounts.formElement.addEventListener("submit", appModules.bankAccountsModule.onSubmit);
   appDom.bankAccounts.cancelButtonElement.addEventListener("click", appModules.bankAccountsModule.resetForm);
+
+  appDom.creditCards.formElement.addEventListener("submit", appModules.creditCardsModule.onSubmit);
+  appDom.creditCards.cancelButtonElement.addEventListener("click", appModules.creditCardsModule.resetForm);
 }

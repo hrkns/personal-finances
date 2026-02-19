@@ -9,6 +9,7 @@ test("frontend initializes at Home route and can route to transactions and setti
   const homeHidden = document.getElementById("view-home").hidden;
   const transactionCategoriesHiddenBefore = document.getElementById("view-transaction-categories").hidden;
   const transactionsHiddenBefore = document.getElementById("view-transactions").hidden;
+  const creditCardsHiddenBefore = document.getElementById("view-credit-cards").hidden;
   const settingsHiddenBefore = document.getElementById("view-settings").hidden;
   const peopleHiddenBefore = document.getElementById("view-people").hidden;
   const bankAccountsHiddenBefore = document.getElementById("view-bank-accounts").hidden;
@@ -34,6 +35,11 @@ test("frontend initializes at Home route and can route to transactions and setti
   const emptyPeopleState = document.getElementById("people-body").textContent;
   const settingsMessageHiddenAfterPeopleSelect = document.getElementById("settings-selection-message").hidden;
 
+  document.querySelector('[data-route-tab="credit-cards"]').click();
+  const creditCardsHiddenAfter = document.getElementById("view-credit-cards").hidden;
+  const emptyCreditCardsState = document.getElementById("credit-cards-body").textContent;
+
+  document.querySelector('[data-route-tab="settings"]').click();
   document.querySelector('[data-settings-tab="currency"]').click();
 
   const banksHiddenAfter = document.getElementById("view-banks").hidden;
@@ -50,6 +56,7 @@ test("frontend initializes at Home route and can route to transactions and setti
   assert.equal(settingsHiddenBefore, true);
   assert.equal(peopleHiddenBefore, true);
   assert.equal(bankAccountsHiddenBefore, true);
+  assert.equal(creditCardsHiddenBefore, true);
   assert.equal(banksHiddenBefore, true);
   assert.equal(currencyHiddenBefore, true);
   assert.equal(settingsMessageHiddenBefore, true);
@@ -67,6 +74,9 @@ test("frontend initializes at Home route and can route to transactions and setti
   assert.match(emptyState, /No currencies yet/);
   assert.match(emptyBanksState, /No banks yet/);
   assert.match(emptyBankAccountsState, /No bank accounts yet/);
+
+  assert.equal(creditCardsHiddenAfter, false);
+  assert.match(emptyCreditCardsState, /No credit cards yet/);
   assert.match(countryOptions, /US - United States/);
   assert.match(bankAccountCurrencyOptions, /Select currency/);
 

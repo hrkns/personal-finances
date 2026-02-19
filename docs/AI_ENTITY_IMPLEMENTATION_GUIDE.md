@@ -32,6 +32,7 @@ As of now, end-to-end entities are:
 - `currencies`
 - `banks`
 - `bank_accounts`
+- `credit_cards`
 - `people`
 - `transaction_categories`
 - `transactions`

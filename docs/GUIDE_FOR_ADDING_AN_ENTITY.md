@@ -1,4 +1,4 @@
-# AI Entity Implementation Guide
+# Guide for adding an entity
 
 This document explains how to add a new entity to this codebase using an AI coding agent, including expected outputs, repository conventions, and how to verify current project status.
 

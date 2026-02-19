@@ -41,6 +41,7 @@ Frontend views are tab-based and route through the `view` query parameter:
 
 - Home: `/?view=home` (or `/`)
 - Transactions: `/?view=transactions`
+- Credit Cards: `/?view=credit-cards`
 - Settings: `/?view=settings`
 
 Within Settings, `settings` query parameter controls which management section is open:
@@ -82,7 +83,7 @@ This keeps schema changes versioned, reviewable, and repeatable without requirin
 
 ## Documentation
 
-- AI entity implementation guide: [docs/AI_ENTITY_IMPLEMENTATION_GUIDE.md](docs/AI_ENTITY_IMPLEMENTATION_GUIDE.md)
+- Guide for adding an entity: [docs/GUIDE_FOR_ADDING_AN_ENTITY.md](docs/GUIDE_FOR_ADDING_AN_ENTITY.md)
 - REST API documentation index: [docs/API.md](docs/API.md)
 - Split API resource docs: [docs/api/](docs/api)
 - Tests documentation: [docs/TESTS.md](docs/TESTS.md)

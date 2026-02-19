@@ -1,0 +1,18 @@
+CREATE TABLE IF NOT EXISTS credit_cards (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  bank_id INTEGER NOT NULL,
+  person_id INTEGER NOT NULL,
+  number TEXT NOT NULL,
+  name TEXT,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(number),
+  FOREIGN KEY(bank_id) REFERENCES banks(id) ON DELETE RESTRICT ON UPDATE CASCADE,
+  FOREIGN KEY(person_id) REFERENCES people(id) ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_credit_cards_bank_id
+ON credit_cards(bank_id);
+
+CREATE INDEX IF NOT EXISTS idx_credit_cards_person_id
+ON credit_cards(person_id);

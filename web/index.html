@@ -13,6 +13,7 @@
     <nav class="tabs" aria-label="Views">
       <button type="button" class="tab-button" data-route-tab="home">Home</button>
       <button type="button" class="tab-button" data-route-tab="transactions">Transactions</button>
+      <button type="button" class="tab-button" data-route-tab="credit-cards">Credit Cards</button>
       <button type="button" class="tab-button" data-route-tab="settings">Settings</button>
     </nav>
 
@@ -112,6 +113,51 @@
           </tr>
         </thead>
         <tbody id="transactions-body"></tbody>
+      </table>
+    </section>
+
+    <section id="view-credit-cards" class="view" data-view="credit-cards" hidden>
+      <h2>Credit Cards</h2>
+      <form id="credit-card-form">
+        <input type="hidden" id="credit-card-id" />
+
+        <label for="credit-card-bank-id">Bank</label>
+        <select id="credit-card-bank-id" name="bank_id" required>
+          <option value="">Select bank</option>
+        </select>
+
+        <label for="credit-card-person-id">Person</label>
+        <select id="credit-card-person-id" name="person_id" required>
+          <option value="">Select person</option>
+        </select>
+
+        <label for="credit-card-number">Number</label>
+        <input id="credit-card-number" name="number" type="text" required />
+
+        <label for="credit-card-name">Name</label>
+        <input id="credit-card-name" name="name" type="text" placeholder="Optional" />
+
+        <div class="actions">
+          <button id="credit-card-submit-button" type="submit">Create</button>
+          <button id="credit-card-cancel-button" type="button" hidden>Cancel edit</button>
+        </div>
+      </form>
+
+      <p id="credit-card-form-message" role="status"></p>
+
+      <h2>Credit Cards</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Bank</th>
+            <th>Person</th>
+            <th>Number</th>
+            <th>Name</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="credit-cards-body"></tbody>
       </table>
     </section>
 
@@ -323,6 +369,7 @@
   <script src="modules/currencies.js"></script>
   <script src="modules/banks.js"></script>
   <script src="modules/bank-accounts.js"></script>
+  <script src="modules/credit-cards.js"></script>
   <script src="app/index.js"></script>
 </body>
 </html>

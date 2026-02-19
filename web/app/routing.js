@@ -30,6 +30,7 @@
 
       views.home.hidden = activeRoute !== "home";
       views.transactions.hidden = activeRoute !== "transactions";
+      views.creditCards.hidden = activeRoute !== "credit-cards";
       views.settings.hidden = activeRoute !== "settings";
 
       settingsViews.transactionCategories.hidden =

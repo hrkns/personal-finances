@@ -14,6 +14,7 @@
       normalizeTransactionCategoryInput,
       normalizeTransactionInput,
       normalizeBankAccountInput,
+      normalizeCreditCardInput,
       escapeHtml,
     } = frontendUtils;
 
@@ -34,6 +35,17 @@
           transactionsModule.render();
         }
       },
+    });
+
+    const creditCardsModule = createCreditCardsModule({
+      elements: dom.creditCards,
+      apiRequest,
+      normalizeCreditCardInput,
+      escapeHtml,
+      getBanks: state.getBanks,
+      getPeople: state.getPeople,
+      getCreditCards: state.getCreditCards,
+      setCreditCards: state.setCreditCards,
     });
 
     const currenciesModule = createCurrenciesModule({
@@ -63,6 +75,8 @@
       onBanksChanged: () => {
         bankAccountsModule.populateBankOptions();
         bankAccountsModule.render();
+        creditCardsModule.populateBankOptions();
+        creditCardsModule.render();
         if (transactionsModule) {
           transactionsModule.populateBankAccountOptions();
           transactionsModule.render();
@@ -78,6 +92,8 @@
       getPeople: state.getPeople,
       setPeople: state.setPeople,
       onPeopleChanged: () => {
+        creditCardsModule.populatePersonOptions();
+        creditCardsModule.render();
         if (transactionsModule) {
           transactionsModule.populatePersonOptions();
           transactionsModule.render();
@@ -121,6 +137,7 @@
       currenciesModule,
       banksModule,
       bankAccountsModule,
+      creditCardsModule,
     };
   }
 

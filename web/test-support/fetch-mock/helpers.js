@@ -55,6 +55,8 @@ function createStores() {
     banksStore: [],
     nextBankAccountId: 1,
     bankAccountsStore: [],
+    nextCreditCardId: 1,
+    creditCardsStore: [],
     nextTransactionId: 1,
     transactionsStore: [],
     countriesStore: [

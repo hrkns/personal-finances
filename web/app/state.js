@@ -5,6 +5,7 @@
     let people = [];
     let transactionCategories = [];
     let bankAccounts = [];
+    let creditCards = [];
     let transactions = [];
 
     return {
@@ -27,6 +28,10 @@
       getBankAccounts: () => bankAccounts,
       setBankAccounts: (items) => {
         bankAccounts = items;
+      },
+      getCreditCards: () => creditCards,
+      setCreditCards: (items) => {
+        creditCards = items;
       },
       getTransactions: () => transactions,
       setTransactions: (items) => {

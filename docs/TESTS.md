@@ -26,6 +26,7 @@ Covered areas include:
 - Currency CRUD and validations
 - Bank CRUD and validations
 - Bank Account CRUD and validations
+- Credit Card CRUD and validations
 - Countries endpoint behavior
 - Migration-backed test setup through temp SQLite DB
 
@@ -80,6 +81,7 @@ Integration files are split by concern:
 - `web/modules/currencies.integration.test.js`
 - `web/modules/banks.integration.test.js`
 - `web/modules/bank-accounts.integration.test.js`
+- `web/modules/credit-cards.integration.test.js`
 
 ## Frontend Combined (Unit + Integration)
 
@@ -107,7 +109,7 @@ E2E details:
 
 - Spins up app with `go run .`
 - Uses isolated sqlite database via `DATABASE_PATH`
-- Covers browser-level Transactions, Transaction Categories, People, Currency, Banks, and Bank Accounts flows
+- Covers browser-level Transactions, Transaction Categories, People, Currency, Banks, Bank Accounts, and Credit Cards flows
 - Verifies conflict scenarios and UI messages
 
 ## Typical Local Validation Order

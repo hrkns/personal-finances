@@ -43,6 +43,45 @@ function upperTrimmedValue(value) {
   return trimmedValue(value).toUpperCase();
 }
 
+function normalizeNullableName(value) {
+  const trimmedName = trimmedValue(value);
+  return trimmedName ? trimmedName : null;
+}
+
+function normalizeCurrencyIDs(value) {
+  if (value === undefined) {
+    return [];
+  }
+
+  if (!Array.isArray(value)) {
+    throw new Error("request body must be valid JSON");
+  }
+
+  const uniqueCurrencyIDs = new Set();
+  const normalizedCurrencyIDs = [];
+  for (const currencyID of value) {
+    if (!Number.isInteger(currencyID) || currencyID <= 0) {
+      throw new Error("currency_ids must contain only positive integers");
+    }
+
+    if (uniqueCurrencyIDs.has(currencyID)) {
+      continue;
+    }
+
+    uniqueCurrencyIDs.add(currencyID);
+    normalizedCurrencyIDs.push(currencyID);
+  }
+
+  return normalizedCurrencyIDs.sort((left, right) => left - right);
+}
+
+function getCurrencyIDsForCreditCard(stores, creditCardID) {
+  return stores.creditCardCurrenciesStore
+    .filter((item) => item.credit_card_id === creditCardID)
+    .map((item) => item.currency_id)
+    .sort((left, right) => left - right);
+}
+
 function createStores() {
   return {
     nextTransactionCategoryID: 1,
@@ -57,6 +96,8 @@ function createStores() {
     bankAccountsStore: [],
     nextCreditCardId: 1,
     creditCardsStore: [],
+    nextCreditCardCurrencyId: 1,
+    creditCardCurrenciesStore: [],
     nextTransactionId: 1,
     transactionsStore: [],
     countriesStore: [
@@ -88,6 +129,9 @@ module.exports = {
   conflict,
   trimmedValue,
   upperTrimmedValue,
+  normalizeNullableName,
+  normalizeCurrencyIDs,
+  getCurrencyIDsForCreditCard,
   createStores,
   parseParentID,
 };

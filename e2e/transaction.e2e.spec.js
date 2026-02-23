@@ -1,5 +1,5 @@
 const { test, expect } = require("@playwright/test");
-const { openSettingsSection } = require("./helpers");
+const { openSettingsSection, uniqueCurrencyCode } = require("./helpers");
 
 function uniqueSuffix() {
   return `${Date.now()}_${Math.floor(Math.random() * 100000)}`;
@@ -24,7 +24,7 @@ test("transaction CRUD flow works end-to-end", async ({ page }) => {
   const personName = `Transaction Person ${suffix}`;
   const categoryName = `Transaction Category ${suffix}`;
   const currencyName = `Transaction Currency ${suffix}`;
-  const currencyCode = `T${String(Date.now()).slice(-5)}`;
+  const currencyCode = uniqueCurrencyCode("T");
   const bankName = `Transaction Bank ${suffix}`;
   const accountNumber = `TX-${suffix}`;
 

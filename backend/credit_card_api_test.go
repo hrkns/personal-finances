@@ -35,6 +35,9 @@ func TestCreditCardCRUDFlow(t *testing.T) {
 	if created.Name != nil {
 		t.Fatalf("expected name to default to null, got %+v", created.Name)
 	}
+	if len(created.CurrencyIDs) != 0 {
+		t.Fatalf("expected new credit card to have no currencies, got %+v", created.CurrencyIDs)
+	}
 
 	listResponse := performRequest(router, http.MethodGet, "/api/credit-cards", nil)
 	if listResponse.Code != http.StatusOK {
@@ -87,6 +90,87 @@ func TestCreditCardUniqueNumberConstraint(t *testing.T) {
 	}
 }
 
+func TestCreditCardCurrencyManagement(t *testing.T) {
+	application := newTestApplication(t)
+	router := application.routes()
+
+	seedCreditCardDependencies(t, router)
+
+	usd := performRequest(router, http.MethodPost, "/api/currencies", []byte(`{"name":"US Dollar","code":"USD"}`))
+	if usd.Code != http.StatusCreated {
+		t.Fatalf("expected currency seed to return 201, got %d", usd.Code)
+	}
+
+	eur := performRequest(router, http.MethodPost, "/api/currencies", []byte(`{"name":"Euro","code":"EUR"}`))
+	if eur.Code != http.StatusCreated {
+		t.Fatalf("expected second currency seed to return 201, got %d", eur.Code)
+	}
+
+	created := performRequest(
+		router,
+		http.MethodPost,
+		"/api/credit-cards",
+		[]byte(`{"bank_id":1,"person_id":1,"number":"5000","currency_ids":[1,2,1]}`),
+	)
+	if created.Code != http.StatusCreated {
+		t.Fatalf("expected credit card create to return 201, got %d", created.Code)
+	}
+
+	var createdCard creditCard
+	if err := json.NewDecoder(created.Body).Decode(&createdCard); err != nil {
+		t.Fatalf("decode created credit card: %v", err)
+	}
+	if len(createdCard.CurrencyIDs) != 2 {
+		t.Fatalf("expected two currency ids in create response, got %+v", createdCard.CurrencyIDs)
+	}
+
+	updateCurrencies := performRequest(
+		router,
+		http.MethodPut,
+		"/api/credit-cards/1/currencies",
+		[]byte(`{"currency_ids":[2]}`),
+	)
+	if updateCurrencies.Code != http.StatusOK {
+		t.Fatalf("expected currencies update to return 200, got %d", updateCurrencies.Code)
+	}
+
+	listCurrencies := performRequest(router, http.MethodGet, "/api/credit-cards/1/currencies", nil)
+	if listCurrencies.Code != http.StatusOK {
+		t.Fatalf("expected list currencies to return 200, got %d", listCurrencies.Code)
+	}
+
+	var currencyLinks []creditCardCurrency
+	if err := json.NewDecoder(listCurrencies.Body).Decode(&currencyLinks); err != nil {
+		t.Fatalf("decode currencies response: %v", err)
+	}
+	if len(currencyLinks) != 1 {
+		t.Fatalf("expected one currency link after dedicated endpoint update, got %+v", currencyLinks)
+	}
+
+	fullUpdate := performRequest(
+		router,
+		http.MethodPut,
+		"/api/credit-cards/1",
+		[]byte(`{"bank_id":1,"person_id":1,"number":"5001","name":"Card","currency_ids":[1]}`),
+	)
+	if fullUpdate.Code != http.StatusOK {
+		t.Fatalf("expected full update to return 200, got %d", fullUpdate.Code)
+	}
+
+	getCard := performRequest(router, http.MethodGet, "/api/credit-cards/1", nil)
+	if getCard.Code != http.StatusOK {
+		t.Fatalf("expected get credit card to return 200, got %d", getCard.Code)
+	}
+
+	var item creditCard
+	if err := json.NewDecoder(getCard.Body).Decode(&item); err != nil {
+		t.Fatalf("decode credit card response: %v", err)
+	}
+	if len(item.CurrencyIDs) != 1 {
+		t.Fatalf("expected currency_ids on credit card, got %+v", item.CurrencyIDs)
+	}
+}
+
 func TestCreditCardValidationErrors(t *testing.T) {
 	application := newTestApplication(t)
 	router := application.routes()
@@ -108,9 +192,151 @@ func TestCreditCardValidationErrors(t *testing.T) {
 		t.Fatalf("expected invalid person to return 400, got %d", invalidPerson.Code)
 	}
 
+	invalidCreateCurrencyID := performRequest(
+		router,
+		http.MethodPost,
+		"/api/credit-cards",
+		[]byte(`{"bank_id":1,"person_id":1,"number":"124","currency_ids":[0]}`),
+	)
+	if invalidCreateCurrencyID.Code != http.StatusBadRequest {
+		t.Fatalf("expected invalid create currency id to return 400, got %d", invalidCreateCurrencyID.Code)
+	}
+
 	invalidID := performRequest(router, http.MethodGet, "/api/credit-cards/not-a-number", nil)
 	if invalidID.Code != http.StatusBadRequest {
 		t.Fatalf("expected invalid id to return 400, got %d", invalidID.Code)
+	}
+
+	created := performRequest(router, http.MethodPost, "/api/credit-cards", []byte(`{"bank_id":1,"person_id":1,"number":"123"}`))
+	if created.Code != http.StatusCreated {
+		t.Fatalf("expected credit card create to return 201, got %d", created.Code)
+	}
+
+	invalidCurrencyLink := performRequest(
+		router,
+		http.MethodPut,
+		"/api/credit-cards/1/currencies",
+		[]byte(`{"currency_ids":[999]}`),
+	)
+	if invalidCurrencyLink.Code != http.StatusBadRequest {
+		t.Fatalf("expected invalid currency link to return 400, got %d", invalidCurrencyLink.Code)
+	}
+
+	invalidCurrencyID := performRequest(
+		router,
+		http.MethodPut,
+		"/api/credit-cards/1/currencies",
+		[]byte(`{"currency_ids":[0]}`),
+	)
+	if invalidCurrencyID.Code != http.StatusBadRequest {
+		t.Fatalf("expected invalid currency id to return 400, got %d", invalidCurrencyID.Code)
+	}
+
+	invalidCurrencyIDsType := performRequest(
+		router,
+		http.MethodPut,
+		"/api/credit-cards/1/currencies",
+		[]byte(`{"currency_ids":"not-an-array"}`),
+	)
+	if invalidCurrencyIDsType.Code != http.StatusBadRequest {
+		t.Fatalf("expected invalid currency_ids type to return 400, got %d", invalidCurrencyIDsType.Code)
+	}
+
+	var invalidPayloadResponse struct {
+		Error struct {
+			Message string `json:"message"`
+		} `json:"error"`
+	}
+	if err := json.NewDecoder(invalidCurrencyIDsType.Body).Decode(&invalidPayloadResponse); err != nil {
+		t.Fatalf("decode invalid currency_ids type response: %v", err)
+	}
+	if invalidPayloadResponse.Error.Message != "currency_ids must be an array of integers" {
+		t.Fatalf("expected specific currency_ids type error message, got %q", invalidPayloadResponse.Error.Message)
+	}
+
+	emptyBody := performRequest(
+		router,
+		http.MethodPut,
+		"/api/credit-cards/1/currencies",
+		[]byte(``),
+	)
+	if emptyBody.Code != http.StatusBadRequest {
+		t.Fatalf("expected empty body to return 400, got %d", emptyBody.Code)
+	}
+	if err := json.NewDecoder(emptyBody.Body).Decode(&invalidPayloadResponse); err != nil {
+		t.Fatalf("decode empty body error response: %v", err)
+	}
+	if invalidPayloadResponse.Error.Message != "request body must not be empty" {
+		t.Fatalf("expected empty body error message, got %q", invalidPayloadResponse.Error.Message)
+	}
+
+	malformedJSON := performRequest(
+		router,
+		http.MethodPut,
+		"/api/credit-cards/1/currencies",
+		[]byte(`{"currency_ids":[1,}`),
+	)
+	if malformedJSON.Code != http.StatusBadRequest {
+		t.Fatalf("expected malformed json to return 400, got %d", malformedJSON.Code)
+	}
+	if err := json.NewDecoder(malformedJSON.Body).Decode(&invalidPayloadResponse); err != nil {
+		t.Fatalf("decode malformed json response: %v", err)
+	}
+	if invalidPayloadResponse.Error.Message != "request body contains malformed JSON" {
+		t.Fatalf("expected malformed json error message, got %q", invalidPayloadResponse.Error.Message)
+	}
+
+	unknownField := performRequest(
+		router,
+		http.MethodPut,
+		"/api/credit-cards/1/currencies",
+		[]byte(`{"currency_ids":[1],"extra":1}`),
+	)
+	if unknownField.Code != http.StatusBadRequest {
+		t.Fatalf("expected unknown field to return 400, got %d", unknownField.Code)
+	}
+	if err := json.NewDecoder(unknownField.Body).Decode(&invalidPayloadResponse); err != nil {
+		t.Fatalf("decode unknown field response: %v", err)
+	}
+	if invalidPayloadResponse.Error.Message != `request body contains unknown field "extra"` {
+		t.Fatalf("expected unknown field error message, got %q", invalidPayloadResponse.Error.Message)
+	}
+
+	nonObjectJSON := performRequest(
+		router,
+		http.MethodPut,
+		"/api/credit-cards/1/currencies",
+		[]byte(`[1,2,3]`),
+	)
+	if nonObjectJSON.Code != http.StatusBadRequest {
+		t.Fatalf("expected non-object json to return 400, got %d", nonObjectJSON.Code)
+	}
+	if err := json.NewDecoder(nonObjectJSON.Body).Decode(&invalidPayloadResponse); err != nil {
+		t.Fatalf("decode non-object json response: %v", err)
+	}
+	if invalidPayloadResponse.Error.Message != "request body must be a JSON object" {
+		t.Fatalf("expected non-object json error message, got %q", invalidPayloadResponse.Error.Message)
+	}
+
+	multipleJSONObjects := performRequest(
+		router,
+		http.MethodPut,
+		"/api/credit-cards/1/currencies",
+		[]byte(`{"currency_ids":[1]}{"currency_ids":[2]}`),
+	)
+	if multipleJSONObjects.Code != http.StatusBadRequest {
+		t.Fatalf("expected multiple json objects to return 400, got %d", multipleJSONObjects.Code)
+	}
+	if err := json.NewDecoder(multipleJSONObjects.Body).Decode(&invalidPayloadResponse); err != nil {
+		t.Fatalf("decode multiple json objects response: %v", err)
+	}
+	if invalidPayloadResponse.Error.Message != "request body must contain a single JSON object" {
+		t.Fatalf("expected multiple json objects error message, got %q", invalidPayloadResponse.Error.Message)
+	}
+
+	notFoundCurrencyRoute := performRequest(router, http.MethodGet, "/api/credit-cards/999/currencies", nil)
+	if notFoundCurrencyRoute.Code != http.StatusNotFound {
+		t.Fatalf("expected unknown credit card currencies to return 404, got %d", notFoundCurrencyRoute.Code)
 	}
 }
 

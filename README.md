@@ -44,6 +44,8 @@ Frontend views are tab-based and route through the `view` query parameter:
 - Credit Cards: `/?view=credit-cards`
 - Settings: `/?view=settings`
 
+Credit card currencies are managed inline inside the Credit Cards view for each card.
+
 Within Settings, `settings` query parameter controls which management section is open:
 
 - Transaction Categories: `/?view=settings&settings=transaction-categories`

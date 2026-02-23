@@ -137,6 +137,10 @@
         <label for="credit-card-name">Name</label>
         <input id="credit-card-name" name="name" type="text" placeholder="Optional" />
 
+        <label for="credit-card-currency-ids">Currencies</label>
+        <select id="credit-card-currency-ids" name="currency_ids" multiple size="4">
+        </select>
+
         <div class="actions">
           <button id="credit-card-submit-button" type="submit">Create</button>
           <button id="credit-card-cancel-button" type="button" hidden>Cancel edit</button>
@@ -154,6 +158,7 @@
             <th>Person</th>
             <th>Number</th>
             <th>Name</th>
+            <th>Currencies</th>
             <th>Actions</th>
           </tr>
         </thead>

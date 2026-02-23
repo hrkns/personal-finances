@@ -504,6 +504,10 @@ func (application app) fetchCreditCardCurrencyIDs(creditCardID int64) ([]int64, 
 		items = append(items, currencyID)
 	}
 
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
 	return items, nil
 }
 
@@ -524,6 +528,10 @@ func (application app) fetchCreditCardCurrencyLinks(creditCardID int64) ([]credi
 			return nil, scanErr
 		}
 		items = append(items, item)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
 	}
 
 	return items, nil

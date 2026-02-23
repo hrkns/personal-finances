@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"strconv"
 	"strings"
@@ -580,8 +581,41 @@ func decodeCreditCardCurrenciesPayload(request *http.Request) (creditCardCurrenc
 	defer request.Body.Close()
 
 	var payload creditCardCurrenciesPayload
-	if err := json.NewDecoder(request.Body).Decode(&payload); err != nil {
-		return creditCardCurrenciesPayload{}, fmt.Errorf("request body must be valid JSON")
+	decoder := json.NewDecoder(request.Body)
+	decoder.DisallowUnknownFields()
+
+	if err := decoder.Decode(&payload); err != nil {
+		var syntaxError *json.SyntaxError
+		var unmarshalTypeError *json.UnmarshalTypeError
+		var invalidUnmarshalError *json.InvalidUnmarshalError
+
+		switch {
+		case errors.As(err, &syntaxError):
+			return creditCardCurrenciesPayload{}, fmt.Errorf("request body contains malformed JSON")
+		case errors.Is(err, io.ErrUnexpectedEOF):
+			return creditCardCurrenciesPayload{}, fmt.Errorf("request body contains malformed JSON")
+		case errors.As(err, &unmarshalTypeError):
+			if unmarshalTypeError.Field == "" {
+				return creditCardCurrenciesPayload{}, fmt.Errorf("request body must be a JSON object")
+			}
+			if strings.HasPrefix(unmarshalTypeError.Field, "currency_ids") {
+				return creditCardCurrenciesPayload{}, fmt.Errorf("currency_ids must be an array of integers")
+			}
+			return creditCardCurrenciesPayload{}, fmt.Errorf("request body contains invalid value for %s", unmarshalTypeError.Field)
+		case strings.HasPrefix(err.Error(), "json: unknown field "):
+			fieldName := strings.TrimPrefix(err.Error(), "json: unknown field ")
+			return creditCardCurrenciesPayload{}, fmt.Errorf("request body contains unknown field %s", fieldName)
+		case errors.Is(err, io.EOF):
+			return creditCardCurrenciesPayload{}, fmt.Errorf("request body must not be empty")
+		case errors.As(err, &invalidUnmarshalError):
+			return creditCardCurrenciesPayload{}, err
+		default:
+			return creditCardCurrenciesPayload{}, fmt.Errorf("request body must be valid JSON")
+		}
+}
+
+	if err := decoder.Decode(&struct{}{}); !errors.Is(err, io.EOF) {
+		return creditCardCurrenciesPayload{}, fmt.Errorf("request body must contain a single JSON object")
 	}
 
 	return payload, nil

@@ -36,6 +36,12 @@ function handleCreditCardsByID(pathname, method, options, stores) {
         return invalidPayload(error.message);
       }
 
+      const existingCurrencyIDs = new Set(stores.currenciesStore.map((item) => item.id));
+      const allCurrenciesExist = currencyIDs.every((currencyID) => existingCurrencyIDs.has(currencyID));
+      if (!allCurrenciesExist) {
+        return invalidPayload("all currencies must exist");
+      }
+
       stores.creditCardCurrenciesStore = stores.creditCardCurrenciesStore.filter(
         (item) => item.credit_card_id !== creditCardID
       );

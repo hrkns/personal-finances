@@ -1,26 +1,13 @@
 const { createResponse } = require("../../integration-http.js");
-const { parseBody, notFound, conflict, trimmedValue } = require("../helpers.js");
-
-function normalizeNullableName(value) {
-  const trimmedName = trimmedValue(value);
-  return trimmedName ? trimmedName : null;
-}
-
-function normalizeCurrencyIDs(value) {
-  if (!Array.isArray(value)) {
-    return [];
-  }
-
-  return [...new Set(value.map((item) => Number(item)).filter((item) => Number.isInteger(item) && item > 0))]
-    .sort((left, right) => left - right);
-}
-
-function getCurrencyIDsForCreditCard(stores, creditCardID) {
-  return stores.creditCardCurrenciesStore
-    .filter((item) => item.credit_card_id === creditCardID)
-    .map((item) => item.currency_id)
-    .sort((left, right) => left - right);
-}
+const {
+  parseBody,
+  notFound,
+  conflict,
+  trimmedValue,
+  normalizeNullableName,
+  normalizeCurrencyIDs,
+  getCurrencyIDsForCreditCard,
+} = require("../helpers.js");
 
 function handleCreditCardsByID(pathname, method, options, stores) {
   const creditCardCurrenciesMatch = pathname.match(/^\/api\/credit-cards\/(\d+)\/currencies$/);

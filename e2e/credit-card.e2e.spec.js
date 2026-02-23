@@ -1,12 +1,8 @@
 const { test, expect } = require("@playwright/test");
-const { openSettingsSection } = require("./helpers");
+const { openSettingsSection, uniqueCurrencyCode } = require("./helpers");
 
 function uniqueSuffix() {
   return `${Date.now()}_${Math.floor(Math.random() * 100000)}`;
-}
-
-function uniqueCurrencyCode(prefix) {
-  return `${prefix}${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
 }
 
 async function waitForAppReady(page) {

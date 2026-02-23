@@ -44,6 +44,7 @@
       escapeHtml,
       getBanks: state.getBanks,
       getPeople: state.getPeople,
+      getCurrencies: state.getCurrencies,
       getCreditCards: state.getCreditCards,
       setCreditCards: state.setCreditCards,
     });
@@ -58,6 +59,7 @@
       onCurrenciesChanged: () => {
         bankAccountsModule.populateCurrencyOptions();
         bankAccountsModule.render();
+        creditCardsModule.render();
         if (transactionsModule) {
           transactionsModule.populateBankAccountOptions();
           transactionsModule.render();

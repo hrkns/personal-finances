@@ -23,6 +23,10 @@ test("credit card CRUD flow works end-to-end", async ({ page }) => {
   const suffix = uniqueSuffix();
   const bankName = `Card Bank ${suffix}`;
   const personName = `Card Person ${suffix}`;
+  const usdName = `Card USD ${suffix}`;
+  const usdCode = `U${String(Date.now()).slice(-5)}`;
+  const eurName = `Card EUR ${suffix}`;
+  const eurCode = `E${String(Date.now()).slice(-5)}`;
   const initialNumber = `CARD-${suffix}`;
   const updatedNumber = `CARD-U-${suffix}`;
 
@@ -42,6 +46,18 @@ test("credit card CRUD flow works end-to-end", async ({ page }) => {
   await peopleForm.getByRole("button", { name: "Create" }).click();
   await expect(page.locator("#person-form-message")).toHaveText("Person created");
 
+  await openSettingsSection(page, "Currency");
+  const currencyForm = page.locator("#currency-form");
+  await currencyForm.getByLabel("Name").fill(usdName);
+  await currencyForm.getByLabel("Code").fill(usdCode);
+  await currencyForm.getByRole("button", { name: "Create" }).click();
+  await expect(page.locator("#form-message")).toHaveText("Currency created");
+
+  await currencyForm.getByLabel("Name").fill(eurName);
+  await currencyForm.getByLabel("Code").fill(eurCode);
+  await currencyForm.getByRole("button", { name: "Create" }).click();
+  await expect(page.locator("#form-message")).toHaveText("Currency created");
+
   await page.getByRole("button", { name: "Credit Cards" }).click();
   const creditCardForm = page.locator("#credit-card-form");
   await creditCardForm.getByLabel("Bank").selectOption({ label: `${bankName} (US)` });
@@ -52,6 +68,20 @@ test("credit card CRUD flow works end-to-end", async ({ page }) => {
 
   await expect(page.locator("#credit-card-form-message")).toHaveText("Credit card created");
   await expect(page.locator("#credit-cards-body")).toContainText(initialNumber);
+
+  const createdRow = page.locator("#credit-cards-body tr", { hasText: initialNumber });
+  await createdRow.locator('button[data-action="manage-currencies"]').click();
+
+  const currencySelector = page.locator('select[data-role="currency-select"][data-credit-card-id="1"]');
+  await currencySelector.selectOption([
+    { label: `${usdCode} - ${usdName}` },
+    { label: `${eurCode} - ${eurName}` },
+  ]);
+  await page.locator('button[data-action="save-currencies"][data-id="1"]').click();
+
+  await expect(page.locator("#credit-card-form-message")).toHaveText("Credit card currencies updated");
+  await expect(page.locator("#credit-cards-body")).toContainText(usdCode);
+  await expect(page.locator("#credit-cards-body")).toContainText(eurCode);
 
   const initialRow = page.locator("#credit-cards-body tr", { hasText: initialNumber });
   await initialRow.locator('button[data-action="edit"]').click();

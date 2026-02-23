@@ -49,12 +49,30 @@ function normalizeNullableName(value) {
 }
 
 function normalizeCurrencyIDs(value) {
-  if (!Array.isArray(value)) {
+  if (value === undefined) {
     return [];
   }
 
-  return [...new Set(value.map((item) => Number(item)).filter((item) => Number.isInteger(item) && item > 0))]
-    .sort((left, right) => left - right);
+  if (!Array.isArray(value)) {
+    throw new Error("request body must be valid JSON");
+  }
+
+  const uniqueCurrencyIDs = new Set();
+  const normalizedCurrencyIDs = [];
+  for (const currencyID of value) {
+    if (!Number.isInteger(currencyID) || currencyID <= 0) {
+      throw new Error("currency_ids must contain only positive integers");
+    }
+
+    if (uniqueCurrencyIDs.has(currencyID)) {
+      continue;
+    }
+
+    uniqueCurrencyIDs.add(currencyID);
+    normalizedCurrencyIDs.push(currencyID);
+  }
+
+  return normalizedCurrencyIDs.sort((left, right) => left - right);
 }
 
 function getCurrencyIDsForCreditCard(stores, creditCardID) {

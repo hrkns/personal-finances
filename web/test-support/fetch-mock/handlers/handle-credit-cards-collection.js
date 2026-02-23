@@ -3,6 +3,7 @@ const {
   parseBody,
   cloneItems,
   conflict,
+  invalidPayload,
   trimmedValue,
   normalizeNullableName,
   normalizeCurrencyIDs,
@@ -21,7 +22,12 @@ function handleCreditCardsCollection(pathname, method, options, stores) {
   if (pathname === "/api/credit-cards" && method === "POST") {
     const payload = parseBody(options);
     const number = trimmedValue(payload.number);
-    const currencyIDs = normalizeCurrencyIDs(payload.currency_ids);
+    let currencyIDs;
+    try {
+      currencyIDs = normalizeCurrencyIDs(payload.currency_ids);
+    } catch (error) {
+      return invalidPayload(error.message);
+    }
 
     const duplicate = stores.creditCardsStore.some((item) => item.number === number);
     if (duplicate) {

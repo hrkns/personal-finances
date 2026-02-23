@@ -3,6 +3,7 @@ const {
   parseBody,
   notFound,
   conflict,
+  invalidPayload,
   trimmedValue,
   normalizeNullableName,
   normalizeCurrencyIDs,
@@ -28,7 +29,12 @@ function handleCreditCardsByID(pathname, method, options, stores) {
 
     if (method === "PUT") {
       const payload = parseBody(options);
-      const currencyIDs = normalizeCurrencyIDs(payload.currency_ids);
+      let currencyIDs;
+      try {
+        currencyIDs = normalizeCurrencyIDs(payload.currency_ids);
+      } catch (error) {
+        return invalidPayload(error.message);
+      }
 
       stores.creditCardCurrenciesStore = stores.creditCardCurrenciesStore.filter(
         (item) => item.credit_card_id !== creditCardID
@@ -61,7 +67,12 @@ function handleCreditCardsByID(pathname, method, options, stores) {
     const id = Number(creditCardMatch[1]);
     const payload = parseBody(options);
     const number = trimmedValue(payload.number);
-    const currencyIDs = normalizeCurrencyIDs(payload.currency_ids);
+    let currencyIDs;
+    try {
+      currencyIDs = normalizeCurrencyIDs(payload.currency_ids);
+    } catch (error) {
+      return invalidPayload(error.message);
+    }
     const index = stores.creditCardsStore.findIndex((item) => item.id === id);
     if (index === -1) {
       return notFound("credit card not found");

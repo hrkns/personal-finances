@@ -27,6 +27,7 @@ Covered areas include:
 - Bank CRUD and validations
 - Bank Account CRUD and validations
 - Credit Card CRUD and validations
+- Credit Card currency association management
 - Countries endpoint behavior
 - Migration-backed test setup through temp SQLite DB
 
@@ -110,6 +111,7 @@ E2E details:
 - Spins up app with `go run .`
 - Uses isolated sqlite database via `DATABASE_PATH`
 - Covers browser-level Transactions, Transaction Categories, People, Currency, Banks, Bank Accounts, and Credit Cards flows
+- Covers browser-level management of currencies assigned to each credit card inside Credit Cards view
 - Verifies conflict scenarios and UI messages
 
 ## Typical Local Validation Order

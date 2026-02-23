@@ -428,7 +428,13 @@ func decodeCreditCardPayload(request *http.Request) (creditCardPayload, error) {
 }
 
 func (application app) validateCurrencyIDs(currencyIDs []int64) error {
+	seenCurrencyIDs := make(map[int64]struct{}, len(currencyIDs))
 	for _, currencyID := range currencyIDs {
+		if _, seen := seenCurrencyIDs[currencyID]; seen {
+			continue
+		}
+		seenCurrencyIDs[currencyID] = struct{}{}
+
 		if currencyID <= 0 {
 			return fmt.Errorf("currency_ids must contain only positive integers")
 		}

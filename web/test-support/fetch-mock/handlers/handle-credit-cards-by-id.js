@@ -28,15 +28,13 @@ function handleCreditCardsByID(pathname, method, options, stores) {
 
     if (method === "PUT") {
       const payload = parseBody(options);
-      const currencyIDs = Array.isArray(payload.currency_ids) ? payload.currency_ids : [];
+      const currencyIDs = normalizeCurrencyIDs(payload.currency_ids);
 
       stores.creditCardCurrenciesStore = stores.creditCardCurrenciesStore.filter(
         (item) => item.credit_card_id !== creditCardID
       );
 
-      const uniqueCurrencyIDs = [...new Set(currencyIDs.map((item) => Number(item)).filter((item) => Number.isInteger(item) && item > 0))];
-      const createdItems = uniqueCurrencyIDs
-        .sort((left, right) => left - right)
+      const createdItems = currencyIDs
         .map((currencyID) => {
           const created = {
             id: stores.nextCreditCardCurrencyId,

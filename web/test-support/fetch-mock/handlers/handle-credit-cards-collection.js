@@ -29,6 +29,12 @@ function handleCreditCardsCollection(pathname, method, options, stores) {
       return invalidPayload(error.message);
     }
 
+    const existingCurrencyIDs = new Set(stores.currenciesStore.map((item) => item.id));
+    const allCurrenciesExist = currencyIDs.every((currencyID) => existingCurrencyIDs.has(currencyID));
+    if (!allCurrenciesExist) {
+      return invalidPayload("all currencies must exist");
+    }
+
     const duplicate = stores.creditCardsStore.some((item) => item.number === number);
     if (duplicate) {
       return conflict("duplicate_credit_card", "credit card number must be unique");

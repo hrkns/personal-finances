@@ -132,6 +132,7 @@ func (application app) listCreditCards(writer http.ResponseWriter) {
 				BankID:   bankID,
 				PersonID: personID,
 				Number:   number,
+				CurrencyIDs: []int64{},
 			}
 			if name.Valid {
 				value := name.String

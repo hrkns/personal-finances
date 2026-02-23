@@ -72,6 +72,7 @@
         idElement: documentRef.getElementById("credit-card-id"),
         bankIdElement: documentRef.getElementById("credit-card-bank-id"),
         personIdElement: documentRef.getElementById("credit-card-person-id"),
+        currencyIdsElement: documentRef.getElementById("credit-card-currency-ids"),
         numberElement: documentRef.getElementById("credit-card-number"),
         nameElement: documentRef.getElementById("credit-card-name"),
         submitButtonElement: documentRef.getElementById("credit-card-submit-button"),

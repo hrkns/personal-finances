@@ -42,11 +42,16 @@ test("frontend can create and list a credit card", async () => {
   document.querySelector('[data-route-tab="credit-cards"]').click();
 
   await createBankAndPerson(window, document);
+  await createCurrencies(window, document);
 
   document.getElementById("credit-card-bank-id").value = "1";
   document.getElementById("credit-card-person-id").value = "1";
   document.getElementById("credit-card-number").value = "4111";
   document.getElementById("credit-card-name").value = "Main Card";
+  const currenciesSelect = document.getElementById("credit-card-currency-ids");
+  for (const option of currenciesSelect.options) {
+    option.selected = option.value === "1";
+  }
   document
     .getElementById("credit-card-form")
     .dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
@@ -62,6 +67,7 @@ test("frontend can create and list a credit card", async () => {
   assert.match(rowsText, /Credit Card Person/);
   assert.match(rowsText, /4111/);
   assert.match(rowsText, /Main Card/);
+  assert.match(rowsText, /USD/);
 
   dom.window.close();
 });
@@ -72,11 +78,15 @@ test("frontend supports credit card edit and delete actions", async () => {
   document.querySelector('[data-route-tab="credit-cards"]').click();
 
   await createBankAndPerson(window, document);
+  await createCurrencies(window, document);
 
   document.getElementById("credit-card-bank-id").value = "1";
   document.getElementById("credit-card-person-id").value = "1";
   document.getElementById("credit-card-number").value = "1000";
   document.getElementById("credit-card-name").value = "  ";
+  for (const option of document.getElementById("credit-card-currency-ids").options) {
+    option.selected = option.value === "1";
+  }
   document
     .getElementById("credit-card-form")
     .dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
@@ -91,6 +101,9 @@ test("frontend supports credit card edit and delete actions", async () => {
 
   document.getElementById("credit-card-number").value = "2000";
   document.getElementById("credit-card-name").value = "Updated Card";
+  for (const option of document.getElementById("credit-card-currency-ids").options) {
+    option.selected = option.value === "2";
+  }
   document
     .getElementById("credit-card-form")
     .dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
@@ -100,6 +113,7 @@ test("frontend supports credit card edit and delete actions", async () => {
 
   assert.match(document.getElementById("credit-cards-body").textContent, /2000/);
   assert.match(document.getElementById("credit-cards-body").textContent, /Updated Card/);
+  assert.match(document.getElementById("credit-cards-body").textContent, /EUR/);
 
   const deleteButton = document.querySelector('#credit-cards-body button[data-action="delete"]');
   deleteButton.dispatchEvent(new window.Event("click", { bubbles: true }));

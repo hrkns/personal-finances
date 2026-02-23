@@ -6,6 +6,15 @@ function normalizeNullableName(value) {
   return trimmedName ? trimmedName : null;
 }
 
+function normalizeCurrencyIDs(value) {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return [...new Set(value.map((item) => Number(item)).filter((item) => Number.isInteger(item) && item > 0))]
+    .sort((left, right) => left - right);
+}
+
 function getCurrencyIDsForCreditCard(stores, creditCardID) {
   return stores.creditCardCurrenciesStore
     .filter((item) => item.credit_card_id === creditCardID)
@@ -67,6 +76,7 @@ function handleCreditCardsByID(pathname, method, options, stores) {
     const id = Number(creditCardMatch[1]);
     const payload = parseBody(options);
     const number = trimmedValue(payload.number);
+    const currencyIDs = normalizeCurrencyIDs(payload.currency_ids);
     const index = stores.creditCardsStore.findIndex((item) => item.id === id);
     if (index === -1) {
       return notFound("credit card not found");
@@ -76,6 +86,19 @@ function handleCreditCardsByID(pathname, method, options, stores) {
     if (duplicate) {
       return conflict("duplicate_credit_card", "credit card number must be unique");
     }
+
+    stores.creditCardCurrenciesStore = stores.creditCardCurrenciesStore.filter(
+      (item) => item.credit_card_id !== id
+    );
+
+    currencyIDs.forEach((currencyID) => {
+      stores.creditCardCurrenciesStore.push({
+        id: stores.nextCreditCardCurrencyId,
+        credit_card_id: id,
+        currency_id: currencyID,
+      });
+      stores.nextCreditCardCurrencyId += 1;
+    });
 
     const updated = {
       id,

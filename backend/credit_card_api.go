@@ -31,6 +31,7 @@ type creditCardPayload struct {
 	PersonID int64   `json:"person_id"`
 	Number   string  `json:"number"`
 	Name     *string `json:"name"`
+	CurrencyIDs []int64 `json:"currency_ids"`
 }
 
 type creditCardCurrency struct {
@@ -174,8 +175,18 @@ func (application app) createCreditCard(writer http.ResponseWriter, request *htt
 		writeError(writer, http.StatusBadRequest, "invalid_payload", validationErr.Error())
 		return
 	}
+	if validationErr = application.validateCurrencyIDs(payload.CurrencyIDs); validationErr != nil {
+		writeError(writer, http.StatusBadRequest, "invalid_payload", validationErr.Error())
+		return
+	}
 
-	result, err := application.db.Exec(
+	tx, err := application.db.Begin()
+	if err != nil {
+		writeError(writer, http.StatusInternalServerError, "internal_error", "failed to create credit card")
+		return
+	}
+
+	result, err := tx.Exec(
 		`INSERT INTO credit_cards(bank_id, person_id, number, name) VALUES (?, ?, ?, ?)`,
 		payload.BankID,
 		payload.PersonID,
@@ -183,6 +194,7 @@ func (application app) createCreditCard(writer http.ResponseWriter, request *htt
 		payload.Name,
 	)
 	if err != nil {
+		tx.Rollback()
 		if isUniqueConstraintError(err) {
 			writeError(writer, http.StatusConflict, "duplicate_credit_card", "credit card number must be unique")
 			return
@@ -197,7 +209,19 @@ func (application app) createCreditCard(writer http.ResponseWriter, request *htt
 
 	id, err := result.LastInsertId()
 	if err != nil {
+		tx.Rollback()
 		writeError(writer, http.StatusInternalServerError, "internal_error", "failed to read created credit card id")
+		return
+	}
+
+	if err = application.replaceCreditCardCurrenciesTx(tx, id, payload.CurrencyIDs); err != nil {
+		tx.Rollback()
+		writeError(writer, http.StatusInternalServerError, "internal_error", "failed to create credit card")
+		return
+	}
+
+	if err = tx.Commit(); err != nil {
+		writeError(writer, http.StatusInternalServerError, "internal_error", "failed to create credit card")
 		return
 	}
 
@@ -217,8 +241,18 @@ func (application app) updateCreditCard(writer http.ResponseWriter, request *htt
 		writeError(writer, http.StatusBadRequest, "invalid_payload", validationErr.Error())
 		return
 	}
+	if validationErr = application.validateCurrencyIDs(payload.CurrencyIDs); validationErr != nil {
+		writeError(writer, http.StatusBadRequest, "invalid_payload", validationErr.Error())
+		return
+	}
 
-	result, err := application.db.Exec(
+	tx, err := application.db.Begin()
+	if err != nil {
+		writeError(writer, http.StatusInternalServerError, "internal_error", "failed to update credit card")
+		return
+	}
+
+	result, err := tx.Exec(
 		`UPDATE credit_cards SET bank_id = ?, person_id = ?, number = ?, name = ? WHERE id = ?`,
 		payload.BankID,
 		payload.PersonID,
@@ -227,6 +261,7 @@ func (application app) updateCreditCard(writer http.ResponseWriter, request *htt
 		id,
 	)
 	if err != nil {
+		tx.Rollback()
 		if isUniqueConstraintError(err) {
 			writeError(writer, http.StatusConflict, "duplicate_credit_card", "credit card number must be unique")
 			return
@@ -241,11 +276,24 @@ func (application app) updateCreditCard(writer http.ResponseWriter, request *htt
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
+		tx.Rollback()
 		writeError(writer, http.StatusInternalServerError, "internal_error", "failed to read update result")
 		return
 	}
 	if rowsAffected == 0 {
+		tx.Rollback()
 		writeError(writer, http.StatusNotFound, "not_found", "credit card not found")
+		return
+	}
+
+	if err = application.replaceCreditCardCurrenciesTx(tx, id, payload.CurrencyIDs); err != nil {
+		tx.Rollback()
+		writeError(writer, http.StatusInternalServerError, "internal_error", "failed to update credit card")
+		return
+	}
+
+	if err = tx.Commit(); err != nil {
+		writeError(writer, http.StatusInternalServerError, "internal_error", "failed to update credit card")
 		return
 	}
 
@@ -326,28 +374,10 @@ func (application app) updateCreditCardCurrencies(writer http.ResponseWriter, re
 		return
 	}
 
-	if _, err = tx.Exec(`DELETE FROM credit_card_currencies WHERE credit_card_id = ?`, creditCardID); err != nil {
+	if err = application.replaceCreditCardCurrenciesTx(tx, creditCardID, payload.CurrencyIDs); err != nil {
 		tx.Rollback()
 		writeError(writer, http.StatusInternalServerError, "internal_error", "failed to update credit card currencies")
 		return
-	}
-
-	seenCurrencyIDs := make(map[int64]struct{}, len(payload.CurrencyIDs))
-	for _, currencyID := range payload.CurrencyIDs {
-		if _, seen := seenCurrencyIDs[currencyID]; seen {
-			continue
-		}
-		seenCurrencyIDs[currencyID] = struct{}{}
-
-		if _, err = tx.Exec(
-			`INSERT INTO credit_card_currencies(credit_card_id, currency_id) VALUES (?, ?)`,
-			creditCardID,
-			currencyID,
-		); err != nil {
-			tx.Rollback()
-			writeError(writer, http.StatusInternalServerError, "internal_error", "failed to update credit card currencies")
-			return
-		}
 	}
 
 	if err = tx.Commit(); err != nil {
@@ -408,6 +438,30 @@ func (application app) validateCurrencyIDs(currencyIDs []int64) error {
 		}
 		if !exists {
 			return fmt.Errorf("all currencies must exist")
+		}
+	}
+
+	return nil
+}
+
+func (application app) replaceCreditCardCurrenciesTx(tx *sql.Tx, creditCardID int64, currencyIDs []int64) error {
+	if _, err := tx.Exec(`DELETE FROM credit_card_currencies WHERE credit_card_id = ?`, creditCardID); err != nil {
+		return err
+	}
+
+	seenCurrencyIDs := make(map[int64]struct{}, len(currencyIDs))
+	for _, currencyID := range currencyIDs {
+		if _, seen := seenCurrencyIDs[currencyID]; seen {
+			continue
+		}
+		seenCurrencyIDs[currencyID] = struct{}{}
+
+		if _, err := tx.Exec(
+			`INSERT INTO credit_card_currencies(credit_card_id, currency_id) VALUES (?, ?)`,
+			creditCardID,
+			currencyID,
+		); err != nil {
+			return err
 		}
 	}
 

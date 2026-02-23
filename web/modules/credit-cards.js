@@ -26,6 +26,7 @@
       elements.cancelButtonElement.hidden = true;
       populateBankOptions();
       populatePersonOptions();
+      populateCurrencyOptions();
     }
 
     function formatBankLabel(bankID) {
@@ -126,12 +127,39 @@
       elements.personIdElement.value = selectedValue;
     }
 
+    function populateCurrencyOptions() {
+      const selectedCurrencyIDs = new Set(getSelectedCurrencyIDsFromForm().map((item) => String(item)));
+      elements.currencyIdsElement.innerHTML = "";
+
+      for (const currency of getCurrencies()) {
+        const option = document.createElement("option");
+        option.value = String(currency.id);
+        option.textContent = `${currency.code} - ${currency.name}`;
+        option.selected = selectedCurrencyIDs.has(option.value);
+        elements.currencyIdsElement.appendChild(option);
+      }
+    }
+
+    function getSelectedCurrencyIDsFromForm() {
+      return [...elements.currencyIdsElement.selectedOptions]
+        .map((option) => Number.parseInt(option.value, 10))
+        .filter((value) => Number.isInteger(value) && value > 0);
+    }
+
+    function setSelectedCurrencyIDsInForm(currencyIDs) {
+      const selectedCurrencyIDs = new Set((currencyIDs || []).map((item) => String(item)));
+      [...elements.currencyIdsElement.options].forEach((option) => {
+        option.selected = selectedCurrencyIDs.has(option.value);
+      });
+    }
+
     async function load() {
       try {
         const creditCards = await apiRequest("/api/credit-cards", { method: "GET" });
         setCreditCards(creditCards);
         populateBankOptions();
         populatePersonOptions();
+        populateCurrencyOptions();
         render();
       } catch (error) {
         setMessage(error.message, true);
@@ -146,7 +174,8 @@
         elements.bankIdElement.value,
         elements.personIdElement.value,
         elements.numberElement.value,
-        elements.nameElement.value
+        elements.nameElement.value,
+        getSelectedCurrencyIDsFromForm()
       );
 
       try {
@@ -203,6 +232,7 @@
         elements.personIdElement.value = String(creditCard.person_id);
         elements.numberElement.value = creditCard.number;
         elements.nameElement.value = creditCard.name || "";
+        setSelectedCurrencyIDsInForm(creditCard.currency_ids || []);
         elements.submitButtonElement.textContent = "Update";
         elements.cancelButtonElement.hidden = false;
         setMessage(`Editing credit card #${creditCard.id}`, false);
@@ -312,11 +342,6 @@
         .map((option) => Number.parseInt(option.value, 10))
         .filter((value) => Number.isInteger(value) && value > 0);
 
-      if (selectedCurrencyIDs.length === 0) {
-        setMessage("Select at least one currency", true);
-        return;
-      }
-
       try {
         await apiRequest(`/api/credit-cards/${creditCardID}/currencies`, {
           method: "PUT",
@@ -340,6 +365,7 @@
       setMessage,
       populateBankOptions,
       populatePersonOptions,
+      populateCurrencyOptions,
       saveCreditCardCurrencies,
     };
   }

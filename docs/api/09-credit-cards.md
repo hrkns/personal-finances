@@ -22,7 +22,8 @@ Credit cards reference an existing bank and person, and enforce globally unique 
   "bank_id": 1,
   "person_id": 1,
   "number": "4111 1111 1111 1111",
-  "name": "Main Card"
+  "name": "Main Card",
+  "currency_ids": [1, 2]
 }
 ```
 
@@ -30,6 +31,7 @@ Normalization rules:
 
 - `number` is trimmed
 - `name` is optional; blank values are normalized to `null`
+- `currency_ids` is optional; duplicates are ignored
 
 Validation rules:
 
@@ -37,7 +39,7 @@ Validation rules:
 - `person_id` required, positive integer, must reference an existing person
 - `number` required, unique
 - `name` optional (`null` when omitted/blank)
-- `currency_ids` read-only list of currencies associated with the credit card
+- `currency_ids` optional list; when provided, all ids must reference existing currencies
 
 ### `GET /api/credit-cards`
 
@@ -225,7 +227,7 @@ Examples:
 {
   "error": {
     "code": "invalid_payload",
-    "message": "bank must exist"
+    "message": "bank and person must exist"
   }
 }
 ```
@@ -234,7 +236,7 @@ Examples:
 {
   "error": {
     "code": "invalid_payload",
-    "message": "person must exist"
+    "message": "all currencies must exist"
   }
 }
 ```

@@ -68,10 +68,12 @@ test("credit card CRUD flow works end-to-end", async ({ page }) => {
   await selectOptionContaining(creditCardForm.getByLabel("Person"), personName);
   await creditCardForm.getByLabel("Number").fill(initialNumber);
   await creditCardForm.getByLabel("Name").fill("Main Card");
+  await creditCardForm.getByLabel("Currencies").selectOption([{ label: `${usdCode} - ${usdName}` }]);
   await creditCardForm.getByRole("button", { name: "Create" }).click();
 
   await expect(page.locator("#credit-card-form-message")).toHaveText("Credit card created");
   await expect(page.locator("#credit-cards-body")).toContainText(initialNumber);
+  await expect(page.locator("#credit-cards-body")).toContainText(usdCode);
 
   const createdRow = page.locator("#credit-cards-body tr", { hasText: initialNumber });
   const manageCurrenciesButton = createdRow.locator('button[data-action="manage-currencies"]');

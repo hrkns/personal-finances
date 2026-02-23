@@ -59,6 +59,7 @@
       onCurrenciesChanged: () => {
         bankAccountsModule.populateCurrencyOptions();
         bankAccountsModule.render();
+        creditCardsModule.populateCurrencyOptions();
         creditCardsModule.render();
         if (transactionsModule) {
           transactionsModule.populateBankAccountOptions();

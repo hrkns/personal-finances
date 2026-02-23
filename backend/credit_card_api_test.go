@@ -106,16 +106,29 @@ func TestCreditCardCurrencyManagement(t *testing.T) {
 		t.Fatalf("expected second currency seed to return 201, got %d", eur.Code)
 	}
 
-	created := performRequest(router, http.MethodPost, "/api/credit-cards", []byte(`{"bank_id":1,"person_id":1,"number":"5000"}`))
+	created := performRequest(
+		router,
+		http.MethodPost,
+		"/api/credit-cards",
+		[]byte(`{"bank_id":1,"person_id":1,"number":"5000","currency_ids":[1,2,1]}`),
+	)
 	if created.Code != http.StatusCreated {
 		t.Fatalf("expected credit card create to return 201, got %d", created.Code)
+	}
+
+	var createdCard creditCard
+	if err := json.NewDecoder(created.Body).Decode(&createdCard); err != nil {
+		t.Fatalf("decode created credit card: %v", err)
+	}
+	if len(createdCard.CurrencyIDs) != 2 {
+		t.Fatalf("expected two currency ids in create response, got %+v", createdCard.CurrencyIDs)
 	}
 
 	updateCurrencies := performRequest(
 		router,
 		http.MethodPut,
 		"/api/credit-cards/1/currencies",
-		[]byte(`{"currency_ids":[1,2,1]}`),
+		[]byte(`{"currency_ids":[2]}`),
 	)
 	if updateCurrencies.Code != http.StatusOK {
 		t.Fatalf("expected currencies update to return 200, got %d", updateCurrencies.Code)
@@ -130,8 +143,18 @@ func TestCreditCardCurrencyManagement(t *testing.T) {
 	if err := json.NewDecoder(listCurrencies.Body).Decode(&currencyLinks); err != nil {
 		t.Fatalf("decode currencies response: %v", err)
 	}
-	if len(currencyLinks) != 2 {
-		t.Fatalf("expected two unique currency links, got %+v", currencyLinks)
+	if len(currencyLinks) != 1 {
+		t.Fatalf("expected one currency link after dedicated endpoint update, got %+v", currencyLinks)
+	}
+
+	fullUpdate := performRequest(
+		router,
+		http.MethodPut,
+		"/api/credit-cards/1",
+		[]byte(`{"bank_id":1,"person_id":1,"number":"5001","name":"Card","currency_ids":[1]}`),
+	)
+	if fullUpdate.Code != http.StatusOK {
+		t.Fatalf("expected full update to return 200, got %d", fullUpdate.Code)
 	}
 
 	getCard := performRequest(router, http.MethodGet, "/api/credit-cards/1", nil)
@@ -143,7 +166,7 @@ func TestCreditCardCurrencyManagement(t *testing.T) {
 	if err := json.NewDecoder(getCard.Body).Decode(&item); err != nil {
 		t.Fatalf("decode credit card response: %v", err)
 	}
-	if len(item.CurrencyIDs) != 2 {
+	if len(item.CurrencyIDs) != 1 {
 		t.Fatalf("expected currency_ids on credit card, got %+v", item.CurrencyIDs)
 	}
 }
@@ -167,6 +190,16 @@ func TestCreditCardValidationErrors(t *testing.T) {
 	invalidPerson := performRequest(router, http.MethodPost, "/api/credit-cards", []byte(`{"bank_id":1,"person_id":999,"number":"123"}`))
 	if invalidPerson.Code != http.StatusBadRequest {
 		t.Fatalf("expected invalid person to return 400, got %d", invalidPerson.Code)
+	}
+
+	invalidCreateCurrencyID := performRequest(
+		router,
+		http.MethodPost,
+		"/api/credit-cards",
+		[]byte(`{"bank_id":1,"person_id":1,"number":"124","currency_ids":[0]}`),
+	)
+	if invalidCreateCurrencyID.Code != http.StatusBadRequest {
+		t.Fatalf("expected invalid create currency id to return 400, got %d", invalidCreateCurrencyID.Code)
 	}
 
 	invalidID := performRequest(router, http.MethodGet, "/api/credit-cards/not-a-number", nil)

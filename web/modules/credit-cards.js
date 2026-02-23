@@ -313,7 +313,7 @@
         .filter((value) => Number.isInteger(value) && value > 0);
 
       if (selectedCurrencyIDs.length === 0) {
-        setMessage("select at least one currency", true);
+        setMessage("Select at least one currency", true);
         return;
       }
 

@@ -5,6 +5,10 @@ function uniqueSuffix() {
   return `${Date.now()}_${Math.floor(Math.random() * 100000)}`;
 }
 
+function uniqueCurrencyCode(prefix) {
+  return `${prefix}${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+}
+
 async function waitForAppReady(page) {
   await page.waitForFunction(() => typeof window.frontendRouter !== "undefined");
 }
@@ -24,9 +28,9 @@ test("credit card CRUD flow works end-to-end", async ({ page }) => {
   const bankName = `Card Bank ${suffix}`;
   const personName = `Card Person ${suffix}`;
   const usdName = `Card USD ${suffix}`;
-  const usdCode = `U${String(Date.now()).slice(-5)}`;
+  const usdCode = uniqueCurrencyCode("U");
   const eurName = `Card EUR ${suffix}`;
-  const eurCode = `E${String(Date.now()).slice(-5)}`;
+  const eurCode = uniqueCurrencyCode("E");
   const initialNumber = `CARD-${suffix}`;
   const updatedNumber = `CARD-U-${suffix}`;
 
@@ -70,14 +74,19 @@ test("credit card CRUD flow works end-to-end", async ({ page }) => {
   await expect(page.locator("#credit-cards-body")).toContainText(initialNumber);
 
   const createdRow = page.locator("#credit-cards-body tr", { hasText: initialNumber });
-  await createdRow.locator('button[data-action="manage-currencies"]').click();
+  const manageCurrenciesButton = createdRow.locator('button[data-action="manage-currencies"]');
+  const createdCreditCardID = await manageCurrenciesButton.getAttribute("data-id");
+  expect(createdCreditCardID).toBeTruthy();
+  await manageCurrenciesButton.click();
 
-  const currencySelector = page.locator('select[data-role="currency-select"][data-credit-card-id="1"]');
+  const currencySelector = page.locator(
+    `select[data-role="currency-select"][data-credit-card-id="${createdCreditCardID}"]`
+  );
   await currencySelector.selectOption([
     { label: `${usdCode} - ${usdName}` },
     { label: `${eurCode} - ${eurName}` },
   ]);
-  await page.locator('button[data-action="save-currencies"][data-id="1"]').click();
+  await page.locator(`button[data-action="save-currencies"][data-id="${createdCreditCardID}"]`).click();
 
   await expect(page.locator("#credit-card-form-message")).toHaveText("Credit card currencies updated");
   await expect(page.locator("#credit-cards-body")).toContainText(usdCode);

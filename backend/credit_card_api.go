@@ -97,7 +97,12 @@ func (application app) creditCardByIDHandler(writer http.ResponseWriter, request
 }
 
 func (application app) listCreditCards(writer http.ResponseWriter) {
-	rows, err := application.db.Query(`SELECT id, bank_id, person_id, number, name FROM credit_cards ORDER BY id`)
+	rows, err := application.db.Query(
+		`SELECT cc.id, cc.bank_id, cc.person_id, cc.number, cc.name, ccc.currency_id
+		 FROM credit_cards cc
+		 LEFT JOIN credit_card_currencies ccc ON ccc.credit_card_id = cc.id
+		 ORDER BY cc.id, ccc.currency_id`,
+	)
 	if err != nil {
 		writeError(writer, http.StatusInternalServerError, "internal_error", "failed to load credit cards")
 		return
@@ -105,20 +110,45 @@ func (application app) listCreditCards(writer http.ResponseWriter) {
 	defer rows.Close()
 
 	items := make([]creditCard, 0)
+	indexByID := make(map[int64]int)
 	for rows.Next() {
-		item, scanErr := scanCreditCard(rows)
+		var itemID int64
+		var bankID int64
+		var personID int64
+		var number string
+		var name sql.NullString
+		var currencyID sql.NullInt64
+		scanErr := rows.Scan(&itemID, &bankID, &personID, &number, &name, &currencyID)
 		if scanErr != nil {
 			writeError(writer, http.StatusInternalServerError, "internal_error", "failed to read credit cards")
 			return
 		}
 
-		currencyIDs, currencyErr := application.fetchCreditCardCurrencyIDs(item.ID)
-		if currencyErr != nil {
-			writeError(writer, http.StatusInternalServerError, "internal_error", "failed to load credit card currencies")
-			return
+		itemIndex, exists := indexByID[itemID]
+		if !exists {
+			item := creditCard{
+				ID:       itemID,
+				BankID:   bankID,
+				PersonID: personID,
+				Number:   number,
+			}
+			if name.Valid {
+				value := name.String
+				item.Name = &value
+			}
+			items = append(items, item)
+			itemIndex = len(items) - 1
+			indexByID[itemID] = itemIndex
 		}
-		item.CurrencyIDs = currencyIDs
-		items = append(items, item)
+
+		if currencyID.Valid {
+			items[itemIndex].CurrencyIDs = append(items[itemIndex].CurrencyIDs, currencyID.Int64)
+		}
+	}
+
+	if err = rows.Err(); err != nil {
+		writeError(writer, http.StatusInternalServerError, "internal_error", "failed to read credit cards")
+		return
 	}
 
 	writeJSON(writer, http.StatusOK, items)
@@ -141,11 +171,6 @@ func (application app) getCreditCard(writer http.ResponseWriter, id int64) {
 func (application app) createCreditCard(writer http.ResponseWriter, request *http.Request) {
 	payload, validationErr := decodeCreditCardPayload(request)
 	if validationErr != nil {
-		writeError(writer, http.StatusBadRequest, "invalid_payload", validationErr.Error())
-		return
-	}
-
-	if validationErr = application.validateCreditCardReferences(payload.BankID, payload.PersonID); validationErr != nil {
 		writeError(writer, http.StatusBadRequest, "invalid_payload", validationErr.Error())
 		return
 	}
@@ -189,11 +214,6 @@ func (application app) createCreditCard(writer http.ResponseWriter, request *htt
 func (application app) updateCreditCard(writer http.ResponseWriter, request *http.Request, id int64) {
 	payload, validationErr := decodeCreditCardPayload(request)
 	if validationErr != nil {
-		writeError(writer, http.StatusBadRequest, "invalid_payload", validationErr.Error())
-		return
-	}
-
-	if validationErr = application.validateCreditCardReferences(payload.BankID, payload.PersonID); validationErr != nil {
 		writeError(writer, http.StatusBadRequest, "invalid_payload", validationErr.Error())
 		return
 	}
@@ -374,26 +394,6 @@ func decodeCreditCardPayload(request *http.Request) (creditCardPayload, error) {
 	}
 
 	return payload, nil
-}
-
-func (application app) validateCreditCardReferences(bankID int64, personID int64) error {
-	bankExists, err := application.bankExists(bankID)
-	if err != nil {
-		return fmt.Errorf("failed to validate bank")
-	}
-	if !bankExists {
-		return fmt.Errorf("bank must exist")
-	}
-
-	personExists, err := application.personExists(personID)
-	if err != nil {
-		return fmt.Errorf("failed to validate person")
-	}
-	if !personExists {
-		return fmt.Errorf("person must exist")
-	}
-
-	return nil
 }
 
 func (application app) validateCurrencyIDs(currencyIDs []int64) error {

@@ -5,6 +5,10 @@ function uniqueSuffix() {
   return `${Date.now()}_${Math.floor(Math.random() * 100000)}`;
 }
 
+function uniqueCurrencyCode(prefix) {
+  return `${prefix}${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+}
+
 async function waitForAppReady(page) {
   await page.waitForFunction(() => typeof window.frontendRouter !== "undefined");
 }
@@ -24,7 +28,7 @@ test("transaction CRUD flow works end-to-end", async ({ page }) => {
   const personName = `Transaction Person ${suffix}`;
   const categoryName = `Transaction Category ${suffix}`;
   const currencyName = `Transaction Currency ${suffix}`;
-  const currencyCode = `T${String(Date.now()).slice(-5)}`;
+  const currencyCode = uniqueCurrencyCode("T");
   const bankName = `Transaction Bank ${suffix}`;
   const accountNumber = `TX-${suffix}`;
 

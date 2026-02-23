@@ -35,6 +35,9 @@ func TestCreditCardCRUDFlow(t *testing.T) {
 	if created.Name != nil {
 		t.Fatalf("expected name to default to null, got %+v", created.Name)
 	}
+	if len(created.CurrencyIDs) != 0 {
+		t.Fatalf("expected new credit card to have no currencies, got %+v", created.CurrencyIDs)
+	}
 
 	listResponse := performRequest(router, http.MethodGet, "/api/credit-cards", nil)
 	if listResponse.Code != http.StatusOK {
@@ -87,6 +90,64 @@ func TestCreditCardUniqueNumberConstraint(t *testing.T) {
 	}
 }
 
+func TestCreditCardCurrencyManagement(t *testing.T) {
+	application := newTestApplication(t)
+	router := application.routes()
+
+	seedCreditCardDependencies(t, router)
+
+	usd := performRequest(router, http.MethodPost, "/api/currencies", []byte(`{"name":"US Dollar","code":"USD"}`))
+	if usd.Code != http.StatusCreated {
+		t.Fatalf("expected currency seed to return 201, got %d", usd.Code)
+	}
+
+	eur := performRequest(router, http.MethodPost, "/api/currencies", []byte(`{"name":"Euro","code":"EUR"}`))
+	if eur.Code != http.StatusCreated {
+		t.Fatalf("expected second currency seed to return 201, got %d", eur.Code)
+	}
+
+	created := performRequest(router, http.MethodPost, "/api/credit-cards", []byte(`{"bank_id":1,"person_id":1,"number":"5000"}`))
+	if created.Code != http.StatusCreated {
+		t.Fatalf("expected credit card create to return 201, got %d", created.Code)
+	}
+
+	updateCurrencies := performRequest(
+		router,
+		http.MethodPut,
+		"/api/credit-cards/1/currencies",
+		[]byte(`{"currency_ids":[1,2,1]}`),
+	)
+	if updateCurrencies.Code != http.StatusOK {
+		t.Fatalf("expected currencies update to return 200, got %d", updateCurrencies.Code)
+	}
+
+	listCurrencies := performRequest(router, http.MethodGet, "/api/credit-cards/1/currencies", nil)
+	if listCurrencies.Code != http.StatusOK {
+		t.Fatalf("expected list currencies to return 200, got %d", listCurrencies.Code)
+	}
+
+	var currencyLinks []creditCardCurrency
+	if err := json.NewDecoder(listCurrencies.Body).Decode(&currencyLinks); err != nil {
+		t.Fatalf("decode currencies response: %v", err)
+	}
+	if len(currencyLinks) != 2 {
+		t.Fatalf("expected two unique currency links, got %+v", currencyLinks)
+	}
+
+	getCard := performRequest(router, http.MethodGet, "/api/credit-cards/1", nil)
+	if getCard.Code != http.StatusOK {
+		t.Fatalf("expected get credit card to return 200, got %d", getCard.Code)
+	}
+
+	var item creditCard
+	if err := json.NewDecoder(getCard.Body).Decode(&item); err != nil {
+		t.Fatalf("decode credit card response: %v", err)
+	}
+	if len(item.CurrencyIDs) != 2 {
+		t.Fatalf("expected currency_ids on credit card, got %+v", item.CurrencyIDs)
+	}
+}
+
 func TestCreditCardValidationErrors(t *testing.T) {
 	application := newTestApplication(t)
 	router := application.routes()
@@ -111,6 +172,36 @@ func TestCreditCardValidationErrors(t *testing.T) {
 	invalidID := performRequest(router, http.MethodGet, "/api/credit-cards/not-a-number", nil)
 	if invalidID.Code != http.StatusBadRequest {
 		t.Fatalf("expected invalid id to return 400, got %d", invalidID.Code)
+	}
+
+	created := performRequest(router, http.MethodPost, "/api/credit-cards", []byte(`{"bank_id":1,"person_id":1,"number":"123"}`))
+	if created.Code != http.StatusCreated {
+		t.Fatalf("expected credit card create to return 201, got %d", created.Code)
+	}
+
+	invalidCurrencyLink := performRequest(
+		router,
+		http.MethodPut,
+		"/api/credit-cards/1/currencies",
+		[]byte(`{"currency_ids":[999]}`),
+	)
+	if invalidCurrencyLink.Code != http.StatusBadRequest {
+		t.Fatalf("expected invalid currency link to return 400, got %d", invalidCurrencyLink.Code)
+	}
+
+	invalidCurrencyID := performRequest(
+		router,
+		http.MethodPut,
+		"/api/credit-cards/1/currencies",
+		[]byte(`{"currency_ids":[0]}`),
+	)
+	if invalidCurrencyID.Code != http.StatusBadRequest {
+		t.Fatalf("expected invalid currency id to return 400, got %d", invalidCurrencyID.Code)
+	}
+
+	notFoundCurrencyRoute := performRequest(router, http.MethodGet, "/api/credit-cards/999/currencies", nil)
+	if notFoundCurrencyRoute.Code != http.StatusNotFound {
+		t.Fatalf("expected unknown credit card currencies to return 404, got %d", notFoundCurrencyRoute.Code)
 	}
 }
 

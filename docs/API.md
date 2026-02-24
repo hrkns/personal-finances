@@ -14,3 +14,4 @@ This API documentation is split by topic for easier navigation and maintenance.
 - [Transaction Categories](api/07-transaction-categories.md)
 - [Transactions](api/08-transactions.md)
 - [Credit Cards](api/09-credit-cards.md)
+- [Credit Card Cycles](api/10-credit-card-cycles.md)

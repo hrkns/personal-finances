@@ -37,7 +37,14 @@ test("frontend initializes at Home route and can route to transactions and setti
 
   document.querySelector('[data-route-tab="credit-cards"]').click();
   const creditCardsHiddenAfter = document.getElementById("view-credit-cards").hidden;
+  const cardsSubViewHiddenAfter = document.getElementById("view-credit-cards-cards").hidden;
+  const cyclesSubViewHiddenAfter = document.getElementById("view-credit-card-cycles").hidden;
   const emptyCreditCardsState = document.getElementById("credit-cards-body").textContent;
+
+  document.querySelector('[data-credit-card-tab="cycles"]').click();
+  const cardsSubViewHiddenAfterCycleSelect = document.getElementById("view-credit-cards-cards").hidden;
+  const cyclesSubViewHiddenAfterCycleSelect = document.getElementById("view-credit-card-cycles").hidden;
+  const emptyCreditCardCyclesState = document.getElementById("credit-card-cycles-body").textContent;
 
   document.querySelector('[data-route-tab="settings"]').click();
   document.querySelector('[data-settings-tab="currency"]').click();
@@ -76,7 +83,12 @@ test("frontend initializes at Home route and can route to transactions and setti
   assert.match(emptyBankAccountsState, /No bank accounts yet/);
 
   assert.equal(creditCardsHiddenAfter, false);
+  assert.equal(cardsSubViewHiddenAfter, false);
+  assert.equal(cyclesSubViewHiddenAfter, true);
+  assert.equal(cardsSubViewHiddenAfterCycleSelect, true);
+  assert.equal(cyclesSubViewHiddenAfterCycleSelect, false);
   assert.match(emptyCreditCardsState, /No credit cards yet/);
+  assert.match(emptyCreditCardCyclesState, /No credit card cycles yet/);
   assert.match(countryOptions, /US - United States/);
   assert.match(bankAccountCurrencyOptions, /Select currency/);
 

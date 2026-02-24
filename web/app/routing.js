@@ -3,9 +3,11 @@
     const {
       tabButtonElements,
       settingsTabButtonElements,
+      creditCardTabButtonElements,
       settingsSelectionMessageElement,
       views,
       settingsViews,
+      creditCardViews,
       frontendRouter,
     } = config;
 
@@ -14,12 +16,14 @@
         return {
           route: routeState,
           settingsSection: null,
+          creditCardSection: null,
         };
       }
 
       return {
         route: routeState?.route || "home",
         settingsSection: routeState?.settingsSection || null,
+        creditCardSection: routeState?.creditCardSection || null,
       };
     }
 
@@ -27,6 +31,7 @@
       const state = normalizeRouteState(routeState);
       const activeRoute = state.route;
       const activeSettingsSection = state.settingsSection;
+      const activeCreditCardSection = state.creditCardSection;
 
       views.home.hidden = activeRoute !== "home";
       views.transactions.hidden = activeRoute !== "transactions";
@@ -40,6 +45,9 @@
       settingsViews.banks.hidden = activeRoute !== "settings" || activeSettingsSection !== "banks";
       settingsViews.currency.hidden = activeRoute !== "settings" || activeSettingsSection !== "currency";
 
+      creditCardViews.cards.hidden = activeRoute !== "credit-cards" || activeCreditCardSection !== "cards";
+      creditCardViews.cycles.hidden = activeRoute !== "credit-cards" || activeCreditCardSection !== "cycles";
+
       settingsSelectionMessageElement.hidden =
         activeRoute !== "settings" || Boolean(activeSettingsSection);
 
@@ -51,6 +59,11 @@
       settingsTabButtonElements.forEach((button) => {
         const section = button.getAttribute("data-settings-tab");
         button.classList.toggle("active", activeRoute === "settings" && section === activeSettingsSection);
+      });
+
+      creditCardTabButtonElements.forEach((button) => {
+        const section = button.getAttribute("data-credit-card-tab");
+        button.classList.toggle("active", activeRoute === "credit-cards" && section === activeCreditCardSection);
       });
     }
 
@@ -66,6 +79,13 @@
         button.addEventListener("click", () => {
           const settingsSection = button.getAttribute("data-settings-tab");
           frontendRouter.navigate("settings", { settingsSection });
+        });
+      });
+
+      creditCardTabButtonElements.forEach((button) => {
+        button.addEventListener("click", () => {
+          const creditCardSection = button.getAttribute("data-credit-card-tab");
+          frontendRouter.navigate("credit-cards", { creditCardSection });
         });
       });
     }

@@ -19,12 +19,11 @@ async function selectOptionContaining(selectLocator, expectedText) {
   await selectLocator.selectOption(value);
 }
 
-test("credit card CRUD flow works end-to-end", async ({ page }) => {
+test("credit card cycle CRUD flow works end-to-end", async ({ page }) => {
   const suffix = uniqueSuffix();
-  const bankName = `Card Bank ${suffix}`;
-  const personName = `Card Person ${suffix}`;
-  const initialNumber = `CARD-${suffix}`;
-  const updatedNumber = `CARD-U-${suffix}`;
+  const bankName = `Cycle Bank ${suffix}`;
+  const personName = `Cycle Person ${suffix}`;
+  const cardNumber = `CYCLE-${suffix}`;
 
   await page.goto("/");
   await waitForAppReady(page);
@@ -43,40 +42,53 @@ test("credit card CRUD flow works end-to-end", async ({ page }) => {
   await expect(page.locator("#person-form-message")).toHaveText("Person created");
 
   await page.getByRole("button", { name: "Credit Cards" }).click();
+  await page.locator('[data-credit-card-tab="cards"]').click();
+
   const creditCardForm = page.locator("#credit-card-form");
   await creditCardForm.getByLabel("Bank").selectOption({ label: `${bankName} (US)` });
   await selectOptionContaining(creditCardForm.getByLabel("Person"), personName);
-  await creditCardForm.getByLabel("Number").fill(initialNumber);
-  await creditCardForm.getByLabel("Name").fill("Main Card");
+  await creditCardForm.getByLabel("Number").fill(cardNumber);
+  await creditCardForm.getByLabel("Name").fill("Cycle Card");
   await creditCardForm.getByRole("button", { name: "Create" }).click();
 
   await expect(page.locator("#credit-card-form-message")).toHaveText("Credit card created");
-  await expect(page.locator("#credit-cards-body")).toContainText(initialNumber);
+  await expect(page.locator("#credit-cards-body")).toContainText(cardNumber);
 
-  const initialRow = page.locator("#credit-cards-body tr", { hasText: initialNumber });
+  await page.locator('[data-credit-card-tab="cycles"]').click();
+
+  const cycleForm = page.locator("#credit-card-cycle-form");
+  await selectOptionContaining(cycleForm.getByLabel("Credit Card"), cardNumber);
+  await cycleForm.getByLabel("Closing Date").fill("2026-03-20");
+  await cycleForm.getByLabel("Due Date").fill("2026-03-30");
+  await cycleForm.getByRole("button", { name: "Create" }).click();
+
+  await expect(page.locator("#credit-card-cycle-form-message")).toHaveText("Credit card cycle created");
+  await expect(page.locator("#credit-card-cycles-body")).toContainText("2026-03-20");
+  await expect(page.locator("#credit-card-cycles-body")).toContainText("2026-03-30");
+
+  const initialRow = page.locator("#credit-card-cycles-body tr", { hasText: "2026-03-20" });
   await initialRow.locator('button[data-action="edit"]').click();
-  await expect(page.locator("#credit-card-submit-button")).toHaveText("Update");
+  await expect(page.locator("#credit-card-cycle-submit-button")).toHaveText("Update");
 
-  await creditCardForm.getByLabel("Number").fill(updatedNumber);
-  await creditCardForm.getByLabel("Name").fill("Updated Card");
-  await creditCardForm.getByRole("button", { name: "Update" }).click();
+  await cycleForm.getByLabel("Closing Date").fill("2026-04-20");
+  await cycleForm.getByLabel("Due Date").fill("2026-04-30");
+  await cycleForm.getByRole("button", { name: "Update" }).click();
 
-  await expect(page.locator("#credit-card-form-message")).toHaveText("Credit card updated");
-  await expect(page.locator("#credit-cards-body")).toContainText(updatedNumber);
-  await expect(page.locator("#credit-cards-body")).toContainText("Updated Card");
+  await expect(page.locator("#credit-card-cycle-form-message")).toHaveText("Credit card cycle updated");
+  await expect(page.locator("#credit-card-cycles-body")).toContainText("2026-04-20");
 
-  const updatedRow = page.locator("#credit-cards-body tr", { hasText: updatedNumber });
+  const updatedRow = page.locator("#credit-card-cycles-body tr", { hasText: "2026-04-20" });
   await updatedRow.locator('button[data-action="delete"]').click();
 
-  await expect(page.locator("#credit-card-form-message")).toHaveText("Credit card deleted");
-  await expect(page.locator("#credit-cards-body")).not.toContainText(updatedNumber);
+  await expect(page.locator("#credit-card-cycle-form-message")).toHaveText("Credit card cycle deleted");
+  await expect(page.locator("#credit-card-cycles-body")).not.toContainText("2026-04-20");
 });
 
-test("duplicate credit card number shows backend conflict message", async ({ page }) => {
+test("credit card cycle validates due date is on or after closing date", async ({ page }) => {
   const suffix = uniqueSuffix();
-  const bankName = `Dup Card Bank ${suffix}`;
-  const personName = `Dup Card Person ${suffix}`;
-  const duplicatedNumber = `DUP-${suffix}`;
+  const bankName = `Cycle Validation Bank ${suffix}`;
+  const personName = `Cycle Validation Person ${suffix}`;
+  const cardNumber = `CYCLE-V-${suffix}`;
 
   await page.goto("/");
   await waitForAppReady(page);
@@ -95,19 +107,25 @@ test("duplicate credit card number shows backend conflict message", async ({ pag
   await expect(page.locator("#person-form-message")).toHaveText("Person created");
 
   await page.getByRole("button", { name: "Credit Cards" }).click();
+  await page.locator('[data-credit-card-tab="cards"]').click();
+
   const creditCardForm = page.locator("#credit-card-form");
   await creditCardForm.getByLabel("Bank").selectOption({ label: `${bankName} (US)` });
   await selectOptionContaining(creditCardForm.getByLabel("Person"), personName);
-  await creditCardForm.getByLabel("Number").fill(duplicatedNumber);
+  await creditCardForm.getByLabel("Number").fill(cardNumber);
+  await creditCardForm.getByLabel("Name").fill("Validation Card");
   await creditCardForm.getByRole("button", { name: "Create" }).click();
-
   await expect(page.locator("#credit-card-form-message")).toHaveText("Credit card created");
 
-  await creditCardForm.getByLabel("Bank").selectOption({ label: `${bankName} (US)` });
-  await selectOptionContaining(creditCardForm.getByLabel("Person"), personName);
-  await creditCardForm.getByLabel("Number").fill(duplicatedNumber);
-  await creditCardForm.getByRole("button", { name: "Create" }).click();
+  await page.locator('[data-credit-card-tab="cycles"]').click();
 
-  await expect(page.locator("#credit-card-form-message")).toHaveText("credit card number must be unique");
-  await expect(page.locator("#credit-card-form-message")).toHaveClass(/error/);
+  const cycleForm = page.locator("#credit-card-cycle-form");
+  await selectOptionContaining(cycleForm.getByLabel("Credit Card"), cardNumber);
+  await cycleForm.getByLabel("Closing Date").fill("2026-08-20");
+  await cycleForm.getByLabel("Due Date").fill("2026-08-10");
+  await cycleForm.getByRole("button", { name: "Create" }).click();
+
+  await expect(page.locator("#credit-card-cycle-form-message")).toHaveText("due_date must be on or after closing_date");
+  await expect(page.locator("#credit-card-cycle-form-message")).toHaveClass(/error/);
+  await expect(page.locator("#credit-card-cycles-body")).toContainText("No credit card cycles yet");
 });

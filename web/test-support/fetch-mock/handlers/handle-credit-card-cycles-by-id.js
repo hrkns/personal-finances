@@ -5,6 +5,7 @@ const {
   conflict,
   invalidPayload,
   trimmedValue,
+  isValidISODate,
 } = require("../helpers.js");
 
 function handleCreditCardCyclesByID(pathname, method, options, stores) {
@@ -37,10 +38,13 @@ function handleCreditCardCyclesByID(pathname, method, options, stores) {
     if (!Number.isInteger(creditCardID) || creditCardID <= 0) {
       return invalidPayload("credit_card_id must be a positive integer");
     }
-    if (!closingDate) {
+    if (!stores.creditCardsStore.some((item) => item.id === creditCardID)) {
+      return invalidPayload("credit card must exist");
+    }
+    if (!isValidISODate(closingDate)) {
       return invalidPayload("closing_date must be a valid date in YYYY-MM-DD format");
     }
-    if (!dueDate) {
+    if (!isValidISODate(dueDate)) {
       return invalidPayload("due_date must be a valid date in YYYY-MM-DD format");
     }
     if (dueDate < closingDate) {

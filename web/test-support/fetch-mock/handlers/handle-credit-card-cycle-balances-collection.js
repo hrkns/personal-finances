@@ -32,7 +32,7 @@ function handleCreditCardCycleBalancesCollection(pathname, method, options, stor
     const creditCardCycleID = Number(payload.credit_card_cycle_id);
     const currencyID = Number(payload.currency_id);
     const balance = Number(payload.balance);
-    const paid = Boolean(payload.paid);
+    const paid = payload.paid;
 
     if (!Number.isInteger(creditCardCycleID) || creditCardCycleID <= 0) {
       return invalidPayload("credit_card_cycle_id must be a positive integer");
@@ -51,6 +51,9 @@ function handleCreditCardCycleBalancesCollection(pathname, method, options, stor
     }
     if (Number.isNaN(balance)) {
       return invalidPayload("balance must be a valid number");
+    }
+    if (typeof paid !== "boolean") {
+      return invalidPayload("paid must be a boolean");
     }
 
     const created = {

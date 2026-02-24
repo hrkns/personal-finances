@@ -13,6 +13,16 @@ function handleCreditCardCyclesByID(pathname, method, options, stores) {
     return null;
   }
 
+  if (method === "GET") {
+    const id = Number(cycleMatch[1]);
+    const cycle = stores.creditCardCyclesStore.find((item) => item.id === id);
+    if (!cycle) {
+      return notFound("credit card cycle not found");
+    }
+
+    return createResponse(200, { ...cycle });
+  }
+
   if (method === "PUT") {
     const id = Number(cycleMatch[1]);
     const payload = parseBody(options);

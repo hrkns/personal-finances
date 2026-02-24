@@ -83,19 +83,17 @@ test("normalizeBankAccountInput parses ids and balance", () => {
 });
 
 test("normalizeCreditCardInput parses ids and normalizes nullable name", () => {
-  const payload = normalizeCreditCardInput(" 3 ", " 9 ", "  4111  ", "  Travel Card ", [" 2 ", "1", "2", "0"]);
+  const payload = normalizeCreditCardInput(" 3 ", " 9 ", "  4111  ", "  Travel Card ");
 
   assert.deepEqual(payload, {
     bank_id: 3,
     person_id: 9,
     number: "4111",
     name: "Travel Card",
-    currency_ids: [2, 1],
   });
 
-  const withoutName = normalizeCreditCardInput("1", "2", "5000", "   ", []);
+  const withoutName = normalizeCreditCardInput("1", "2", "5000", "   ");
   assert.equal(withoutName.name, null);
-  assert.deepEqual(withoutName.currency_ids, []);
 });
 
 test("normalizeTransactionInput normalizes type, amount, ids and nullable notes", () => {

@@ -10,8 +10,7 @@ Credit cards reference an existing bank and person, and enforce globally unique 
   "bank_id": 1,
   "person_id": 1,
   "number": "4111 1111 1111 1111",
-  "name": "Main Card",
-  "currency_ids": [1, 2]
+  "name": "Main Card"
 }
 ```
 
@@ -22,8 +21,7 @@ Credit cards reference an existing bank and person, and enforce globally unique 
   "bank_id": 1,
   "person_id": 1,
   "number": "4111 1111 1111 1111",
-  "name": "Main Card",
-  "currency_ids": [1, 2]
+  "name": "Main Card"
 }
 ```
 
@@ -31,7 +29,6 @@ Normalization rules:
 
 - `number` is trimmed
 - `name` is optional; blank values are normalized to `null`
-- `currency_ids` is optional; duplicates are ignored
 
 Validation rules:
 
@@ -39,7 +36,6 @@ Validation rules:
 - `person_id` required, positive integer, must reference an existing person
 - `number` required, unique
 - `name` optional (`null` when omitted/blank)
-- `currency_ids` optional list; when provided, all ids must reference existing currencies
 
 ### `GET /api/credit-cards`
 
@@ -52,8 +48,7 @@ Validation rules:
     "bank_id": 1,
     "person_id": 1,
     "number": "4111 1111 1111 1111",
-    "name": "Main Card",
-    "currency_ids": [1, 2]
+    "name": "Main Card"
   }
 ]
 ```
@@ -68,8 +63,7 @@ Validation rules:
   "bank_id": 1,
   "person_id": 1,
   "number": "4111 1111 1111 1111",
-  "name": "Main Card",
-  "currency_ids": [1, 2]
+  "name": "Main Card"
 }
 ```
 
@@ -91,109 +85,6 @@ Validation rules:
   "error": {
     "code": "invalid_id",
     "message": "credit card id must be a positive integer"
-  }
-}
-```
-
-### Credit Card Currency Entity
-
-Credit card currencies are stored in an association entity:
-
-```json
-{
-  "id": 1,
-  "credit_card_id": 1,
-  "currency_id": 1
-}
-```
-
-### `GET /api/credit-cards/{id}/currencies`
-
-Returns all currency links for a specific credit card.
-
-#### Success (`200 OK`)
-
-```json
-[
-  { "id": 1, "credit_card_id": 1, "currency_id": 1 },
-  { "id": 2, "credit_card_id": 1, "currency_id": 2 }
-]
-```
-
-#### Not Found (`404 Not Found`)
-
-```json
-{
-  "error": {
-    "code": "not_found",
-    "message": "credit card not found"
-  }
-}
-```
-
-#### Invalid ID (`400 Bad Request`)
-
-```json
-{
-  "error": {
-    "code": "invalid_id",
-    "message": "credit card id must be a positive integer"
-  }
-}
-```
-
-### `PUT /api/credit-cards/{id}/currencies`
-
-Replaces all currencies associated with the credit card.
-
-Request body:
-
-```json
-{
-  "currency_ids": [1, 2]
-}
-```
-
-#### Success (`200 OK`)
-
-Returns the stored association rows:
-
-```json
-[
-  { "id": 1, "credit_card_id": 1, "currency_id": 1 },
-  { "id": 2, "credit_card_id": 1, "currency_id": 2 }
-]
-```
-
-#### Validation Error (`400 Bad Request`)
-
-Examples:
-
-```json
-{
-  "error": {
-    "code": "invalid_payload",
-    "message": "currency_ids must contain only positive integers"
-  }
-}
-```
-
-```json
-{
-  "error": {
-    "code": "invalid_payload",
-    "message": "all currencies must exist"
-  }
-}
-```
-
-#### Not Found (`404 Not Found`)
-
-```json
-{
-  "error": {
-    "code": "not_found",
-    "message": "credit card not found"
   }
 }
 ```
@@ -228,15 +119,6 @@ Examples:
   "error": {
     "code": "invalid_payload",
     "message": "bank and person must exist"
-  }
-}
-```
-
-```json
-{
-  "error": {
-    "code": "invalid_payload",
-    "message": "all currencies must exist"
   }
 }
 ```
@@ -301,4 +183,3 @@ No response body.
     "message": "credit card not found"
   }
 }
-```

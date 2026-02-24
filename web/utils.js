@@ -37,20 +37,14 @@
     };
   }
 
-  function normalizeCreditCardInput(bankId, personId, number, name, currencyIds) {
+  function normalizeCreditCardInput(bankId, personId, number, name) {
     const normalizedName = String(name ?? "").trim();
-    const normalizedCurrencyIDs = Array.isArray(currencyIds)
-      ? [...new Set(currencyIds
-        .map((item) => Number.parseInt(String(item ?? ""), 10))
-        .filter((item) => Number.isInteger(item) && item > 0))]
-      : [];
 
     return {
       bank_id: Number.parseInt(String(bankId ?? ""), 10),
       person_id: Number.parseInt(String(personId ?? ""), 10),
       number: String(number ?? "").trim(),
       name: normalizedName ? normalizedName : null,
-      currency_ids: normalizedCurrencyIDs,
     };
   }
 

@@ -329,7 +329,7 @@
       event.preventDefault();
 
       if (!selectedCycleID) {
-        setBalanceMessage("select a cycle first", true);
+        setBalanceMessage("Select a cycle first", true);
         return;
       }
 

@@ -31,8 +31,18 @@ function handleCreditCardCycleBalancesCollection(pathname, method, options, stor
     const payload = parseBody(options);
     const creditCardCycleID = Number(payload.credit_card_cycle_id);
     const currencyID = Number(payload.currency_id);
-    const balance = Number(payload.balance);
-    const paid = payload.paid;
+    const hasBalance = Object.prototype.hasOwnProperty.call(payload, "balance");
+    const hasPaid = Object.prototype.hasOwnProperty.call(payload, "paid");
+
+    let balance = 0;
+    if (hasBalance) {
+      balance = Number(payload.balance);
+    }
+
+    let paid = false;
+    if (hasPaid) {
+      paid = payload.paid;
+    }
 
     if (!Number.isInteger(creditCardCycleID) || creditCardCycleID <= 0) {
       return invalidPayload("credit_card_cycle_id must be a positive integer");
@@ -52,7 +62,7 @@ function handleCreditCardCycleBalancesCollection(pathname, method, options, stor
     if (Number.isNaN(balance)) {
       return invalidPayload("balance must be a valid number");
     }
-    if (typeof paid !== "boolean") {
+    if (hasPaid && typeof paid !== "boolean") {
       return invalidPayload("paid must be a boolean");
     }
 

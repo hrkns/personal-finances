@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS credit_card_cycle_payments (
+CREATE TABLE IF NOT EXISTS credit_card_cycle_balances (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   credit_card_cycle_id INTEGER NOT NULL,
   currency_id INTEGER NOT NULL,
@@ -14,8 +14,8 @@ CREATE TABLE IF NOT EXISTS credit_card_cycle_payments (
     ON DELETE RESTRICT
 );
 
-CREATE INDEX IF NOT EXISTS idx_credit_card_cycle_payments_cycle_id
-ON credit_card_cycle_payments(credit_card_cycle_id);
+CREATE INDEX IF NOT EXISTS idx_credit_card_cycle_balances_cycle_id
+ON credit_card_cycle_balances(credit_card_cycle_id);
 
-CREATE INDEX IF NOT EXISTS idx_credit_card_cycle_payments_currency_id
-ON credit_card_cycle_payments(currency_id);
+CREATE INDEX IF NOT EXISTS idx_credit_card_cycle_balances_currency_id
+ON credit_card_cycle_balances(currency_id);

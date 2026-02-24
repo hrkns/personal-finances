@@ -12,9 +12,11 @@ const appModules = createAppModules({
 const appRouting = createAppRouting({
   tabButtonElements: appDom.tabButtonElements,
   settingsTabButtonElements: appDom.settingsTabButtonElements,
+  creditCardTabButtonElements: appDom.creditCardTabButtonElements,
   settingsSelectionMessageElement: appDom.settingsSelectionMessageElement,
   views: appDom.views,
   settingsViews: appDom.settingsViews,
+  creditCardViews: appDom.creditCardViews,
   frontendRouter,
 });
 
@@ -36,8 +38,10 @@ async function init() {
     appModules.currenciesModule.load(),
     appModules.banksModule.load(),
     appModules.bankAccountsModule.load(),
-    appModules.creditCardsModule.load(),
   ]);
+
+  await appModules.creditCardsModule.load();
+  await appModules.creditCardCyclesModule.load();
 
   appDom.transactionCategories.formElement.addEventListener("submit", appModules.transactionCategoriesModule.onSubmit);
   appDom.transactionCategories.cancelButtonElement.addEventListener(
@@ -62,4 +66,7 @@ async function init() {
 
   appDom.creditCards.formElement.addEventListener("submit", appModules.creditCardsModule.onSubmit);
   appDom.creditCards.cancelButtonElement.addEventListener("click", appModules.creditCardsModule.resetForm);
+
+  appDom.creditCardCycles.formElement.addEventListener("submit", appModules.creditCardCyclesModule.onSubmit);
+  appDom.creditCardCycles.cancelButtonElement.addEventListener("click", appModules.creditCardCyclesModule.resetForm);
 }

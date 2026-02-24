@@ -48,6 +48,14 @@
     };
   }
 
+  function normalizeCreditCardCycleInput(creditCardID, closingDate, dueDate) {
+    return {
+      credit_card_id: Number.parseInt(String(creditCardID ?? ""), 10),
+      closing_date: String(closingDate ?? "").trim(),
+      due_date: String(dueDate ?? "").trim(),
+    };
+  }
+
   function normalizeTransactionInput(transactionDate, type, amount, notes, personId, bankAccountId, categoryId) {
     const normalizedNotes = String(notes ?? "").trim();
 
@@ -93,6 +101,7 @@
     normalizeTransactionCategoryInput,
     normalizeBankAccountInput,
     normalizeCreditCardInput,
+    normalizeCreditCardCycleInput,
     normalizeTransactionInput,
     escapeHtml,
     parseApiResponse,

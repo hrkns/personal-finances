@@ -15,10 +15,12 @@
       normalizeTransactionInput,
       normalizeBankAccountInput,
       normalizeCreditCardInput,
+      normalizeCreditCardCycleInput,
       escapeHtml,
     } = frontendUtils;
 
     let transactionsModule = null;
+    let creditCardCyclesModule = null;
 
     const bankAccountsModule = createBankAccountsModule({
       elements: dom.bankAccounts,
@@ -46,6 +48,21 @@
       getPeople: state.getPeople,
       getCreditCards: state.getCreditCards,
       setCreditCards: state.setCreditCards,
+      onCreditCardsChanged: async () => {
+        if (creditCardCyclesModule) {
+          await creditCardCyclesModule.load();
+        }
+      },
+    });
+
+    creditCardCyclesModule = createCreditCardCyclesModule({
+      elements: dom.creditCardCycles,
+      apiRequest,
+      normalizeCreditCardCycleInput,
+      escapeHtml,
+      getCreditCards: state.getCreditCards,
+      getCreditCardCycles: state.getCreditCardCycles,
+      setCreditCardCycles: state.setCreditCardCycles,
     });
 
     const currenciesModule = createCurrenciesModule({
@@ -138,6 +155,7 @@
       banksModule,
       bankAccountsModule,
       creditCardsModule,
+      creditCardCyclesModule,
     };
   }
 

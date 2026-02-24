@@ -35,7 +35,8 @@ section {
 }
 
 .view[hidden],
-.settings-view[hidden] {
+.settings-view[hidden],
+.credit-cards-view[hidden] {
   display: none;
 }
 
@@ -80,7 +81,9 @@ td {
 #bank-account-form-message,
 #transaction-category-form-message,
 #person-form-message,
-#transaction-form-message {
+#transaction-form-message,
+#credit-card-form-message,
+#credit-card-cycle-form-message {
   min-height: 20px;
 }
 

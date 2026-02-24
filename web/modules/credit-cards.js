@@ -9,6 +9,7 @@
       getPeople,
       getCreditCards,
       setCreditCards,
+      onCreditCardsChanged,
     } = config;
 
     function setMessage(message, isError) {
@@ -123,6 +124,9 @@
         populateBankOptions();
         populatePersonOptions();
         render();
+        if (onCreditCardsChanged) {
+          await onCreditCardsChanged();
+        }
       } catch (error) {
         setMessage(error.message, true);
       }

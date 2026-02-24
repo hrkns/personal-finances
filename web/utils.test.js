@@ -8,6 +8,7 @@ const {
   normalizeTransactionCategoryInput,
   normalizeBankAccountInput,
   normalizeCreditCardInput,
+  normalizeCreditCardCycleInput,
   normalizeTransactionInput,
   escapeHtml,
   parseApiResponse,
@@ -94,6 +95,16 @@ test("normalizeCreditCardInput parses ids and normalizes nullable name", () => {
 
   const withoutName = normalizeCreditCardInput("1", "2", "5000", "   ");
   assert.equal(withoutName.name, null);
+});
+
+test("normalizeCreditCardCycleInput parses id and trims dates", () => {
+  const payload = normalizeCreditCardCycleInput(" 4 ", " 2026-03-20 ", " 2026-03-30 ");
+
+  assert.deepEqual(payload, {
+    credit_card_id: 4,
+    closing_date: "2026-03-20",
+    due_date: "2026-03-30",
+  });
 });
 
 test("normalizeTransactionInput normalizes type, amount, ids and nullable notes", () => {

@@ -1,0 +1,72 @@
+const { createResponse } = require("../../integration-http.js");
+const {
+  parseBody,
+  cloneItems,
+  invalidPayload,
+} = require("../helpers.js");
+
+function handleCreditCardCycleBalancesCollection(pathname, method, options, stores) {
+  const collectionMatch = pathname.match(/^\/api\/credit-card-cycles\/(\d+)\/balances$/);
+  if (!collectionMatch) {
+    return null;
+  }
+
+  const cycleID = Number(collectionMatch[1]);
+
+  if (method === "GET") {
+    if (!stores.creditCardCyclesStore.some((item) => item.id === cycleID)) {
+      return createResponse(404, {
+        error: {
+          code: "not_found",
+          message: "credit card cycle not found",
+        },
+      });
+    }
+
+    const items = stores.creditCardCycleBalancesStore.filter((item) => item.credit_card_cycle_id === cycleID);
+    return createResponse(200, cloneItems(items));
+  }
+
+  if (method === "POST") {
+    const payload = parseBody(options);
+    const creditCardCycleID = Number(payload.credit_card_cycle_id);
+    const currencyID = Number(payload.currency_id);
+    const balance = Number(payload.balance);
+    const paid = Boolean(payload.paid);
+
+    if (!Number.isInteger(creditCardCycleID) || creditCardCycleID <= 0) {
+      return invalidPayload("credit_card_cycle_id must be a positive integer");
+    }
+    if (creditCardCycleID !== cycleID) {
+      return invalidPayload("credit_card_cycle_id must match route id");
+    }
+    if (!Number.isInteger(currencyID) || currencyID <= 0) {
+      return invalidPayload("currency_id must be a positive integer");
+    }
+    if (!stores.creditCardCyclesStore.some((item) => item.id === creditCardCycleID)) {
+      return invalidPayload("credit card cycle and currency must exist");
+    }
+    if (!stores.currenciesStore.some((item) => item.id === currencyID)) {
+      return invalidPayload("credit card cycle and currency must exist");
+    }
+    if (Number.isNaN(balance)) {
+      return invalidPayload("balance must be a valid number");
+    }
+
+    const created = {
+      id: stores.nextCreditCardCycleBalanceId,
+      credit_card_cycle_id: creditCardCycleID,
+      currency_id: currencyID,
+      balance,
+      paid,
+    };
+
+    stores.nextCreditCardCycleBalanceId += 1;
+    stores.creditCardCycleBalancesStore.push(created);
+    return createResponse(201, created);
+  }
+
+  return null;
+}
+
+module.exports = { handleCreditCardCycleBalancesCollection };

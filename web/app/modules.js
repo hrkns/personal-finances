@@ -16,6 +16,7 @@
       normalizeBankAccountInput,
       normalizeCreditCardInput,
       normalizeCreditCardCycleInput,
+      normalizeCreditCardCycleBalanceInput,
       escapeHtml,
     } = frontendUtils;
 
@@ -57,12 +58,17 @@
 
     creditCardCyclesModule = createCreditCardCyclesModule({
       elements: dom.creditCardCycles,
+      balanceElements: dom.creditCardCycleBalances,
       apiRequest,
       normalizeCreditCardCycleInput,
+      normalizeCreditCardCycleBalanceInput,
       escapeHtml,
       getCreditCards: state.getCreditCards,
+      getCurrencies: state.getCurrencies,
       getCreditCardCycles: state.getCreditCardCycles,
       setCreditCardCycles: state.setCreditCardCycles,
+      getCreditCardCycleBalances: state.getCreditCardCycleBalances,
+      setCreditCardCycleBalances: state.setCreditCardCycleBalances,
     });
 
     const currenciesModule = createCurrenciesModule({
@@ -75,6 +81,8 @@
       onCurrenciesChanged: () => {
         bankAccountsModule.populateCurrencyOptions();
         bankAccountsModule.render();
+        creditCardCyclesModule.populateBalanceCurrencyOptions();
+        creditCardCyclesModule.renderBalances();
         if (transactionsModule) {
           transactionsModule.populateBankAccountOptions();
           transactionsModule.render();

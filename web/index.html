@@ -205,6 +205,49 @@
           </thead>
           <tbody id="credit-card-cycles-body"></tbody>
         </table>
+
+        <section id="credit-card-cycle-balances-section">
+          <h2>Cycle Balances</h2>
+          <p id="credit-card-cycle-balances-selection-message">Select a cycle balance context to continue.</p>
+
+          <form id="credit-card-cycle-balance-form">
+            <input type="hidden" id="credit-card-cycle-balance-id" />
+            <input type="hidden" id="credit-card-cycle-balance-cycle-id" />
+
+            <label for="credit-card-cycle-balance-currency-id">Currency</label>
+            <select id="credit-card-cycle-balance-currency-id" name="currency_id" required>
+              <option value="">Select currency</option>
+            </select>
+
+            <label for="credit-card-cycle-balance-balance">Balance</label>
+            <input id="credit-card-cycle-balance-balance" name="balance" type="number" step="0.01" required />
+
+            <label for="credit-card-cycle-balance-paid">
+              <input id="credit-card-cycle-balance-paid" name="paid" type="checkbox" />
+              Paid
+            </label>
+
+            <div class="actions">
+              <button id="credit-card-cycle-balance-submit-button" type="submit">Create</button>
+              <button id="credit-card-cycle-balance-cancel-button" type="button" hidden>Cancel edit</button>
+            </div>
+          </form>
+
+          <p id="credit-card-cycle-balance-form-message" role="status"></p>
+
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Currency</th>
+                <th>Balance</th>
+                <th>Paid</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="credit-card-cycle-balances-body"></tbody>
+          </table>
+        </section>
       </section>
     </section>
 

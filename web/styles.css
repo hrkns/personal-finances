@@ -53,6 +53,17 @@ textarea {
   padding: 8px;
 }
 
+input[type="checkbox"] {
+  width: auto;
+  padding: 0;
+}
+
+#credit-card-cycle-balance-form label[for="credit-card-cycle-balance-paid"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .actions {
   margin-top: 12px;
   display: flex;
@@ -83,7 +94,8 @@ td {
 #person-form-message,
 #transaction-form-message,
 #credit-card-form-message,
-#credit-card-cycle-form-message {
+#credit-card-cycle-form-message,
+#credit-card-cycle-balance-form-message {
   min-height: 20px;
 }
 

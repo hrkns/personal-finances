@@ -16,6 +16,7 @@
     } = config;
 
     let selectedCycleID = null;
+    let isLoadingBalances = false;
 
     function setMessage(message, isError) {
       elements.messageElement.textContent = message;
@@ -145,6 +146,22 @@
 
       const selectedCycle = getCreditCardCycles().find((item) => item.id === selectedCycleID);
       balanceElements.selectionMessageElement.hidden = false;
+
+      if (isLoadingBalances) {
+      balanceElements.selectionMessageElement.textContent = selectedCycle
+        ? `Loading balances for cycle #${selectedCycleID} (${selectedCycle.closing_date} → ${selectedCycle.due_date})...`
+        : `Loading balances for cycle #${selectedCycleID}...`;
+      balanceElements.formElement.hidden = false;
+
+      const row = document.createElement("tr");
+      const cell = document.createElement("td");
+      cell.colSpan = 5;
+      cell.textContent = "Loading cycle balances...";
+      row.appendChild(cell);
+      balanceElements.bodyElement.appendChild(row);
+      return;
+      }
+
       balanceElements.selectionMessageElement.textContent = selectedCycle
         ? `Managing balances for cycle #${selectedCycleID} (${selectedCycle.closing_date} → ${selectedCycle.due_date})`
         : `Managing balances for cycle #${selectedCycleID}`;
@@ -183,18 +200,25 @@
     async function loadBalancesForSelectedCycle() {
       if (!selectedCycleID) {
         setCreditCardCycleBalances([]);
+      isLoadingBalances = false;
         renderBalances();
         return;
       }
+
+      setCreditCardCycleBalances([]);
+      isLoadingBalances = true;
+      renderBalances();
 
       try {
         const balances = await apiRequest(`/api/credit-card-cycles/${selectedCycleID}/balances`, { method: "GET" });
         setCreditCardCycleBalances(balances);
         balanceElements.cycleIdElement.value = String(selectedCycleID);
         populateBalanceCurrencyOptions();
-        renderBalances();
       } catch (error) {
         setBalanceMessage(error.message, true);
+      } finally {
+      isLoadingBalances = false;
+      renderBalances();
       }
     }
 
@@ -320,7 +344,7 @@
       if (action === "balances") {
         selectedCycleID = cycle.id;
         resetBalanceForm();
-        setBalanceMessage(`Managing balances for cycle #${cycle.id}`, false);
+      renderBalances();
         loadBalancesForSelectedCycle();
       }
     }

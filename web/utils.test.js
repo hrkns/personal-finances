@@ -9,6 +9,7 @@ const {
   normalizeBankAccountInput,
   normalizeCreditCardInput,
   normalizeCreditCardCycleInput,
+  normalizeCreditCardCycleBalanceInput,
   normalizeTransactionInput,
   escapeHtml,
   parseApiResponse,
@@ -104,6 +105,17 @@ test("normalizeCreditCardCycleInput parses id and trims dates", () => {
     credit_card_id: 4,
     closing_date: "2026-03-20",
     due_date: "2026-03-30",
+  });
+});
+
+test("normalizeCreditCardCycleBalanceInput parses ids, balance and paid flag", () => {
+  const payload = normalizeCreditCardCycleBalanceInput(" 7 ", " 2 ", " 99.45 ", true);
+
+  assert.deepEqual(payload, {
+    credit_card_cycle_id: 7,
+    currency_id: 2,
+    balance: 99.45,
+    paid: true,
   });
 });
 

@@ -56,6 +56,15 @@
     };
   }
 
+  function normalizeCreditCardCycleBalanceInput(creditCardCycleID, currencyID, balance, paid) {
+    return {
+      credit_card_cycle_id: Number.parseInt(String(creditCardCycleID ?? ""), 10),
+      currency_id: Number.parseInt(String(currencyID ?? ""), 10),
+      balance: Number.parseFloat(String(balance ?? "0")),
+      paid: Boolean(paid),
+    };
+  }
+
   function normalizeTransactionInput(transactionDate, type, amount, notes, personId, bankAccountId, categoryId) {
     const normalizedNotes = String(notes ?? "").trim();
 
@@ -102,6 +111,7 @@
     normalizeBankAccountInput,
     normalizeCreditCardInput,
     normalizeCreditCardCycleInput,
+    normalizeCreditCardCycleBalanceInput,
     normalizeTransactionInput,
     escapeHtml,
     parseApiResponse,

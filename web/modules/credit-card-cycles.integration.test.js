@@ -166,3 +166,143 @@ test("frontend validates due date is on or after closing date", async () => {
 
   dom.window.close();
 });
+
+test("frontend can manage cycle balances under a selected cycle", async () => {
+  const { dom, window, document } = await setupFrontendApp();
+
+  document.querySelector('[data-route-tab="settings"]').click();
+  document.querySelector('[data-settings-tab="currency"]').click();
+  document.getElementById("currency-name").value = "US Dollar";
+  document.getElementById("currency-code").value = "USD";
+  document
+    .getElementById("currency-form")
+    .dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  document.querySelector('[data-route-tab="credit-cards"]').click();
+  await createBankPersonAndCreditCard(window, document);
+
+  document.querySelector('[data-credit-card-tab="cycles"]').click();
+
+  document.getElementById("credit-card-cycle-credit-card-id").value = "1";
+  document.getElementById("credit-card-cycle-closing-date").value = "2026-09-01";
+  document.getElementById("credit-card-cycle-due-date").value = "2026-09-10";
+  document
+    .getElementById("credit-card-cycle-form")
+    .dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  const balancesButton = document.querySelector('#credit-card-cycles-body button[data-action="balances"]');
+  balancesButton.dispatchEvent(new window.Event("click", { bubbles: true }));
+
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  document.getElementById("credit-card-cycle-balance-currency-id").value = "1";
+  document.getElementById("credit-card-cycle-balance-balance").value = "500.5";
+  document.getElementById("credit-card-cycle-balance-paid").checked = false;
+  document
+    .getElementById("credit-card-cycle-balance-form")
+    .dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  assert.equal(document.getElementById("credit-card-cycle-balance-form-message").textContent, "Credit card cycle balance created");
+  assert.match(document.getElementById("credit-card-cycle-balances-body").textContent, /USD/);
+  assert.match(document.getElementById("credit-card-cycle-balances-body").textContent, /500.5/);
+
+  const balanceEditButton = document.querySelector('#credit-card-cycle-balances-body button[data-balance-action="edit"]');
+  balanceEditButton.dispatchEvent(new window.Event("click", { bubbles: true }));
+
+  document.getElementById("credit-card-cycle-balance-balance").value = "350.25";
+  document.getElementById("credit-card-cycle-balance-paid").checked = true;
+  document
+    .getElementById("credit-card-cycle-balance-form")
+    .dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  assert.equal(document.getElementById("credit-card-cycle-balance-form-message").textContent, "Credit card cycle balance updated");
+  assert.match(document.getElementById("credit-card-cycle-balances-body").textContent, /350.25/);
+  assert.match(document.getElementById("credit-card-cycle-balances-body").textContent, /Yes/);
+
+  const balanceDeleteButton = document.querySelector('#credit-card-cycle-balances-body button[data-balance-action="delete"]');
+  balanceDeleteButton.dispatchEvent(new window.Event("click", { bubbles: true }));
+
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  assert.equal(document.getElementById("credit-card-cycle-balance-form-message").textContent, "Credit card cycle balance deleted");
+  assert.match(document.getElementById("credit-card-cycle-balances-body").textContent, /No cycle balances yet/);
+
+  dom.window.close();
+});
+
+test("frontend validates unique currency per cycle balance", async () => {
+  const { dom, window, document } = await setupFrontendApp();
+
+  document.querySelector('[data-route-tab="settings"]').click();
+  document.querySelector('[data-settings-tab="currency"]').click();
+  document.getElementById("currency-name").value = "US Dollar";
+  document.getElementById("currency-code").value = "USD";
+  document
+    .getElementById("currency-form")
+    .dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  document.querySelector('[data-route-tab="credit-cards"]').click();
+  await createBankPersonAndCreditCard(window, document);
+
+  document.querySelector('[data-credit-card-tab="cycles"]').click();
+
+  document.getElementById("credit-card-cycle-credit-card-id").value = "1";
+  document.getElementById("credit-card-cycle-closing-date").value = "2026-10-01";
+  document.getElementById("credit-card-cycle-due-date").value = "2026-10-10";
+  document
+    .getElementById("credit-card-cycle-form")
+    .dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  const balancesButton = document.querySelector('#credit-card-cycles-body button[data-action="balances"]');
+  balancesButton.dispatchEvent(new window.Event("click", { bubbles: true }));
+
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  document.getElementById("credit-card-cycle-balance-currency-id").value = "1";
+  document.getElementById("credit-card-cycle-balance-balance").value = "120";
+  document.getElementById("credit-card-cycle-balance-paid").checked = false;
+  document
+    .getElementById("credit-card-cycle-balance-form")
+    .dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  document.getElementById("credit-card-cycle-balance-currency-id").value = "1";
+  document.getElementById("credit-card-cycle-balance-balance").value = "220";
+  document.getElementById("credit-card-cycle-balance-paid").checked = true;
+  document
+    .getElementById("credit-card-cycle-balance-form")
+    .dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  assert.equal(
+    document.getElementById("credit-card-cycle-balance-form-message").textContent,
+    "A balance with this currency already exists for the selected cycle"
+  );
+  assert.equal(document.querySelectorAll("#credit-card-cycle-balances-body tr").length, 1);
+
+  dom.window.close();
+});

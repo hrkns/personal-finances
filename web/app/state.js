@@ -7,6 +7,7 @@
     let bankAccounts = [];
     let creditCards = [];
     let creditCardCycles = [];
+    let creditCardCycleBalances = [];
     let transactions = [];
 
     return {
@@ -37,6 +38,10 @@
       getCreditCardCycles: () => creditCardCycles,
       setCreditCardCycles: (items) => {
         creditCardCycles = items;
+      },
+      getCreditCardCycleBalances: () => creditCardCycleBalances,
+      setCreditCardCycleBalances: (items) => {
+        creditCardCycleBalances = items;
       },
       getTransactions: () => transactions,
       setTransactions: (items) => {

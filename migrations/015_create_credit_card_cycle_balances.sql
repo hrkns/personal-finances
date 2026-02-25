@@ -2,8 +2,8 @@ CREATE TABLE IF NOT EXISTS credit_card_cycle_balances (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   credit_card_cycle_id INTEGER NOT NULL,
   currency_id INTEGER NOT NULL,
-  balance REAL NOT NULL,
-  paid INTEGER NOT NULL,
+  balance REAL NOT NULL DEFAULT 0,
+  paid INTEGER NOT NULL DEFAULT 0,
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY(credit_card_cycle_id) REFERENCES credit_card_cycles(id)

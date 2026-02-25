@@ -1,3 +1,12 @@
+/**
+ * App bootstrap entrypoint.
+ *
+ * Analogy:
+ * - React: this plays the role of the root composition layer where providers,
+ *   router bindings, and feature modules are wired together before user interaction.
+ * - Angular: comparable to an `AppModule` + `AppComponent` initialization sequence.
+ * - Vue: similar to `main.js` where plugins/composables are assembled and mounted.
+ */
 const appDom = createAppDom(document);
 const appState = createAppState();
 const apiRequest = createApiRequest(frontendUtils.parseApiResponse);
@@ -22,6 +31,14 @@ const appRouting = createAppRouting({
 
 init();
 
+/**
+ * Initializes data dependencies, routing, and event bindings for all views.
+ *
+ * This is the imperative equivalent of a framework lifecycle startup:
+ * load initial state, activate navigation, then bind UI handlers.
+ *
+ * @returns {Promise<void>}
+ */
 async function init() {
   await appModules.banksModule.loadCountryOptions();
 
@@ -41,7 +58,6 @@ async function init() {
   ]);
 
   await appModules.creditCardsModule.load();
-  await appModules.creditCardCyclesModule.load();
 
   appDom.transactionCategories.formElement.addEventListener("submit", appModules.transactionCategoriesModule.onSubmit);
   appDom.transactionCategories.cancelButtonElement.addEventListener(
@@ -66,6 +82,9 @@ async function init() {
 
   appDom.creditCards.formElement.addEventListener("submit", appModules.creditCardsModule.onSubmit);
   appDom.creditCards.cancelButtonElement.addEventListener("click", appModules.creditCardsModule.resetForm);
+
+  appDom.creditCardInstallments.formElement.addEventListener("submit", appModules.creditCardInstallmentsModule.onSubmit);
+  appDom.creditCardInstallments.cancelButtonElement.addEventListener("click", appModules.creditCardInstallmentsModule.resetForm);
 
   appDom.creditCardCycles.formElement.addEventListener("submit", appModules.creditCardCyclesModule.onSubmit);
   appDom.creditCardCycles.cancelButtonElement.addEventListener("click", appModules.creditCardCyclesModule.resetForm);

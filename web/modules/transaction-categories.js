@@ -1,4 +1,26 @@
+/**
+ * Transaction Categories feature module.
+ *
+ * Analogy:
+ * - React: resembles a stateful feature hook that manages hierarchical options.
+ * - Angular: similar to a component coordinating parent/child select inputs.
+ * - Vue: similar to a composable handling tree-like category relationships.
+ */
 (function initTransactionCategoriesModule(globalScope) {
+  /**
+   * Creates category CRUD controller, including parent-category option management.
+   *
+   * @param {{
+   *   elements: object,
+   *   apiRequest: (url: string, options?: RequestInit) => Promise<any>,
+   *   normalizeTransactionCategoryInput: (name: string, parentId: string) => object,
+   *   escapeHtml: (value: any) => string,
+   *   getTransactionCategories: () => any[],
+   *   setTransactionCategories: (items: any[]) => void,
+   *   onTransactionCategoriesChanged?: () => void
+   * }} config
+   * @returns {{load: Function, render: Function, onSubmit: Function, onRowAction: Function, resetForm: Function, setMessage: Function, populateParentOptions: Function}}
+   */
   function createTransactionCategoriesModule(config) {
     const {
       elements,

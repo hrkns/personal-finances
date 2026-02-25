@@ -16,3 +16,4 @@ This API documentation is split by topic for easier navigation and maintenance.
 - [Credit Cards](api/09-credit-cards.md)
 - [Credit Card Cycles](api/10-credit-card-cycles.md)
 - [Credit Card Cycle Balances](api/11-credit-card-cycle-balances.md)
+- [Credit Card Installments](api/12-credit-card-installments.md)

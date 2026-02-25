@@ -1,4 +1,25 @@
+/**
+ * People feature module.
+ *
+ * Analogy:
+ * - React: similar to a domain hook controlling a small CRUD component tree.
+ * - Angular/Vue: similar to a feature component/composable for a single entity.
+ */
 (function initPeopleModule(globalScope) {
+  /**
+   * Creates the people controller for CRUD and rendering.
+   *
+   * @param {{
+   *   elements: object,
+   *   apiRequest: (url: string, options?: RequestInit) => Promise<any>,
+   *   normalizePersonInput: (name: string) => object,
+   *   escapeHtml: (value: any) => string,
+   *   getPeople: () => any[],
+   *   setPeople: (items: any[]) => void,
+   *   onPeopleChanged?: () => void
+   * }} config
+   * @returns {{load: Function, render: Function, onSubmit: Function, onRowAction: Function, resetForm: Function, setMessage: Function}}
+   */
   function createPeopleModule(config) {
     const {
       elements,

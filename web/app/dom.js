@@ -1,4 +1,39 @@
+/**
+ * DOM registry factory.
+ *
+ * Analogy:
+ * - React: similar to collecting stable `ref` handles in one place.
+ * - Angular: similar to grouping `@ViewChild` references by feature section.
+ * - Vue: similar to a centralized map of template refs consumed by composables.
+ */
 (function initAppDom(globalScope) {
+  /**
+   * Builds and returns all DOM references used by feature modules.
+   *
+   * The returned object acts as a single source of truth for element lookups,
+   * avoiding repeated queries and making module contracts explicit.
+   *
+   * @param {Document} documentRef Browser document reference.
+   * @returns {{
+   *   currency: object,
+   *   bank: object,
+   *   people: object,
+   *   transactionCategories: object,
+   *   transactions: object,
+   *   bankAccounts: object,
+   *   creditCards: object,
+   *   creditCardCycles: object,
+   *   creditCardInstallments: object,
+   *   creditCardCycleBalances: object,
+   *   settingsSelectionMessageElement: HTMLElement,
+   *   tabButtonElements: NodeListOf<Element>,
+   *   settingsTabButtonElements: NodeListOf<Element>,
+   *   creditCardTabButtonElements: NodeListOf<Element>,
+   *   views: object,
+   *   creditCardViews: object,
+   *   settingsViews: object
+   * }}
+   */
   function createAppDom(documentRef) {
     return {
       currency: {
@@ -90,6 +125,20 @@
         messageElement: documentRef.getElementById("credit-card-cycle-form-message"),
         bodyElement: documentRef.getElementById("credit-card-cycles-body"),
       },
+      creditCardInstallments: {
+        formElement: documentRef.getElementById("credit-card-installment-form"),
+        idElement: documentRef.getElementById("credit-card-installment-id"),
+        creditCardIdElement: documentRef.getElementById("credit-card-installment-credit-card-id"),
+        currencyIdElement: documentRef.getElementById("credit-card-installment-currency-id"),
+        conceptElement: documentRef.getElementById("credit-card-installment-concept"),
+        amountElement: documentRef.getElementById("credit-card-installment-amount"),
+        startDateElement: documentRef.getElementById("credit-card-installment-start-date"),
+        countElement: documentRef.getElementById("credit-card-installment-count"),
+        submitButtonElement: documentRef.getElementById("credit-card-installment-submit-button"),
+        cancelButtonElement: documentRef.getElementById("credit-card-installment-cancel-button"),
+        messageElement: documentRef.getElementById("credit-card-installment-form-message"),
+        bodyElement: documentRef.getElementById("credit-card-installments-body"),
+      },
       creditCardCycleBalances: {
         sectionElement: documentRef.getElementById("credit-card-cycle-balances-section"),
         selectionMessageElement: documentRef.getElementById("credit-card-cycle-balances-selection-message"),
@@ -116,6 +165,7 @@
       },
       creditCardViews: {
         cards: documentRef.getElementById("view-credit-cards-cards"),
+        installments: documentRef.getElementById("view-credit-card-installments"),
         cycles: documentRef.getElementById("view-credit-card-cycles"),
       },
       settingsViews: {

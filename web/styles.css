@@ -94,6 +94,7 @@ td {
 #person-form-message,
 #transaction-form-message,
 #credit-card-form-message,
+#credit-card-installment-form-message,
 #credit-card-cycle-form-message,
 #credit-card-cycle-balance-form-message {
   min-height: 20px;

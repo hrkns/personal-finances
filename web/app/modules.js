@@ -1,4 +1,33 @@
+/**
+ * Feature-module composition root.
+ *
+ * Analogy:
+ * - React: similar to dependency injection through props/context into feature hooks.
+ * - Angular: similar to wiring services and child feature components in a parent module.
+ * - Vue: similar to assembling multiple composables and exposing their APIs.
+ */
 (function initAppModules(globalScope) {
+  /**
+   * Instantiates all feature modules and their cross-module callbacks.
+   *
+   * @param {{
+   *   dom: object,
+   *   state: object,
+   *   apiRequest: (url: string, options?: RequestInit) => Promise<any>,
+   *   frontendUtils: object
+   * }} config Shared dependencies for every feature module.
+   * @returns {{
+   *   transactionCategoriesModule: object,
+   *   transactionsModule: object,
+   *   peopleModule: object,
+   *   currenciesModule: object,
+   *   banksModule: object,
+   *   bankAccountsModule: object,
+   *   creditCardsModule: object,
+   *   creditCardInstallmentsModule: object,
+   *   creditCardCyclesModule: object
+   * }}
+   */
   function createAppModules(config) {
     const {
       dom,
@@ -15,6 +44,7 @@
       normalizeTransactionInput,
       normalizeBankAccountInput,
       normalizeCreditCardInput,
+      normalizeCreditCardInstallmentInput,
       normalizeCreditCardCycleInput,
       normalizeCreditCardCycleBalanceInput,
       escapeHtml,
@@ -22,6 +52,7 @@
 
     let transactionsModule = null;
     let creditCardCyclesModule = null;
+    let creditCardInstallmentsModule = null;
 
     const bankAccountsModule = createBankAccountsModule({
       elements: dom.bankAccounts,
@@ -53,7 +84,21 @@
         if (creditCardCyclesModule) {
           await creditCardCyclesModule.load();
         }
+        if (creditCardInstallmentsModule) {
+          await creditCardInstallmentsModule.load();
+        }
       },
+    });
+
+    creditCardInstallmentsModule = createCreditCardInstallmentsModule({
+      elements: dom.creditCardInstallments,
+      apiRequest,
+      normalizeCreditCardInstallmentInput,
+      escapeHtml,
+      getCreditCards: state.getCreditCards,
+      getCurrencies: state.getCurrencies,
+      getCreditCardInstallments: state.getCreditCardInstallments,
+      setCreditCardInstallments: state.setCreditCardInstallments,
     });
 
     creditCardCyclesModule = createCreditCardCyclesModule({
@@ -81,6 +126,8 @@
       onCurrenciesChanged: () => {
         bankAccountsModule.populateCurrencyOptions();
         bankAccountsModule.render();
+        creditCardInstallmentsModule.populateCurrencyOptions();
+        creditCardInstallmentsModule.render();
         creditCardCyclesModule.populateBalanceCurrencyOptions();
         creditCardCyclesModule.renderBalances();
         if (transactionsModule) {
@@ -163,6 +210,7 @@
       banksModule,
       bankAccountsModule,
       creditCardsModule,
+      creditCardInstallmentsModule,
       creditCardCyclesModule,
     };
   }

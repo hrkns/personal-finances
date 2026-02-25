@@ -10,13 +10,19 @@ import (
 	"personal-finances/backend"
 )
 
-const serverAddress = ":8080"
+const defaultServerPort = "8080"
 
 func main() {
 	databasePath := os.Getenv("DATABASE_PATH")
 	if strings.TrimSpace(databasePath) == "" {
 		databasePath = filepath.Join("data", "personal_finances.db")
 	}
+
+	serverPort := strings.TrimSpace(os.Getenv("PORT"))
+	if serverPort == "" {
+		serverPort = defaultServerPort
+	}
+	serverAddress := ":" + strings.TrimPrefix(serverPort, ":")
 
 	db, err := backend.SetupDatabase(databasePath)
 	if err != nil {

@@ -10,7 +10,7 @@ type app struct {
 	db *sql.DB
 }
 
-func NewMux(db *sql.DB) *http.ServeMux {
+func NewMux(db *sql.DB) http.Handler {
 	application := app{db: db}
 	return application.routes()
 }

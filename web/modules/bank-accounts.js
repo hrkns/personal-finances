@@ -1,4 +1,27 @@
+/**
+ * Bank Accounts feature module.
+ *
+ * Analogy:
+ * - React: equivalent to a CRUD container that depends on bank/currency lookup state.
+ * - Angular/Vue: similar to a feature component/composable with dependent selects.
+ */
 (function initBankAccountsModule(globalScope) {
+  /**
+   * Creates bank-account controller with CRUD and dependent option lists.
+   *
+   * @param {{
+   *   elements: object,
+   *   apiRequest: (url: string, options?: RequestInit) => Promise<any>,
+   *   normalizeBankAccountInput: Function,
+   *   escapeHtml: (value: any) => string,
+   *   getBanks: () => any[],
+   *   getCurrencies: () => any[],
+   *   getBankAccounts: () => any[],
+   *   setBankAccounts: (items: any[]) => void,
+   *   onBankAccountsChanged?: () => void
+   * }} config
+   * @returns {{load: Function, render: Function, onSubmit: Function, onRowAction: Function, resetForm: Function, setMessage: Function, populateBankOptions: Function, populateCurrencyOptions: Function}}
+   */
   function createBankAccountsModule(config) {
     const {
       elements,

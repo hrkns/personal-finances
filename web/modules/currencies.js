@@ -1,4 +1,26 @@
+/**
+ * Currencies feature module.
+ *
+ * Analogy:
+ * - React: behaves like a feature hook + presentational table/form pair.
+ * - Angular: similar to a smart component backed by a service.
+ * - Vue: similar to a domain composable driving a template section.
+ */
 (function initCurrenciesModule(globalScope) {
+  /**
+   * Creates the currencies controller for CRUD UI interactions.
+   *
+   * @param {{
+   *   elements: object,
+   *   apiRequest: (url: string, options?: RequestInit) => Promise<any>,
+   *   normalizeCurrencyInput: (name: string, code: string) => object,
+   *   escapeHtml: (value: any) => string,
+   *   getCurrencies: () => any[],
+   *   setCurrencies: (items: any[]) => void,
+   *   onCurrenciesChanged?: () => void
+   * }} config
+   * @returns {{load: Function, render: Function, onSubmit: Function, onRowAction: Function, resetForm: Function, setMessage: Function}}
+   */
   function createCurrenciesModule(config) {
     const {
       elements,

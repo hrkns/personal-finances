@@ -1,4 +1,26 @@
+/**
+ * View-routing UI orchestrator.
+ *
+ * Analogy:
+ * - React Router / Vue Router: equivalent to mapping route state to visible components.
+ * - Angular Router: similar to activating route outlets and nav link active classes.
+ */
 (function initAppRouting(globalScope) {
+  /**
+   * Creates route application/binding helpers for tab-based navigation.
+   *
+   * @param {{
+   *   tabButtonElements: NodeListOf<Element>,
+   *   settingsTabButtonElements: NodeListOf<Element>,
+   *   creditCardTabButtonElements: NodeListOf<Element>,
+   *   settingsSelectionMessageElement: HTMLElement,
+   *   views: object,
+   *   settingsViews: object,
+   *   creditCardViews: object,
+   *   frontendRouter: object
+   * }} config DOM and router dependencies.
+   * @returns {{applyRoute: (routeState: any) => void, bindTabNavigation: () => void}}
+   */
   function createAppRouting(config) {
     const {
       tabButtonElements,
@@ -46,6 +68,7 @@
       settingsViews.currency.hidden = activeRoute !== "settings" || activeSettingsSection !== "currency";
 
       creditCardViews.cards.hidden = activeRoute !== "credit-cards" || activeCreditCardSection !== "cards";
+      creditCardViews.installments.hidden = activeRoute !== "credit-cards" || activeCreditCardSection !== "installments";
       creditCardViews.cycles.hidden = activeRoute !== "credit-cards" || activeCreditCardSection !== "cycles";
 
       settingsSelectionMessageElement.hidden =

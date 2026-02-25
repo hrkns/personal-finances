@@ -2,6 +2,7 @@ package backend
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -15,11 +16,24 @@ type errorBody struct {
 	Message string `json:"message"`
 }
 
-func (application app) routes() *http.ServeMux {
+func (application app) routes() http.Handler {
 	mux := http.NewServeMux()
 	application.registerAPIRoutes(mux)
 	mux.Handle("/", http.FileServer(http.Dir("web")))
-	return mux
+	return recoverMiddleware(mux)
+}
+
+func recoverMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		defer func() {
+			if recovered := recover(); recovered != nil {
+				log.Printf("panic recovered for %s %s: %v", request.Method, request.URL.Path, recovered)
+				writeError(writer, http.StatusInternalServerError, "internal_error", "internal server error")
+			}
+		}()
+
+		next.ServeHTTP(writer, request)
+	})
 }
 
 func (application app) registerAPIRoutes(mux *http.ServeMux) {

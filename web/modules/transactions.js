@@ -1,4 +1,31 @@
+/**
+ * Transactions feature module.
+ *
+ * Analogy:
+ * - React: similar to a smart page component that joins multiple stores (people,
+ *   accounts, categories) into one normalized view model.
+ * - Angular: similar to a container component with several injected services.
+ * - Vue: similar to a composable that computes labels from related entity stores.
+ */
 (function initTransactionsModule(globalScope) {
+  /**
+   * Creates transactions controller with CRUD operations and relational label formatting.
+   *
+   * @param {{
+   *   elements: object,
+   *   apiRequest: (url: string, options?: RequestInit) => Promise<any>,
+   *   normalizeTransactionInput: Function,
+   *   escapeHtml: (value: any) => string,
+   *   getPeople: () => any[],
+   *   getBanks: () => any[],
+   *   getCurrencies: () => any[],
+   *   getBankAccounts: () => any[],
+   *   getTransactionCategories: () => any[],
+   *   getTransactions: () => any[],
+   *   setTransactions: (items: any[]) => void
+   * }} config
+   * @returns {{load: Function, render: Function, onSubmit: Function, onRowAction: Function, resetForm: Function, setMessage: Function, populatePersonOptions: Function, populateBankAccountOptions: Function, populateCategoryOptions: Function}}
+   */
   function createTransactionsModule(config) {
     const {
       elements,

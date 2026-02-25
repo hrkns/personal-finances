@@ -1,4 +1,27 @@
+/**
+ * Credit Card Installments feature module.
+ *
+ * Analogy:
+ * - React: comparable to a feature slice with local client-side guards
+ *   (duplicate concept per card) before API submission.
+ * - Angular/Vue: similar to form logic with synchronous validators plus backend validation.
+ */
 (function initCreditCardInstallmentsModule(globalScope) {
+  /**
+   * Creates installments controller with CRUD, card/currency lookups, and duplicate checks.
+   *
+   * @param {{
+   *   elements: object,
+   *   apiRequest: (url: string, options?: RequestInit) => Promise<any>,
+   *   normalizeCreditCardInstallmentInput: Function,
+   *   escapeHtml: (value: any) => string,
+   *   getCreditCards: () => any[],
+   *   getCurrencies: () => any[],
+   *   getCreditCardInstallments: () => any[],
+   *   setCreditCardInstallments: (items: any[]) => void
+   * }} config
+   * @returns {{load: Function, render: Function, onSubmit: Function, onRowAction: Function, resetForm: Function, setMessage: Function, populateCreditCardOptions: Function, populateCurrencyOptions: Function}}
+   */
   function createCreditCardInstallmentsModule(config) {
     const {
       elements,

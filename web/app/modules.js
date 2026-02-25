@@ -1,4 +1,33 @@
+/**
+ * Feature-module composition root.
+ *
+ * Analogy:
+ * - React: similar to dependency injection through props/context into feature hooks.
+ * - Angular: similar to wiring services and child feature components in a parent module.
+ * - Vue: similar to assembling multiple composables and exposing their APIs.
+ */
 (function initAppModules(globalScope) {
+  /**
+   * Instantiates all feature modules and their cross-module callbacks.
+   *
+   * @param {{
+   *   dom: object,
+   *   state: object,
+   *   apiRequest: (url: string, options?: RequestInit) => Promise<any>,
+   *   frontendUtils: object
+   * }} config Shared dependencies for every feature module.
+   * @returns {{
+   *   transactionCategoriesModule: object,
+   *   transactionsModule: object,
+   *   peopleModule: object,
+   *   currenciesModule: object,
+   *   banksModule: object,
+   *   bankAccountsModule: object,
+   *   creditCardsModule: object,
+   *   creditCardInstallmentsModule: object,
+   *   creditCardCyclesModule: object
+   * }}
+   */
   function createAppModules(config) {
     const {
       dom,

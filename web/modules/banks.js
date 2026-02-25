@@ -1,4 +1,26 @@
+/**
+ * Banks feature module.
+ *
+ * Analogy:
+ * - React: equivalent to a container component orchestrating form/table + API calls.
+ * - Angular: comparable to a component with injected API service and template bindings.
+ * - Vue: comparable to a composable-backed section with imperative DOM updates.
+ */
 (function initBanksModule(globalScope) {
+  /**
+   * Creates the banks controller for list/create/update/delete behavior.
+   *
+   * @param {{
+   *   elements: object,
+   *   apiRequest: (url: string, options?: RequestInit) => Promise<any>,
+   *   normalizeBankInput: (name: string, country: string) => object,
+   *   escapeHtml: (value: any) => string,
+   *   getBanks: () => any[],
+   *   setBanks: (items: any[]) => void,
+   *   onBanksChanged?: () => void
+   * }} config
+   * @returns {{load: Function, loadCountryOptions: Function, render: Function, onSubmit: Function, onRowAction: Function, resetForm: Function, setMessage: Function}}
+   */
   function createBanksModule(config) {
     const {
       elements,

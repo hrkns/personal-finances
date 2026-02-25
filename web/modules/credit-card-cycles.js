@@ -1,4 +1,45 @@
+/**
+ * Credit Card Cycles feature module.
+ *
+ * Analogy:
+ * - React: this combines two related slices (cycles + cycle balances) like a parent
+ *   page coordinating a nested child resource.
+ * - Angular: similar to a master-detail component where selecting a cycle drives
+ *   a nested balances panel.
+ * - Vue: similar to a composable that manages both parent entity state and selected-child context.
+ */
 (function initCreditCardCyclesModule(globalScope) {
+  /**
+   * Creates cycle controller with nested balance management and selection context.
+   *
+   * @param {{
+   *   elements: object,
+   *   balanceElements: object,
+   *   apiRequest: (url: string, options?: RequestInit) => Promise<any>,
+   *   normalizeCreditCardCycleInput: Function,
+   *   normalizeCreditCardCycleBalanceInput: Function,
+   *   escapeHtml: (value: any) => string,
+   *   getCreditCards: () => any[],
+   *   getCurrencies: () => any[],
+   *   getCreditCardCycles: () => any[],
+   *   setCreditCardCycles: (items: any[]) => void,
+   *   getCreditCardCycleBalances: () => any[],
+   *   setCreditCardCycleBalances: (items: any[]) => void
+   * }} config
+   * @returns {{
+   *   load: Function,
+   *   render: Function,
+   *   renderBalances: Function,
+   *   onSubmit: Function,
+   *   onRowAction: Function,
+   *   resetForm: Function,
+   *   onBalanceSubmit: Function,
+   *   resetBalanceForm: Function,
+   *   setMessage: Function,
+   *   populateCreditCardOptions: Function,
+   *   populateBalanceCurrencyOptions: Function
+   * }}
+   */
   function createCreditCardCyclesModule(config) {
     const {
       elements,

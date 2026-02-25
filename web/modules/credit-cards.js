@@ -1,4 +1,28 @@
+/**
+ * Credit Cards feature module.
+ *
+ * Analogy:
+ * - React: a parent feature container that also triggers child feature refreshes
+ *   (cycles/installments) after card mutations.
+ * - Angular: similar to a smart component broadcasting changes to sibling sections.
+ */
 (function initCreditCardsModule(globalScope) {
+  /**
+   * Creates credit-card controller with CRUD and dependent bank/person options.
+   *
+   * @param {{
+   *   elements: object,
+   *   apiRequest: (url: string, options?: RequestInit) => Promise<any>,
+   *   normalizeCreditCardInput: Function,
+   *   escapeHtml: (value: any) => string,
+   *   getBanks: () => any[],
+   *   getPeople: () => any[],
+   *   getCreditCards: () => any[],
+   *   setCreditCards: (items: any[]) => void,
+   *   onCreditCardsChanged?: () => Promise<void>
+   * }} config
+   * @returns {{load: Function, render: Function, onSubmit: Function, onRowAction: Function, resetForm: Function, setMessage: Function, populateBankOptions: Function, populatePersonOptions: Function}}
+   */
   function createCreditCardsModule(config) {
     const {
       elements,

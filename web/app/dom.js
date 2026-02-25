@@ -94,6 +94,7 @@
         formElement: documentRef.getElementById("credit-card-installment-form"),
         idElement: documentRef.getElementById("credit-card-installment-id"),
         creditCardIdElement: documentRef.getElementById("credit-card-installment-credit-card-id"),
+        currencyIdElement: documentRef.getElementById("credit-card-installment-currency-id"),
         conceptElement: documentRef.getElementById("credit-card-installment-concept"),
         amountElement: documentRef.getElementById("credit-card-installment-amount"),
         startDateElement: documentRef.getElementById("credit-card-installment-start-date"),

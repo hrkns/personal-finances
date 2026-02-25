@@ -28,6 +28,19 @@ async function createBankPersonAndCreditCard(window, document) {
 
   await new Promise((resolve) => setTimeout(resolve, 0));
   await new Promise((resolve) => setTimeout(resolve, 0));
+
+  document.querySelector('[data-route-tab="settings"]').click();
+  document.querySelector('[data-settings-tab="currency"]').click();
+  document.getElementById("currency-name").value = "US Dollar";
+  document.getElementById("currency-code").value = "USD";
+  document
+    .getElementById("currency-form")
+    .dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  document.querySelector('[data-route-tab="credit-cards"]').click();
 }
 
 test("frontend can create, update and delete credit card installments", async () => {
@@ -39,6 +52,7 @@ test("frontend can create, update and delete credit card installments", async ()
   document.querySelector('[data-credit-card-tab="installments"]').click();
 
   document.getElementById("credit-card-installment-credit-card-id").value = "1";
+  document.getElementById("credit-card-installment-currency-id").value = "1";
   document.getElementById("credit-card-installment-concept").value = "Laptop";
   document.getElementById("credit-card-installment-amount").value = "1200.75";
   document.getElementById("credit-card-installment-start-date").value = "2026-03-01";
@@ -92,6 +106,7 @@ test("frontend validates unique concept per credit card installment", async () =
   document.querySelector('[data-credit-card-tab="installments"]').click();
 
   document.getElementById("credit-card-installment-credit-card-id").value = "1";
+  document.getElementById("credit-card-installment-currency-id").value = "1";
   document.getElementById("credit-card-installment-concept").value = "Phone";
   document.getElementById("credit-card-installment-amount").value = "800";
   document.getElementById("credit-card-installment-start-date").value = "2026-05-01";
@@ -104,6 +119,7 @@ test("frontend validates unique concept per credit card installment", async () =
   await new Promise((resolve) => setTimeout(resolve, 0));
 
   document.getElementById("credit-card-installment-credit-card-id").value = "1";
+  document.getElementById("credit-card-installment-currency-id").value = "1";
   document.getElementById("credit-card-installment-concept").value = "Phone";
   document.getElementById("credit-card-installment-amount").value = "300";
   document.getElementById("credit-card-installment-start-date").value = "2026-06-01";

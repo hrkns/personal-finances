@@ -8,6 +8,7 @@ Credit card installments are standalone resources associated with a credit card.
 {
   "id": 1,
   "credit_card_id": 1,
+  "currency_id": 1,
   "concept": "Laptop",
   "amount": 1200.5,
   "start_date": "2026-03-01",
@@ -20,6 +21,7 @@ Credit card installments are standalone resources associated with a credit card.
 ```json
 {
   "credit_card_id": 1,
+  "currency_id": 1,
   "concept": "Laptop",
   "amount": 1200.5,
   "start_date": "2026-03-01",
@@ -30,6 +32,7 @@ Credit card installments are standalone resources associated with a credit card.
 Validation rules:
 
 - `credit_card_id` required, positive integer, must reference an existing credit card
+- `currency_id` required, positive integer, must reference an existing currency
 - `concept` required, trimmed, non-empty string
 - (`credit_card_id`, `concept`) combination must be unique
 - `amount` required number, must be greater than `0`
@@ -45,6 +48,7 @@ Validation rules:
   {
     "id": 1,
     "credit_card_id": 1,
+    "currency_id": 1,
     "concept": "Laptop",
     "amount": 1200.5,
     "start_date": "2026-03-01",

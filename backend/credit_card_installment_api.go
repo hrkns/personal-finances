@@ -18,6 +18,7 @@ const (
 type creditCardInstallment struct {
 	ID           int64   `json:"id"`
 	CreditCardID int64   `json:"credit_card_id"`
+	CurrencyID   int64   `json:"currency_id"`
 	Concept      string  `json:"concept"`
 	Amount       float64 `json:"amount"`
 	StartDate    string  `json:"start_date"`
@@ -26,6 +27,7 @@ type creditCardInstallment struct {
 
 type creditCardInstallmentPayload struct {
 	CreditCardID int64   `json:"credit_card_id"`
+	CurrencyID   int64   `json:"currency_id"`
 	Concept      string  `json:"concept"`
 	Amount       float64 `json:"amount"`
 	StartDate    string  `json:"start_date"`
@@ -69,7 +71,7 @@ func (application app) creditCardInstallmentByIDHandler(writer http.ResponseWrit
 
 func (application app) listCreditCardInstallments(writer http.ResponseWriter) {
 	rows, err := application.db.Query(
-		`SELECT id, credit_card_id, concept, amount, start_date, count FROM credit_card_installments ORDER BY id`,
+		`SELECT id, credit_card_id, currency_id, concept, amount, start_date, count FROM credit_card_installments ORDER BY id`,
 	)
 	if err != nil {
 		writeError(writer, http.StatusInternalServerError, "internal_error", "failed to load credit card installments")
@@ -117,8 +119,9 @@ func (application app) createCreditCardInstallment(writer http.ResponseWriter, r
 	}
 
 	result, err := application.db.Exec(
-		`INSERT INTO credit_card_installments(credit_card_id, concept, amount, start_date, count) VALUES (?, ?, ?, ?, ?)`,
+		`INSERT INTO credit_card_installments(credit_card_id, currency_id, concept, amount, start_date, count) VALUES (?, ?, ?, ?, ?, ?)`,
 		payload.CreditCardID,
+		payload.CurrencyID,
 		payload.Concept,
 		payload.Amount,
 		payload.StartDate,
@@ -130,7 +133,7 @@ func (application app) createCreditCardInstallment(writer http.ResponseWriter, r
 			return
 		}
 		if isForeignKeyConstraintError(err) {
-			writeError(writer, http.StatusBadRequest, "invalid_payload", "credit card must exist")
+			writeError(writer, http.StatusBadRequest, "invalid_payload", "credit card and currency must exist")
 			return
 		}
 		writeError(writer, http.StatusInternalServerError, "internal_error", "failed to create credit card installment")
@@ -161,8 +164,9 @@ func (application app) updateCreditCardInstallment(writer http.ResponseWriter, r
 	}
 
 	result, err := application.db.Exec(
-		`UPDATE credit_card_installments SET credit_card_id = ?, concept = ?, amount = ?, start_date = ?, count = ? WHERE id = ?`,
+		`UPDATE credit_card_installments SET credit_card_id = ?, currency_id = ?, concept = ?, amount = ?, start_date = ?, count = ? WHERE id = ?`,
 		payload.CreditCardID,
+		payload.CurrencyID,
 		payload.Concept,
 		payload.Amount,
 		payload.StartDate,
@@ -175,7 +179,7 @@ func (application app) updateCreditCardInstallment(writer http.ResponseWriter, r
 			return
 		}
 		if isForeignKeyConstraintError(err) {
-			writeError(writer, http.StatusBadRequest, "invalid_payload", "credit card must exist")
+			writeError(writer, http.StatusBadRequest, "invalid_payload", "credit card and currency must exist")
 			return
 		}
 		writeError(writer, http.StatusInternalServerError, "internal_error", "failed to update credit card installment")
@@ -235,6 +239,9 @@ func decodeCreditCardInstallmentPayload(request *http.Request) (creditCardInstal
 	if payload.CreditCardID <= 0 {
 		return creditCardInstallmentPayload{}, fmt.Errorf("credit_card_id must be a positive integer")
 	}
+	if payload.CurrencyID <= 0 {
+		return creditCardInstallmentPayload{}, fmt.Errorf("currency_id must be a positive integer")
+	}
 	if payload.Concept == "" {
 		return creditCardInstallmentPayload{}, fmt.Errorf("concept is required")
 	}
@@ -253,7 +260,7 @@ func decodeCreditCardInstallmentPayload(request *http.Request) (creditCardInstal
 
 func (application app) fetchCreditCardInstallment(id int64) (creditCardInstallment, error) {
 	row := application.db.QueryRow(
-		`SELECT id, credit_card_id, concept, amount, start_date, count FROM credit_card_installments WHERE id = ?`,
+		`SELECT id, credit_card_id, currency_id, concept, amount, start_date, count FROM credit_card_installments WHERE id = ?`,
 		id,
 	)
 
@@ -267,7 +274,7 @@ func (application app) fetchCreditCardInstallment(id int64) (creditCardInstallme
 
 func scanCreditCardInstallment(source scanner) (creditCardInstallment, error) {
 	var item creditCardInstallment
-	if err := source.Scan(&item.ID, &item.CreditCardID, &item.Concept, &item.Amount, &item.StartDate, &item.Count); err != nil {
+	if err := source.Scan(&item.ID, &item.CreditCardID, &item.CurrencyID, &item.Concept, &item.Amount, &item.StartDate, &item.Count); err != nil {
 		return creditCardInstallment{}, err
 	}
 

@@ -67,6 +67,7 @@
       normalizeCreditCardInstallmentInput,
       escapeHtml,
       getCreditCards: state.getCreditCards,
+      getCurrencies: state.getCurrencies,
       getCreditCardInstallments: state.getCreditCardInstallments,
       setCreditCardInstallments: state.setCreditCardInstallments,
     });
@@ -96,6 +97,8 @@
       onCurrenciesChanged: () => {
         bankAccountsModule.populateCurrencyOptions();
         bankAccountsModule.render();
+        creditCardInstallmentsModule.populateCurrencyOptions();
+        creditCardInstallmentsModule.render();
         creditCardCyclesModule.populateBalanceCurrencyOptions();
         creditCardCyclesModule.renderBalances();
         if (transactionsModule) {

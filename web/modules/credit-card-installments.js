@@ -6,6 +6,7 @@
       normalizeCreditCardInstallmentInput,
       escapeHtml,
       getCreditCards,
+      getCurrencies,
       getCreditCardInstallments,
       setCreditCardInstallments,
     } = config;
@@ -47,12 +48,41 @@
       elements.creditCardIdElement.value = selectedValue;
     }
 
+    function formatCurrencyLabel(currencyID) {
+      const currency = getCurrencies().find((item) => item.id === currencyID);
+      if (!currency) {
+        return `#${currencyID}`;
+      }
+
+      return `${currency.code} (${currency.name})`;
+    }
+
+    function populateCurrencyOptions() {
+      const selectedValue = elements.currencyIdElement.value;
+      elements.currencyIdElement.innerHTML = "";
+
+      const defaultOption = document.createElement("option");
+      defaultOption.value = "";
+      defaultOption.textContent = "Select currency";
+      elements.currencyIdElement.appendChild(defaultOption);
+
+      for (const currency of getCurrencies()) {
+        const option = document.createElement("option");
+        option.value = String(currency.id);
+        option.textContent = `${currency.code} (${currency.name})`;
+        elements.currencyIdElement.appendChild(option);
+      }
+
+      elements.currencyIdElement.value = selectedValue;
+    }
+
     function resetForm() {
       elements.formElement.reset();
       elements.idElement.value = "";
       elements.submitButtonElement.textContent = "Create";
       elements.cancelButtonElement.hidden = true;
       populateCreditCardOptions();
+      populateCurrencyOptions();
     }
 
     function render() {
@@ -62,7 +92,7 @@
       if (installments.length === 0) {
         const row = document.createElement("tr");
         const cell = document.createElement("td");
-        cell.colSpan = 7;
+        cell.colSpan = 8;
         cell.textContent = "No credit card installments yet";
         row.appendChild(cell);
         elements.bodyElement.appendChild(row);
@@ -74,6 +104,7 @@
         row.innerHTML = `
           <td>${installment.id}</td>
           <td>${escapeHtml(formatCreditCardLabel(installment.credit_card_id))}</td>
+          <td>${escapeHtml(formatCurrencyLabel(installment.currency_id))}</td>
           <td>${escapeHtml(installment.concept)}</td>
           <td>${escapeHtml(installment.amount)}</td>
           <td>${escapeHtml(installment.start_date)}</td>
@@ -96,6 +127,7 @@
         const installments = await apiRequest("/api/credit-card-installments", { method: "GET" });
         setCreditCardInstallments(installments);
         populateCreditCardOptions();
+        populateCurrencyOptions();
         render();
       } catch (error) {
         setMessage(error.message, true);
@@ -118,6 +150,7 @@
       const id = elements.idElement.value.trim();
       const payload = normalizeCreditCardInstallmentInput(
         elements.creditCardIdElement.value,
+        elements.currencyIdElement.value,
         elements.conceptElement.value,
         elements.amountElement.value,
         elements.startDateElement.value,
@@ -177,6 +210,7 @@
       if (action === "edit") {
         elements.idElement.value = String(installment.id);
         elements.creditCardIdElement.value = String(installment.credit_card_id);
+        elements.currencyIdElement.value = String(installment.currency_id);
         elements.conceptElement.value = installment.concept;
         elements.amountElement.value = String(installment.amount);
         elements.startDateElement.value = installment.start_date;
@@ -200,6 +234,7 @@
       resetForm,
       setMessage,
       populateCreditCardOptions,
+      populateCurrencyOptions,
     };
   }
 

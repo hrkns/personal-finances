@@ -121,10 +121,11 @@ test("normalizeCreditCardCycleBalanceInput parses ids, balance and paid flag", (
 });
 
 test("normalizeCreditCardInstallmentInput parses ids, concept, amount, start date and count", () => {
-  const payload = normalizeCreditCardInstallmentInput(" 9 ", "  Laptop  ", " 450.75 ", " 2026-03-01 ", " 12 ");
+  const payload = normalizeCreditCardInstallmentInput(" 9 ", " 2 ", "  Laptop  ", " 450.75 ", " 2026-03-01 ", " 12 ");
 
   assert.deepEqual(payload, {
     credit_card_id: 9,
+    currency_id: 2,
     concept: "Laptop",
     amount: 450.75,
     start_date: "2026-03-01",

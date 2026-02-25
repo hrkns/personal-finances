@@ -16,7 +16,7 @@ func TestCreditCardInstallmentCRUDFlow(t *testing.T) {
 		router,
 		http.MethodPost,
 		"/api/credit-card-installments",
-		[]byte(`{"credit_card_id":1,"concept":"Laptop","amount":1200.5,"start_date":"2026-03-01","count":12}`),
+		[]byte(`{"credit_card_id":1,"currency_id":1,"concept":"Laptop","amount":1200.5,"start_date":"2026-03-01","count":12}`),
 	)
 	if createResponse.Code != http.StatusCreated {
 		t.Fatalf("expected create to return 201, got %d", createResponse.Code)
@@ -26,7 +26,7 @@ func TestCreditCardInstallmentCRUDFlow(t *testing.T) {
 	if err := json.NewDecoder(createResponse.Body).Decode(&created); err != nil {
 		t.Fatalf("decode created response: %v", err)
 	}
-	if created.Concept != "Laptop" || created.Amount != 1200.5 || created.StartDate != "2026-03-01" || created.Count != 12 {
+	if created.CurrencyID != 1 || created.Concept != "Laptop" || created.Amount != 1200.5 || created.StartDate != "2026-03-01" || created.Count != 12 {
 		t.Fatalf("unexpected created credit card installment: %+v", created)
 	}
 
@@ -44,7 +44,7 @@ func TestCreditCardInstallmentCRUDFlow(t *testing.T) {
 		router,
 		http.MethodPut,
 		"/api/credit-card-installments/1",
-		[]byte(`{"credit_card_id":1,"concept":"Laptop Updated","amount":900,"start_date":"2026-04-01","count":10}`),
+		[]byte(`{"credit_card_id":1,"currency_id":1,"concept":"Laptop Updated","amount":900,"start_date":"2026-04-01","count":10}`),
 	)
 	if updateResponse.Code != http.StatusOK {
 		t.Fatalf("expected update to return 200, got %d", updateResponse.Code)
@@ -54,7 +54,7 @@ func TestCreditCardInstallmentCRUDFlow(t *testing.T) {
 	if err := json.NewDecoder(updateResponse.Body).Decode(&updated); err != nil {
 		t.Fatalf("decode updated response: %v", err)
 	}
-	if updated.Concept != "Laptop Updated" || updated.Amount != 900 || updated.StartDate != "2026-04-01" || updated.Count != 10 {
+	if updated.CurrencyID != 1 || updated.Concept != "Laptop Updated" || updated.Amount != 900 || updated.StartDate != "2026-04-01" || updated.Count != 10 {
 		t.Fatalf("unexpected updated credit card installment: %+v", updated)
 	}
 
@@ -79,7 +79,7 @@ func TestCreditCardInstallmentUniqueCardConcept(t *testing.T) {
 		router,
 		http.MethodPost,
 		"/api/credit-card-installments",
-		[]byte(`{"credit_card_id":1,"concept":"Phone","amount":1000,"start_date":"2026-05-01","count":8}`),
+		[]byte(`{"credit_card_id":1,"currency_id":1,"concept":"Phone","amount":1000,"start_date":"2026-05-01","count":8}`),
 	)
 	if firstCreate.Code != http.StatusCreated {
 		t.Fatalf("expected first create to return 201, got %d", firstCreate.Code)
@@ -89,7 +89,7 @@ func TestCreditCardInstallmentUniqueCardConcept(t *testing.T) {
 		router,
 		http.MethodPost,
 		"/api/credit-card-installments",
-		[]byte(`{"credit_card_id":1,"concept":"Phone","amount":500,"start_date":"2026-06-01","count":5}`),
+		[]byte(`{"credit_card_id":1,"currency_id":1,"concept":"Phone","amount":500,"start_date":"2026-06-01","count":5}`),
 	)
 	if duplicateCreate.Code != http.StatusConflict {
 		t.Fatalf("expected duplicate create to return 409, got %d", duplicateCreate.Code)
@@ -106,17 +106,27 @@ func TestCreditCardInstallmentValidationErrors(t *testing.T) {
 		router,
 		http.MethodPost,
 		"/api/credit-card-installments",
-		[]byte(`{"credit_card_id":0,"concept":"A","amount":10,"start_date":"2026-01-01","count":1}`),
+		[]byte(`{"credit_card_id":0,"currency_id":1,"concept":"A","amount":10,"start_date":"2026-01-01","count":1}`),
 	)
 	if invalidCardID.Code != http.StatusBadRequest {
 		t.Fatalf("expected invalid card id to return 400, got %d", invalidCardID.Code)
+	}
+
+	invalidCurrencyID := performRequest(
+		router,
+		http.MethodPost,
+		"/api/credit-card-installments",
+		[]byte(`{"credit_card_id":1,"currency_id":0,"concept":"A","amount":10,"start_date":"2026-01-01","count":1}`),
+	)
+	if invalidCurrencyID.Code != http.StatusBadRequest {
+		t.Fatalf("expected invalid currency id to return 400, got %d", invalidCurrencyID.Code)
 	}
 
 	emptyConcept := performRequest(
 		router,
 		http.MethodPost,
 		"/api/credit-card-installments",
-		[]byte(`{"credit_card_id":1,"concept":"  ","amount":10,"start_date":"2026-01-01","count":1}`),
+		[]byte(`{"credit_card_id":1,"currency_id":1,"concept":"  ","amount":10,"start_date":"2026-01-01","count":1}`),
 	)
 	if emptyConcept.Code != http.StatusBadRequest {
 		t.Fatalf("expected empty concept to return 400, got %d", emptyConcept.Code)
@@ -126,7 +136,7 @@ func TestCreditCardInstallmentValidationErrors(t *testing.T) {
 		router,
 		http.MethodPost,
 		"/api/credit-card-installments",
-		[]byte(`{"credit_card_id":1,"concept":"A","amount":0,"start_date":"2026-01-01","count":1}`),
+		[]byte(`{"credit_card_id":1,"currency_id":1,"concept":"A","amount":0,"start_date":"2026-01-01","count":1}`),
 	)
 	if invalidAmount.Code != http.StatusBadRequest {
 		t.Fatalf("expected invalid amount to return 400, got %d", invalidAmount.Code)
@@ -136,7 +146,7 @@ func TestCreditCardInstallmentValidationErrors(t *testing.T) {
 		router,
 		http.MethodPost,
 		"/api/credit-card-installments",
-		[]byte(`{"credit_card_id":1,"concept":"A","amount":10,"start_date":"2026-13-01","count":1}`),
+		[]byte(`{"credit_card_id":1,"currency_id":1,"concept":"A","amount":10,"start_date":"2026-13-01","count":1}`),
 	)
 	if invalidStartDate.Code != http.StatusBadRequest {
 		t.Fatalf("expected invalid start date to return 400, got %d", invalidStartDate.Code)
@@ -146,10 +156,20 @@ func TestCreditCardInstallmentValidationErrors(t *testing.T) {
 		router,
 		http.MethodPost,
 		"/api/credit-card-installments",
-		[]byte(`{"credit_card_id":1,"concept":"A","amount":10,"start_date":"2026-01-01","count":0}`),
+		[]byte(`{"credit_card_id":1,"currency_id":1,"concept":"A","amount":10,"start_date":"2026-01-01","count":0}`),
 	)
 	if invalidCount.Code != http.StatusBadRequest {
 		t.Fatalf("expected invalid count to return 400, got %d", invalidCount.Code)
+	}
+
+	invalidForeignKeys := performRequest(
+		router,
+		http.MethodPost,
+		"/api/credit-card-installments",
+		[]byte(`{"credit_card_id":999,"currency_id":999,"concept":"A","amount":10,"start_date":"2026-01-01","count":1}`),
+	)
+	if invalidForeignKeys.Code != http.StatusBadRequest {
+		t.Fatalf("expected invalid foreign keys to return 400, got %d", invalidForeignKeys.Code)
 	}
 
 	notFound := performRequest(router, http.MethodGet, "/api/credit-card-installments/999", nil)
@@ -171,5 +191,15 @@ func seedCreditCardInstallmentDependencies(t *testing.T, router http.Handler) {
 	)
 	if creditCard.Code != http.StatusCreated {
 		t.Fatalf("expected credit card seed to return 201, got %d", creditCard.Code)
+	}
+
+	currency := performRequest(
+		router,
+		http.MethodPost,
+		"/api/currencies",
+		[]byte(`{"name":"US Dollar","code":"USD"}`),
+	)
+	if currency.Code != http.StatusCreated {
+		t.Fatalf("expected currency seed to return 201, got %d", currency.Code)
 	}
 }

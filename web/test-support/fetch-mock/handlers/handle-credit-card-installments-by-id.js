@@ -32,6 +32,7 @@ function handleCreditCardInstallmentsByID(pathname, method, options, stores) {
 
     const payload = parseBody(options);
     const creditCardID = Number(payload.credit_card_id);
+    const currencyID = Number(payload.currency_id);
     const concept = trimmedValue(payload.concept);
     const amount = Number(payload.amount);
     const startDate = trimmedValue(payload.start_date);
@@ -39,6 +40,9 @@ function handleCreditCardInstallmentsByID(pathname, method, options, stores) {
 
     if (!Number.isInteger(creditCardID) || creditCardID <= 0) {
       return invalidPayload("credit_card_id must be a positive integer");
+    }
+    if (!Number.isInteger(currencyID) || currencyID <= 0) {
+      return invalidPayload("currency_id must be a positive integer");
     }
     if (concept === "") {
       return invalidPayload("concept is required");
@@ -53,7 +57,10 @@ function handleCreditCardInstallmentsByID(pathname, method, options, stores) {
       return invalidPayload("count must be greater than zero");
     }
     if (!stores.creditCardsStore.some((item) => item.id === creditCardID)) {
-      return invalidPayload("credit card must exist");
+      return invalidPayload("credit card and currency must exist");
+    }
+    if (!stores.currenciesStore.some((item) => item.id === currencyID)) {
+      return invalidPayload("credit card and currency must exist");
     }
 
     const duplicate = stores.creditCardInstallmentsStore.some(
@@ -66,6 +73,7 @@ function handleCreditCardInstallmentsByID(pathname, method, options, stores) {
     const updated = {
       id,
       credit_card_id: creditCardID,
+      currency_id: currencyID,
       concept,
       amount,
       start_date: startDate,

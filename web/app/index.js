@@ -41,6 +41,7 @@ async function init() {
   ]);
 
   await appModules.creditCardsModule.load();
+  await appModules.creditCardInstallmentsModule.load();
   await appModules.creditCardCyclesModule.load();
 
   appDom.transactionCategories.formElement.addEventListener("submit", appModules.transactionCategoriesModule.onSubmit);
@@ -66,6 +67,9 @@ async function init() {
 
   appDom.creditCards.formElement.addEventListener("submit", appModules.creditCardsModule.onSubmit);
   appDom.creditCards.cancelButtonElement.addEventListener("click", appModules.creditCardsModule.resetForm);
+
+  appDom.creditCardInstallments.formElement.addEventListener("submit", appModules.creditCardInstallmentsModule.onSubmit);
+  appDom.creditCardInstallments.cancelButtonElement.addEventListener("click", appModules.creditCardInstallmentsModule.resetForm);
 
   appDom.creditCardCycles.formElement.addEventListener("submit", appModules.creditCardCyclesModule.onSubmit);
   appDom.creditCardCycles.cancelButtonElement.addEventListener("click", appModules.creditCardCyclesModule.resetForm);

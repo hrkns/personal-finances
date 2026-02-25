@@ -15,6 +15,7 @@
       normalizeTransactionInput,
       normalizeBankAccountInput,
       normalizeCreditCardInput,
+      normalizeCreditCardInstallmentInput,
       normalizeCreditCardCycleInput,
       normalizeCreditCardCycleBalanceInput,
       escapeHtml,
@@ -22,6 +23,7 @@
 
     let transactionsModule = null;
     let creditCardCyclesModule = null;
+    let creditCardInstallmentsModule = null;
 
     const bankAccountsModule = createBankAccountsModule({
       elements: dom.bankAccounts,
@@ -53,7 +55,20 @@
         if (creditCardCyclesModule) {
           await creditCardCyclesModule.load();
         }
+        if (creditCardInstallmentsModule) {
+          await creditCardInstallmentsModule.load();
+        }
       },
+    });
+
+    creditCardInstallmentsModule = createCreditCardInstallmentsModule({
+      elements: dom.creditCardInstallments,
+      apiRequest,
+      normalizeCreditCardInstallmentInput,
+      escapeHtml,
+      getCreditCards: state.getCreditCards,
+      getCreditCardInstallments: state.getCreditCardInstallments,
+      setCreditCardInstallments: state.setCreditCardInstallments,
     });
 
     creditCardCyclesModule = createCreditCardCyclesModule({
@@ -163,6 +178,7 @@
       banksModule,
       bankAccountsModule,
       creditCardsModule,
+      creditCardInstallmentsModule,
       creditCardCyclesModule,
     };
   }

@@ -46,6 +46,7 @@
       settingsViews.currency.hidden = activeRoute !== "settings" || activeSettingsSection !== "currency";
 
       creditCardViews.cards.hidden = activeRoute !== "credit-cards" || activeCreditCardSection !== "cards";
+      creditCardViews.installments.hidden = activeRoute !== "credit-cards" || activeCreditCardSection !== "installments";
       creditCardViews.cycles.hidden = activeRoute !== "credit-cards" || activeCreditCardSection !== "cycles";
 
       settingsSelectionMessageElement.hidden =

@@ -6,6 +6,7 @@
     let transactionCategories = [];
     let bankAccounts = [];
     let creditCards = [];
+    let creditCardInstallments = [];
     let creditCardCycles = [];
     let creditCardCycleBalances = [];
     let transactions = [];
@@ -34,6 +35,10 @@
       getCreditCards: () => creditCards,
       setCreditCards: (items) => {
         creditCards = items;
+      },
+      getCreditCardInstallments: () => creditCardInstallments,
+      setCreditCardInstallments: (items) => {
+        creditCardInstallments = items;
       },
       getCreditCardCycles: () => creditCardCycles,
       setCreditCardCycles: (items) => {

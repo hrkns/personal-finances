@@ -10,6 +10,7 @@ const {
   normalizeCreditCardInput,
   normalizeCreditCardCycleInput,
   normalizeCreditCardCycleBalanceInput,
+  normalizeCreditCardInstallmentInput,
   normalizeTransactionInput,
   escapeHtml,
   parseApiResponse,
@@ -116,6 +117,18 @@ test("normalizeCreditCardCycleBalanceInput parses ids, balance and paid flag", (
     currency_id: 2,
     balance: 99.45,
     paid: true,
+  });
+});
+
+test("normalizeCreditCardInstallmentInput parses ids, concept, amount, start date and count", () => {
+  const payload = normalizeCreditCardInstallmentInput(" 9 ", "  Laptop  ", " 450.75 ", " 2026-03-01 ", " 12 ");
+
+  assert.deepEqual(payload, {
+    credit_card_id: 9,
+    concept: "Laptop",
+    amount: 450.75,
+    start_date: "2026-03-01",
+    count: 12,
   });
 });
 

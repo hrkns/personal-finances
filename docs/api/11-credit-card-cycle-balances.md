@@ -29,6 +29,7 @@ Validation rules:
 
 - `credit_card_cycle_id` required, positive integer, must match route cycle id
 - `currency_id` required, positive integer, must reference an existing currency
+- (`credit_card_cycle_id`, `currency_id`) combination must be unique
 - `balance` optional number (float); if omitted, defaults to `0`
 - `paid` optional boolean; if omitted, defaults to `false`
 
@@ -99,6 +100,17 @@ Examples:
 }
 ```
 
+#### Conflict (`409 Conflict`)
+
+```json
+{
+  "error": {
+    "code": "duplicate_credit_card_cycle_balance",
+    "message": "credit card cycle and currency combination must be unique"
+  }
+}
+```
+
 ### `PUT /api/credit-card-cycles/{cycle_id}/balances/{id}`
 
 Request body: Credit Card Cycle Balance Payload.
@@ -106,6 +118,17 @@ Request body: Credit Card Cycle Balance Payload.
 #### Success (`200 OK`)
 
 Body: Credit Card Cycle Balance Object.
+
+#### Conflict (`409 Conflict`)
+
+```json
+{
+  "error": {
+    "code": "duplicate_credit_card_cycle_balance",
+    "message": "credit card cycle and currency combination must be unique"
+  }
+}
+```
 
 #### Not Found (`404 Not Found`)
 

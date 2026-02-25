@@ -19,3 +19,6 @@ ON credit_card_cycle_balances(credit_card_cycle_id);
 
 CREATE INDEX IF NOT EXISTS idx_credit_card_cycle_balances_currency_id
 ON credit_card_cycle_balances(currency_id);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_credit_card_cycle_balances_cycle_currency_unique
+ON credit_card_cycle_balances(credit_card_cycle_id, currency_id);

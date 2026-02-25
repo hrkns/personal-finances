@@ -111,6 +111,53 @@ func TestCreditCardCycleBalanceValidationErrors(t *testing.T) {
 	}
 }
 
+func TestCreditCardCycleBalanceUniqueCycleCurrency(t *testing.T) {
+	application := newTestApplication(t)
+	router := application.routes()
+
+	seedCreditCardCycleBalanceDependencies(t, router)
+
+	firstCreate := performRequest(
+		router,
+		http.MethodPost,
+		"/api/credit-card-cycles/1/balances",
+		[]byte(`{"credit_card_cycle_id":1,"currency_id":1,"balance":100,"paid":false}`),
+	)
+	if firstCreate.Code != http.StatusCreated {
+		t.Fatalf("expected first create to return 201, got %d", firstCreate.Code)
+	}
+
+	duplicateCreate := performRequest(
+		router,
+		http.MethodPost,
+		"/api/credit-card-cycles/1/balances",
+		[]byte(`{"credit_card_cycle_id":1,"currency_id":1,"balance":200,"paid":true}`),
+	)
+	if duplicateCreate.Code != http.StatusConflict {
+		t.Fatalf("expected duplicate create to return 409, got %d", duplicateCreate.Code)
+	}
+
+	secondCurrencyBalance := performRequest(
+		router,
+		http.MethodPost,
+		"/api/credit-card-cycles/1/balances",
+		[]byte(`{"credit_card_cycle_id":1,"currency_id":2,"balance":300,"paid":false}`),
+	)
+	if secondCurrencyBalance.Code != http.StatusCreated {
+		t.Fatalf("expected second currency create to return 201, got %d", secondCurrencyBalance.Code)
+	}
+
+	duplicateUpdate := performRequest(
+		router,
+		http.MethodPut,
+		"/api/credit-card-cycles/1/balances/2",
+		[]byte(`{"credit_card_cycle_id":1,"currency_id":1,"balance":350,"paid":true}`),
+	)
+	if duplicateUpdate.Code != http.StatusConflict {
+		t.Fatalf("expected duplicate update to return 409, got %d", duplicateUpdate.Code)
+	}
+}
+
 func seedCreditCardCycleBalanceDependencies(t *testing.T, router http.Handler) {
 	t.Helper()
 
@@ -119,6 +166,11 @@ func seedCreditCardCycleBalanceDependencies(t *testing.T, router http.Handler) {
 	currency := performRequest(router, http.MethodPost, "/api/currencies", []byte(`{"name":"US Dollar","code":"USD"}`))
 	if currency.Code != http.StatusCreated {
 		t.Fatalf("expected currency seed to return 201, got %d", currency.Code)
+	}
+
+	secondCurrency := performRequest(router, http.MethodPost, "/api/currencies", []byte(`{"name":"Euro","code":"EUR"}`))
+	if secondCurrency.Code != http.StatusCreated {
+		t.Fatalf("expected second currency seed to return 201, got %d", secondCurrency.Code)
 	}
 
 	creditCard := performRequest(router, http.MethodPost, "/api/credit-cards", []byte(`{"bank_id":1,"person_id":1,"number":"1111 2222"}`))

@@ -364,6 +364,19 @@
         balanceElements.paidElement.checked
       );
 
+      const hasDuplicateCurrency = getCreditCardCycleBalances().some((item) => {
+        if (id && String(item.id) === id) {
+          return false;
+        }
+
+        return item.currency_id === payload.currency_id;
+      });
+
+      if (hasDuplicateCurrency) {
+        setBalanceMessage("A balance with this currency already exists for the selected cycle", true);
+        return;
+      }
+
       try {
         if (id) {
           await apiRequest(`/api/credit-card-cycles/${selectedCycleID}/balances/${id}`, {

@@ -165,6 +165,10 @@ func (application app) createCreditCardCycleBalance(writer http.ResponseWriter, 
 		payload.Paid,
 	)
 	if err != nil {
+		if isUniqueConstraintError(err) {
+			writeError(writer, http.StatusConflict, "duplicate_credit_card_cycle_balance", "credit card cycle and currency combination must be unique")
+			return
+		}
 		if isForeignKeyConstraintError(err) {
 			writeError(writer, http.StatusBadRequest, "invalid_payload", "credit card cycle and currency must exist")
 			return
@@ -210,6 +214,10 @@ func (application app) updateCreditCardCycleBalance(writer http.ResponseWriter, 
 		cycleID,
 	)
 	if err != nil {
+		if isUniqueConstraintError(err) {
+			writeError(writer, http.StatusConflict, "duplicate_credit_card_cycle_balance", "credit card cycle and currency combination must be unique")
+			return
+		}
 		if isForeignKeyConstraintError(err) {
 			writeError(writer, http.StatusBadRequest, "invalid_payload", "credit card cycle and currency must exist")
 			return

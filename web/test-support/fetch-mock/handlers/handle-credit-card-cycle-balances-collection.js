@@ -2,6 +2,7 @@ const { createResponse } = require("../../integration-http.js");
 const {
   parseBody,
   cloneItems,
+  conflict,
   invalidPayload,
 } = require("../helpers.js");
 
@@ -64,6 +65,13 @@ function handleCreditCardCycleBalancesCollection(pathname, method, options, stor
     }
     if (hasPaid && typeof paid !== "boolean") {
       return invalidPayload("paid must be a boolean");
+    }
+
+    const hasDuplicateCycleCurrency = stores.creditCardCycleBalancesStore.some(
+      (item) => item.credit_card_cycle_id === creditCardCycleID && item.currency_id === currencyID
+    );
+    if (hasDuplicateCycleCurrency) {
+      return conflict("duplicate_credit_card_cycle_balance", "credit card cycle and currency combination must be unique");
     }
 
     const created = {

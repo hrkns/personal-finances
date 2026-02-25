@@ -109,7 +109,7 @@ npm run test:frontend:e2e
 If needed, override the E2E server port (default: `19777`):
 
 ```bash
-$env:PLAYWRIGHT_E2E_PORT=19888; npm run test:frontend:e2e
+PLAYWRIGHT_E2E_PORT=19888 npm run test:frontend:e2e
 ```
 
 E2E details:

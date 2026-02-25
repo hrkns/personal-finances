@@ -41,8 +41,6 @@ async function init() {
   ]);
 
   await appModules.creditCardsModule.load();
-  await appModules.creditCardInstallmentsModule.load();
-  await appModules.creditCardCyclesModule.load();
 
   appDom.transactionCategories.formElement.addEventListener("submit", appModules.transactionCategoriesModule.onSubmit);
   appDom.transactionCategories.cancelButtonElement.addEventListener(

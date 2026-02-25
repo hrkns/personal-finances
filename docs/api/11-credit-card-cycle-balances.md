@@ -30,7 +30,7 @@ Validation rules:
 - `credit_card_cycle_id` required, positive integer, must match route cycle id
 - `currency_id` required, positive integer, must reference an existing currency
 - `balance` optional number (float); if omitted, defaults to `0`
-- `paid` boolean
+- `paid` optional boolean; if omitted, defaults to `false`
 
 ### `GET /api/credit-card-cycles/{cycle_id}/balances`
 

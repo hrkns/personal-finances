@@ -148,18 +148,17 @@
       balanceElements.selectionMessageElement.hidden = false;
 
       if (isLoadingBalances) {
-      balanceElements.selectionMessageElement.textContent = selectedCycle
-        ? `Loading balances for cycle #${selectedCycleID} (${selectedCycle.closing_date} → ${selectedCycle.due_date})...`
-        : `Loading balances for cycle #${selectedCycleID}...`;
-      balanceElements.formElement.hidden = false;
-
-      const row = document.createElement("tr");
-      const cell = document.createElement("td");
-      cell.colSpan = 5;
-      cell.textContent = "Loading cycle balances...";
-      row.appendChild(cell);
-      balanceElements.bodyElement.appendChild(row);
-      return;
+        balanceElements.selectionMessageElement.textContent = selectedCycle
+          ? `Loading balances for cycle #${selectedCycleID} (${selectedCycle.closing_date} → ${selectedCycle.due_date})...`
+          : `Loading balances for cycle #${selectedCycleID}...`;
+        balanceElements.formElement.hidden = false;
+        const row = document.createElement("tr");
+        const cell = document.createElement("td");
+        cell.colSpan = 5;
+        cell.textContent = "Loading cycle balances...";
+        row.appendChild(cell);
+        balanceElements.bodyElement.appendChild(row);
+        return;
       }
 
       balanceElements.selectionMessageElement.textContent = selectedCycle
@@ -200,7 +199,7 @@
     async function loadBalancesForSelectedCycle() {
       if (!selectedCycleID) {
         setCreditCardCycleBalances([]);
-      isLoadingBalances = false;
+        isLoadingBalances = false;
         renderBalances();
         return;
       }
@@ -217,8 +216,8 @@
       } catch (error) {
         setBalanceMessage(error.message, true);
       } finally {
-      isLoadingBalances = false;
-      renderBalances();
+        isLoadingBalances = false;
+        renderBalances();
       }
     }
 
@@ -344,7 +343,7 @@
       if (action === "balances") {
         selectedCycleID = cycle.id;
         resetBalanceForm();
-      renderBalances();
+        renderBalances();
         loadBalancesForSelectedCycle();
       }
     }

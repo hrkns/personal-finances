@@ -1,12 +1,8 @@
 const { test, expect } = require("@playwright/test");
-const { openSettingsSection, uniqueCurrencyCode } = require("./helpers");
+const { openApp, openSettingsSection, uniqueCurrencyCode } = require("./helpers");
 
 function uniqueSuffix() {
   return `${Date.now()}_${Math.floor(Math.random() * 100000)}`;
-}
-
-async function waitForAppReady(page) {
-  await page.waitForFunction(() => typeof window.frontendRouter !== "undefined");
 }
 
 async function selectOptionContaining(selectLocator, expectedText) {
@@ -27,8 +23,7 @@ test("credit card subscription CRUD flow works end-to-end", async ({ page }) => 
   const currencyName = `Subscription Currency ${suffix}`;
   const currencyCode = uniqueCurrencyCode("S");
 
-  await page.goto("/");
-  await waitForAppReady(page);
+  await openApp(page);
 
   await openSettingsSection(page, "Banks");
   const bankForm = page.locator("#bank-form");

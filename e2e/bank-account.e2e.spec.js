@@ -1,12 +1,8 @@
 const { test, expect } = require("@playwright/test");
-const { openSettingsSection, uniqueCurrencyCode } = require("./helpers");
+const { openApp, openSettingsSection, uniqueCurrencyCode } = require("./helpers");
 
 function uniqueSuffix() {
   return `${Date.now()}_${Math.floor(Math.random() * 100000)}`;
-}
-
-async function waitForAppReady(page) {
-  await page.waitForFunction(() => typeof window.frontendRouter !== "undefined");
 }
 
 test("bank account CRUD flow works end-to-end", async ({ page }) => {
@@ -17,8 +13,7 @@ test("bank account CRUD flow works end-to-end", async ({ page }) => {
   const initialAccountNumber = `ACC-${suffix}`;
   const updatedAccountNumber = `ACC-U-${suffix}`;
 
-  await page.goto("/");
-  await waitForAppReady(page);
+  await openApp(page);
 
   await openSettingsSection(page, "Currency");
   const currencyForm = page.locator("#currency-form");
@@ -70,8 +65,7 @@ test("duplicate bank account shows backend conflict message", async ({ page }) =
   const bankName = `Dup Account Bank ${suffix}`;
   const accountNumber = `DUP-${suffix}`;
 
-  await page.goto("/");
-  await waitForAppReady(page);
+  await openApp(page);
 
   await openSettingsSection(page, "Currency");
   const currencyForm = page.locator("#currency-form");

@@ -1,5 +1,5 @@
 const { test, expect } = require("@playwright/test");
-const { openSettingsSection } = require("./helpers");
+const { openApp, openSettingsSection } = require("./helpers");
 
 function uniqueSuffix() {
   return `${Date.now()}_${Math.floor(Math.random() * 100000)}`;
@@ -11,7 +11,7 @@ test("bank CRUD flow works end-to-end", async ({ page }) => {
   const updatedName = `Bank Updated ${suffix}`;
   const bankForm = page.locator("#bank-form");
 
-  await page.goto("/");
+  await openApp(page);
   await openSettingsSection(page, "Banks");
 
   await bankForm.getByLabel("Name").fill(initialName);
@@ -45,7 +45,7 @@ test("duplicate bank per country shows backend conflict message", async ({ page 
   const name = `Duplicate Bank ${suffix}`;
   const bankForm = page.locator("#bank-form");
 
-  await page.goto("/");
+  await openApp(page);
   await openSettingsSection(page, "Banks");
 
   await bankForm.getByLabel("Name").fill(name);

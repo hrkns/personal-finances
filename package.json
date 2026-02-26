@@ -7,7 +7,7 @@
     "lint:js:fix": "eslint . --fix",
     "lint:go": "node scripts/lint-go.js",
     "lint:go:fmtcheck": "node scripts/lint-go.js --fmtcheck",
-    "lint:go:fix": "gofmt -s -w .",
+    "lint:go:fix": "gofmt -s -w ./main.go ./backend",
     "test:frontend": "node scripts/run-node-tests.js web all",
     "test:frontend:unit": "node scripts/run-node-tests.js web unit",
     "test:frontend:integration": "node scripts/run-node-tests.js web integration",

@@ -22,6 +22,7 @@ module.exports = [
       "web/**/*.integration.test.js",
       "web/integration-test-setup.js",
       "web/test-support/**/*.js",
+      "eslint.config.js",
     ],
     languageOptions: {
       globals: {

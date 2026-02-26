@@ -24,7 +24,7 @@
    *   creditCards: object,
    *   creditCardCycles: object,
    *   creditCardInstallments: object,
-  *   creditCardSubscriptions: object,
+  *    creditCardSubscriptions: object,
    *   creditCardCycleBalances: object,
    *   settingsSelectionMessageElement: HTMLElement,
    *   tabButtonElements: NodeListOf<Element>,

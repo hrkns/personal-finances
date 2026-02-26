@@ -25,7 +25,7 @@
    *   bankAccountsModule: object,
    *   creditCardsModule: object,
    *   creditCardInstallmentsModule: object,
-  *   creditCardSubscriptionsModule: object,
+   *   creditCardSubscriptionsModule: object,
    *   creditCardCyclesModule: object
    * }}
    */

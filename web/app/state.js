@@ -18,7 +18,7 @@
    *   getBankAccounts: () => any[], setBankAccounts: (items: any[]) => void,
    *   getCreditCards: () => any[], setCreditCards: (items: any[]) => void,
    *   getCreditCardInstallments: () => any[], setCreditCardInstallments: (items: any[]) => void,
-  *   getCreditCardSubscriptions: () => any[], setCreditCardSubscriptions: (items: any[]) => void,
+  *    getCreditCardSubscriptions: () => any[], setCreditCardSubscriptions: (items: any[]) => void,
    *   getCreditCardCycles: () => any[], setCreditCardCycles: (items: any[]) => void,
    *   getCreditCardCycleBalances: () => any[], setCreditCardCycleBalances: (items: any[]) => void,
    *   getTransactions: () => any[], setTransactions: (items: any[]) => void

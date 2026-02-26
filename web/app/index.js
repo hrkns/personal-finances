@@ -86,6 +86,9 @@ async function init() {
   appDom.creditCardInstallments.formElement.addEventListener("submit", appModules.creditCardInstallmentsModule.onSubmit);
   appDom.creditCardInstallments.cancelButtonElement.addEventListener("click", appModules.creditCardInstallmentsModule.resetForm);
 
+  appDom.creditCardSubscriptions.formElement.addEventListener("submit", appModules.creditCardSubscriptionsModule.onSubmit);
+  appDom.creditCardSubscriptions.cancelButtonElement.addEventListener("click", appModules.creditCardSubscriptionsModule.resetForm);
+
   appDom.creditCardCycles.formElement.addEventListener("submit", appModules.creditCardCyclesModule.onSubmit);
   appDom.creditCardCycles.cancelButtonElement.addEventListener("click", appModules.creditCardCyclesModule.resetForm);
 

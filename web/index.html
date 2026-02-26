@@ -122,6 +122,7 @@
         <button type="button" class="tab-button" data-credit-card-tab="cards">Cards</button>
         <button type="button" class="tab-button" data-credit-card-tab="cycles">Cycles</button>
         <button type="button" class="tab-button" data-credit-card-tab="installments">Installments</button>
+        <button type="button" class="tab-button" data-credit-card-tab="subscriptions">Subscriptions</button>
       </nav>
 
       <section id="view-credit-cards-cards" class="credit-cards-view" hidden>
@@ -302,6 +303,51 @@
             <tbody id="credit-card-cycle-balances-body"></tbody>
           </table>
         </section>
+      </section>
+
+      <section id="view-credit-card-subscriptions" class="credit-cards-view" hidden>
+        <h2>Subscriptions</h2>
+        <form id="credit-card-subscription-form">
+          <input type="hidden" id="credit-card-subscription-id" />
+
+          <label for="credit-card-subscription-credit-card-id">Credit Card</label>
+          <select id="credit-card-subscription-credit-card-id" name="credit_card_id" required>
+            <option value="">Select credit card</option>
+          </select>
+
+          <label for="credit-card-subscription-currency-id">Currency</label>
+          <select id="credit-card-subscription-currency-id" name="currency_id" required>
+            <option value="">Select currency</option>
+          </select>
+
+          <label for="credit-card-subscription-concept">Concept</label>
+          <input id="credit-card-subscription-concept" name="concept" type="text" required />
+
+          <label for="credit-card-subscription-amount">Amount</label>
+          <input id="credit-card-subscription-amount" name="amount" type="number" step="0.01" min="0.01" required />
+
+          <div class="actions">
+            <button id="credit-card-subscription-submit-button" type="submit">Create</button>
+            <button id="credit-card-subscription-cancel-button" type="button" hidden>Cancel edit</button>
+          </div>
+        </form>
+
+        <p id="credit-card-subscription-form-message" role="status"></p>
+
+        <h2>Credit Card Subscriptions</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Credit Card</th>
+              <th>Currency</th>
+              <th>Concept</th>
+              <th>Amount</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="credit-card-subscriptions-body"></tbody>
+        </table>
       </section>
     </section>
 
@@ -516,6 +562,7 @@
   <script src="modules/credit-cards.js"></script>
   <script src="modules/credit-card-installments.js"></script>
   <script src="modules/credit-card-cycles.js"></script>
+  <script src="modules/credit-card-subscriptions.js"></script>
   <script src="app/index.js"></script>
 </body>
 </html>

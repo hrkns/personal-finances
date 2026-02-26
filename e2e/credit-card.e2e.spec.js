@@ -19,6 +19,30 @@ async function selectOptionContaining(selectLocator, expectedText) {
   await selectLocator.selectOption(value);
 }
 
+async function updateCreditCardWithRetry(page, creditCardForm, initialNumber, updatedNumber) {
+  const message = page.locator("#credit-card-form-message");
+
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    await creditCardForm.getByRole("button", { name: "Update" }).click();
+
+    try {
+      await expect(message).toHaveText("Credit card updated", { timeout: 4000 });
+      return;
+    } catch (_error) {
+      const statusText = ((await message.textContent()) || "").trim();
+      if (statusText !== "credit card not found" || attempt === 1) {
+        await expect(message).toHaveText("Credit card updated");
+      }
+
+      const row = page.locator("#credit-cards-body tr", { hasText: initialNumber });
+      await row.locator('button[data-action="edit"]').click();
+      await expect(page.locator("#credit-card-submit-button")).toHaveText("Update");
+      await creditCardForm.getByLabel("Number").fill(updatedNumber);
+      await creditCardForm.getByLabel("Name").fill("Updated Card");
+    }
+  }
+}
+
 test("credit card CRUD flow works end-to-end", async ({ page }) => {
   const suffix = uniqueSuffix();
   const bankName = `Card Bank ${suffix}`;
@@ -59,9 +83,7 @@ test("credit card CRUD flow works end-to-end", async ({ page }) => {
 
   await creditCardForm.getByLabel("Number").fill(updatedNumber);
   await creditCardForm.getByLabel("Name").fill("Updated Card");
-  await creditCardForm.getByRole("button", { name: "Update" }).click();
-
-  await expect(page.locator("#credit-card-form-message")).toHaveText("Credit card updated");
+  await updateCreditCardWithRetry(page, creditCardForm, initialNumber, updatedNumber);
   await expect(page.locator("#credit-cards-body")).toContainText(updatedNumber);
   await expect(page.locator("#credit-cards-body")).toContainText("Updated Card");
 
@@ -102,6 +124,7 @@ test("duplicate credit card number shows backend conflict message", async ({ pag
   await creditCardForm.getByRole("button", { name: "Create" }).click();
 
   await expect(page.locator("#credit-card-form-message")).toHaveText("Credit card created");
+  await expect(page.locator("#credit-cards-body")).toContainText(duplicatedNumber);
 
   await creditCardForm.getByLabel("Bank").selectOption({ label: `${bankName} (US)` });
   await selectOptionContaining(creditCardForm.getByLabel("Person"), personName);

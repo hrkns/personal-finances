@@ -25,6 +25,7 @@
    *   bankAccountsModule: object,
    *   creditCardsModule: object,
    *   creditCardInstallmentsModule: object,
+  *   creditCardSubscriptionsModule: object,
    *   creditCardCyclesModule: object
    * }}
    */
@@ -45,6 +46,7 @@
       normalizeBankAccountInput,
       normalizeCreditCardInput,
       normalizeCreditCardInstallmentInput,
+      normalizeCreditCardSubscriptionInput,
       normalizeCreditCardCycleInput,
       normalizeCreditCardCycleBalanceInput,
       escapeHtml,
@@ -53,6 +55,7 @@
     let transactionsModule = null;
     let creditCardCyclesModule = null;
     let creditCardInstallmentsModule = null;
+    let creditCardSubscriptionsModule = null;
 
     const bankAccountsModule = createBankAccountsModule({
       elements: dom.bankAccounts,
@@ -87,6 +90,9 @@
         if (creditCardInstallmentsModule) {
           await creditCardInstallmentsModule.load();
         }
+        if (creditCardSubscriptionsModule) {
+          await creditCardSubscriptionsModule.load();
+        }
       },
     });
 
@@ -116,6 +122,17 @@
       setCreditCardCycleBalances: state.setCreditCardCycleBalances,
     });
 
+    creditCardSubscriptionsModule = createCreditCardSubscriptionsModule({
+      elements: dom.creditCardSubscriptions,
+      apiRequest,
+      normalizeCreditCardSubscriptionInput,
+      escapeHtml,
+      getCreditCards: state.getCreditCards,
+      getCurrencies: state.getCurrencies,
+      getCreditCardSubscriptions: state.getCreditCardSubscriptions,
+      setCreditCardSubscriptions: state.setCreditCardSubscriptions,
+    });
+
     const currenciesModule = createCurrenciesModule({
       elements: dom.currency,
       apiRequest,
@@ -128,6 +145,8 @@
         bankAccountsModule.render();
         creditCardInstallmentsModule.populateCurrencyOptions();
         creditCardInstallmentsModule.render();
+        creditCardSubscriptionsModule.populateCurrencyOptions();
+        creditCardSubscriptionsModule.render();
         creditCardCyclesModule.populateBalanceCurrencyOptions();
         creditCardCyclesModule.renderBalances();
         if (transactionsModule) {
@@ -211,6 +230,7 @@
       bankAccountsModule,
       creditCardsModule,
       creditCardInstallmentsModule,
+      creditCardSubscriptionsModule,
       creditCardCyclesModule,
     };
   }

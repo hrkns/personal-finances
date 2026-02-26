@@ -11,6 +11,7 @@ const {
   normalizeCreditCardCycleInput,
   normalizeCreditCardCycleBalanceInput,
   normalizeCreditCardInstallmentInput,
+  normalizeCreditCardSubscriptionInput,
   normalizeTransactionInput,
   escapeHtml,
   parseApiResponse,
@@ -130,6 +131,17 @@ test("normalizeCreditCardInstallmentInput parses ids, concept, amount, start dat
     amount: 450.75,
     start_date: "2026-03-01",
     count: 12,
+  });
+});
+
+test("normalizeCreditCardSubscriptionInput parses ids, concept and amount", () => {
+  const payload = normalizeCreditCardSubscriptionInput(" 7 ", " 3 ", "  Streaming  ", " 19.99 ");
+
+  assert.deepEqual(payload, {
+    credit_card_id: 7,
+    currency_id: 3,
+    concept: "Streaming",
+    amount: 19.99,
   });
 });
 

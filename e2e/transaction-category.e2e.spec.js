@@ -1,5 +1,5 @@
 const { test, expect } = require("@playwright/test");
-const { openSettingsSection } = require("./helpers");
+const { openApp, openSettingsSection } = require("./helpers");
 
 function uniqueSuffix() {
   return `${Date.now()}_${Math.floor(Math.random() * 100000)}`;
@@ -12,7 +12,7 @@ test("transaction category CRUD flow works end-to-end", async ({ page }) => {
   const updatedChildName = `Job One ${suffix}`;
   const form = page.locator("#transaction-category-form");
 
-  await page.goto("/");
+  await openApp(page);
   await openSettingsSection(page, "Transaction Categories");
 
   await form.getByLabel("Name").fill(rootName);
@@ -62,7 +62,7 @@ test("transaction category with child cannot be deleted", async ({ page }) => {
   const childName = `Job 1 ${suffix}`;
   const form = page.locator("#transaction-category-form");
 
-  await page.goto("/");
+  await openApp(page);
   await openSettingsSection(page, "Transaction Categories");
 
   await form.getByLabel("Name").fill(rootName);

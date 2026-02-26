@@ -1,5 +1,5 @@
 const { test, expect } = require("@playwright/test");
-const { openSettingsSection, uniqueCurrencyCode } = require("./helpers");
+const { openApp, openSettingsSection, uniqueCurrencyCode } = require("./helpers");
 
 function uniqueSuffix() {
   return `${Date.now()}_${Math.floor(Math.random() * 100000)}`;
@@ -13,7 +13,7 @@ test("currency CRUD flow works end-to-end", async ({ page }) => {
   const updatedCode = uniqueCurrencyCode("U");
   const currencyForm = page.locator("#currency-form");
 
-  await page.goto("/");
+  await openApp(page);
   await openSettingsSection(page, "Currency");
 
   await currencyForm.getByLabel("Name").fill(initialName);
@@ -48,7 +48,7 @@ test("duplicate currency shows backend conflict message", async ({ page }) => {
   const code = uniqueCurrencyCode("D");
   const currencyForm = page.locator("#currency-form");
 
-  await page.goto("/");
+  await openApp(page);
   await openSettingsSection(page, "Currency");
 
   await currencyForm.getByLabel("Name").fill(name);

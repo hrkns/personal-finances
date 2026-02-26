@@ -1,5 +1,5 @@
 const { test, expect } = require("@playwright/test");
-const { openSettingsSection } = require("./helpers");
+const { openApp, openSettingsSection } = require("./helpers");
 
 function uniqueSuffix() {
   return `${Date.now()}_${Math.floor(Math.random() * 100000)}`;
@@ -11,7 +11,7 @@ test("people CRUD flow works end-to-end", async ({ page }) => {
   const updatedName = `Person Updated ${suffix}`;
   const personForm = page.locator("#people-form");
 
-  await page.goto("/");
+  await openApp(page);
   await openSettingsSection(page, "People");
 
   await personForm.getByLabel("Name").fill(initialName);
@@ -39,7 +39,7 @@ test("people CRUD flow works end-to-end", async ({ page }) => {
 test("blank person name shows validation message", async ({ page }) => {
   const personForm = page.locator("#people-form");
 
-  await page.goto("/");
+  await openApp(page);
   await openSettingsSection(page, "People");
 
   await personForm.getByLabel("Name").fill("    ");

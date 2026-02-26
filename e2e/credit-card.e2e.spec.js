@@ -1,12 +1,8 @@
 const { test, expect } = require("@playwright/test");
-const { openSettingsSection } = require("./helpers");
+const { openApp, openSettingsSection } = require("./helpers");
 
 function uniqueSuffix() {
   return `${Date.now()}_${Math.floor(Math.random() * 100000)}`;
-}
-
-async function waitForAppReady(page) {
-  await page.waitForFunction(() => typeof window.frontendRouter !== "undefined");
 }
 
 async function selectOptionContaining(selectLocator, expectedText) {
@@ -43,6 +39,23 @@ async function updateCreditCardWithRetry(page, creditCardForm, initialNumber, up
   }
 }
 
+async function submitExpectSuccessWithRetry(submitAction, messageLocator, successText) {
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    await submitAction();
+
+    try {
+      await expect(messageLocator).toHaveText(successText, { timeout: 4000 });
+      return;
+    } catch (_error) {
+      const statusText = ((await messageLocator.textContent()) || "").trim();
+      if (statusText !== "Failed to fetch" || attempt === 1) {
+        await expect(messageLocator).toHaveText(successText);
+        return;
+      }
+    }
+  }
+}
+
 test("credit card CRUD flow works end-to-end", async ({ page }) => {
   const suffix = uniqueSuffix();
   const bankName = `Card Bank ${suffix}`;
@@ -50,21 +63,26 @@ test("credit card CRUD flow works end-to-end", async ({ page }) => {
   const initialNumber = `CARD-${suffix}`;
   const updatedNumber = `CARD-U-${suffix}`;
 
-  await page.goto("/");
-  await waitForAppReady(page);
+  await openApp(page);
 
   await openSettingsSection(page, "Banks");
   const bankForm = page.locator("#bank-form");
   await bankForm.getByLabel("Name").fill(bankName);
   await bankForm.getByLabel("Country").selectOption("US");
-  await bankForm.getByRole("button", { name: "Create" }).click();
-  await expect(page.locator("#bank-form-message")).toHaveText("Bank created");
+  await submitExpectSuccessWithRetry(
+    () => bankForm.getByRole("button", { name: "Create" }).click(),
+    page.locator("#bank-form-message"),
+    "Bank created"
+  );
 
   await openSettingsSection(page, "People");
   const peopleForm = page.locator("#people-form");
   await peopleForm.getByLabel("Name").fill(personName);
-  await peopleForm.getByRole("button", { name: "Create" }).click();
-  await expect(page.locator("#person-form-message")).toHaveText("Person created");
+  await submitExpectSuccessWithRetry(
+    () => peopleForm.getByRole("button", { name: "Create" }).click(),
+    page.locator("#person-form-message"),
+    "Person created"
+  );
 
   await page.getByRole("button", { name: "Credit Cards" }).click();
   const creditCardForm = page.locator("#credit-card-form");
@@ -72,9 +90,11 @@ test("credit card CRUD flow works end-to-end", async ({ page }) => {
   await selectOptionContaining(creditCardForm.getByLabel("Person"), personName);
   await creditCardForm.getByLabel("Number").fill(initialNumber);
   await creditCardForm.getByLabel("Name").fill("Main Card");
-  await creditCardForm.getByRole("button", { name: "Create" }).click();
-
-  await expect(page.locator("#credit-card-form-message")).toHaveText("Credit card created");
+  await submitExpectSuccessWithRetry(
+    () => creditCardForm.getByRole("button", { name: "Create" }).click(),
+    page.locator("#credit-card-form-message"),
+    "Credit card created"
+  );
   await expect(page.locator("#credit-cards-body")).toContainText(initialNumber);
 
   const initialRow = page.locator("#credit-cards-body tr", { hasText: initialNumber });
@@ -100,30 +120,37 @@ test("duplicate credit card number shows backend conflict message", async ({ pag
   const personName = `Dup Card Person ${suffix}`;
   const duplicatedNumber = `DUP-${suffix}`;
 
-  await page.goto("/");
-  await waitForAppReady(page);
+  await openApp(page);
 
   await openSettingsSection(page, "Banks");
   const bankForm = page.locator("#bank-form");
   await bankForm.getByLabel("Name").fill(bankName);
   await bankForm.getByLabel("Country").selectOption("US");
-  await bankForm.getByRole("button", { name: "Create" }).click();
-  await expect(page.locator("#bank-form-message")).toHaveText("Bank created");
+  await submitExpectSuccessWithRetry(
+    () => bankForm.getByRole("button", { name: "Create" }).click(),
+    page.locator("#bank-form-message"),
+    "Bank created"
+  );
 
   await openSettingsSection(page, "People");
   const peopleForm = page.locator("#people-form");
   await peopleForm.getByLabel("Name").fill(personName);
-  await peopleForm.getByRole("button", { name: "Create" }).click();
-  await expect(page.locator("#person-form-message")).toHaveText("Person created");
+  await submitExpectSuccessWithRetry(
+    () => peopleForm.getByRole("button", { name: "Create" }).click(),
+    page.locator("#person-form-message"),
+    "Person created"
+  );
 
   await page.getByRole("button", { name: "Credit Cards" }).click();
   const creditCardForm = page.locator("#credit-card-form");
   await creditCardForm.getByLabel("Bank").selectOption({ label: `${bankName} (US)` });
   await selectOptionContaining(creditCardForm.getByLabel("Person"), personName);
   await creditCardForm.getByLabel("Number").fill(duplicatedNumber);
-  await creditCardForm.getByRole("button", { name: "Create" }).click();
-
-  await expect(page.locator("#credit-card-form-message")).toHaveText("Credit card created");
+  await submitExpectSuccessWithRetry(
+    () => creditCardForm.getByRole("button", { name: "Create" }).click(),
+    page.locator("#credit-card-form-message"),
+    "Credit card created"
+  );
   await expect(page.locator("#credit-cards-body")).toContainText(duplicatedNumber);
 
   await creditCardForm.getByLabel("Bank").selectOption({ label: `${bankName} (US)` });

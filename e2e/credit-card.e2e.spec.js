@@ -50,6 +50,7 @@ async function submitExpectSuccessWithRetry(submitAction, messageLocator, succes
       const statusText = ((await messageLocator.textContent()) || "").trim();
       if (statusText !== "Failed to fetch" || attempt === 1) {
         await expect(messageLocator).toHaveText(successText);
+        return;
       }
     }
   }

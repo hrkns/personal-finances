@@ -9,6 +9,7 @@ module.exports = defineConfig({
   testDir: "./e2e",
   timeout: 30_000,
   workers: 1,
+  retries: 1,
   use: {
     baseURL: e2eBaseUrl,
     trace: "on-first-retry",

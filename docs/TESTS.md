@@ -83,6 +83,7 @@ Integration files are split by concern:
 - `web/modules/banks.integration.test.js`
 - `web/modules/bank-accounts.integration.test.js`
 - `web/modules/credit-cards.integration.test.js`
+- `web/modules/credit-card-subscriptions.integration.test.js`
 
 ## Frontend Combined (Unit + Integration)
 
@@ -117,6 +118,7 @@ E2E details:
 - Spins up app with `go run .`
 - Uses isolated sqlite database via `DATABASE_PATH`
 - Covers browser-level Transactions, Transaction Categories, People, Currency, Banks, Bank Accounts, and Credit Cards flows
+- Covers browser-level Credit Card Subscriptions CRUD flow
 - Covers browser-level management of currencies assigned to each credit card inside Credit Cards view
 - Verifies conflict scenarios and UI messages
 

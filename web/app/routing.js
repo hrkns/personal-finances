@@ -70,6 +70,7 @@
       creditCardViews.cards.hidden = activeRoute !== "credit-cards" || activeCreditCardSection !== "cards";
       creditCardViews.installments.hidden = activeRoute !== "credit-cards" || activeCreditCardSection !== "installments";
       creditCardViews.cycles.hidden = activeRoute !== "credit-cards" || activeCreditCardSection !== "cycles";
+      creditCardViews.subscriptions.hidden = activeRoute !== "credit-cards" || activeCreditCardSection !== "subscriptions";
 
       settingsSelectionMessageElement.hidden =
         activeRoute !== "settings" || Boolean(activeSettingsSection);

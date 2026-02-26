@@ -1,0 +1,4 @@
+DROP INDEX IF EXISTS idx_credit_card_installments_card_concept_unique;
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_credit_card_installments_card_currency_concept_unique
+ON credit_card_installments(credit_card_id, currency_id, concept);

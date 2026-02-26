@@ -40,6 +40,15 @@ async function createBankPersonAndCreditCard(window, document) {
   await new Promise((resolve) => setTimeout(resolve, 0));
   await new Promise((resolve) => setTimeout(resolve, 0));
 
+  document.getElementById("currency-name").value = "Euro";
+  document.getElementById("currency-code").value = "EUR";
+  document
+    .getElementById("currency-form")
+    .dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
   document.querySelector('[data-route-tab="credit-cards"]').click();
 }
 
@@ -97,7 +106,7 @@ test("frontend can create, update and delete credit card installments", async ()
   dom.window.close();
 });
 
-test("frontend validates unique concept per credit card installment", async () => {
+test("frontend validates unique concept per credit card and currency installment", async () => {
   const { dom, window, document } = await setupFrontendApp();
 
   document.querySelector('[data-route-tab="credit-cards"]').click();
@@ -132,8 +141,24 @@ test("frontend validates unique concept per credit card installment", async () =
 
   assert.equal(
     document.getElementById("credit-card-installment-form-message").textContent,
-    "A credit card installment with this concept already exists for the selected credit card"
+    "A credit card installment with this concept already exists for the selected credit card and currency"
   );
+
+  document.getElementById("credit-card-installment-credit-card-id").value = "1";
+  document.getElementById("credit-card-installment-currency-id").value = "2";
+  document.getElementById("credit-card-installment-concept").value = "Phone";
+  document.getElementById("credit-card-installment-amount").value = "300";
+  document.getElementById("credit-card-installment-start-date").value = "2026-06-01";
+  document.getElementById("credit-card-installment-count").value = "3";
+  document
+    .getElementById("credit-card-installment-form")
+    .dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  assert.equal(document.getElementById("credit-card-installment-form-message").textContent, "Credit card installment created");
+  assert.equal(document.querySelectorAll("#credit-card-installments-body tr").length, 2);
 
   dom.window.close();
 });

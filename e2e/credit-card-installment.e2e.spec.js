@@ -188,7 +188,7 @@ test("duplicate credit card installment concept per card is blocked", async ({ p
   await installmentForm.getByRole("button", { name: "Create" }).click();
 
   await expect(page.locator("#credit-card-installment-form-message")).toHaveText(
-    "A credit card installment with this concept already exists for the selected credit card"
+    "A credit card installment with this concept already exists for the selected credit card and currency"
   );
   await expect(page.locator("#credit-card-installment-form-message")).toHaveClass(/error/);
 });

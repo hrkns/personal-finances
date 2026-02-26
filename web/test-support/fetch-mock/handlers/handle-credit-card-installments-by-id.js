@@ -64,10 +64,10 @@ function handleCreditCardInstallmentsByID(pathname, method, options, stores) {
     }
 
     const duplicate = stores.creditCardInstallmentsStore.some(
-      (item) => item.id !== id && item.credit_card_id === creditCardID && item.concept === concept
+      (item) => item.id !== id && item.credit_card_id === creditCardID && item.currency_id === currencyID && item.concept === concept
     );
     if (duplicate) {
-      return conflict("duplicate_credit_card_installment", "credit card and concept combination must be unique");
+      return conflict("duplicate_credit_card_installment", "credit card, currency and concept combination must be unique");
     }
 
     const updated = {

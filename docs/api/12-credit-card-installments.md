@@ -34,7 +34,7 @@ Validation rules:
 - `credit_card_id` required, positive integer, must reference an existing credit card
 - `currency_id` required, positive integer, must reference an existing currency
 - `concept` required, trimmed, non-empty string
-- (`credit_card_id`, `concept`) combination must be unique
+- (`credit_card_id`, `currency_id`, `concept`) combination must be unique
 - `amount` required number, must be greater than `0`
 - `start_date` required, valid date in `YYYY-MM-DD` format
 - `count` required integer, must be greater than `0`
@@ -103,7 +103,7 @@ Body: Credit Card Installment Object.
 {
   "error": {
     "code": "duplicate_credit_card_installment",
-    "message": "credit card and concept combination must be unique"
+    "message": "credit card, currency and concept combination must be unique"
   }
 }
 ```
@@ -122,7 +122,7 @@ Body: Credit Card Installment Object.
 {
   "error": {
     "code": "duplicate_credit_card_installment",
-    "message": "credit card and concept combination must be unique"
+    "message": "credit card, currency and concept combination must be unique"
   }
 }
 ```

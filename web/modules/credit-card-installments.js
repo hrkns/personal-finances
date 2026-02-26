@@ -3,7 +3,7 @@
  *
  * Analogy:
  * - React: comparable to a feature slice with local client-side guards
- *   (duplicate concept per card) before API submission.
+ *   (duplicate concept per card/currency) before API submission.
  * - Angular/Vue: similar to form logic with synchronous validators plus backend validation.
  */
 (function initCreditCardInstallmentsModule(globalScope) {
@@ -157,13 +157,13 @@
       }
     }
 
-    function hasDuplicateCardConcept(payload, id) {
+    function hasDuplicateCardCurrencyConcept(payload, id) {
       return getCreditCardInstallments().some((item) => {
         if (id && String(item.id) === id) {
           return false;
         }
 
-        return item.credit_card_id === payload.credit_card_id && item.concept === payload.concept;
+        return item.credit_card_id === payload.credit_card_id && item.currency_id === payload.currency_id && item.concept === payload.concept;
       });
     }
 
@@ -180,8 +180,8 @@
         elements.countElement.value
       );
 
-      if (hasDuplicateCardConcept(payload, id)) {
-        setMessage("A credit card installment with this concept already exists for the selected credit card", true);
+      if (hasDuplicateCardCurrencyConcept(payload, id)) {
+        setMessage("A credit card installment with this concept already exists for the selected credit card and currency", true);
         return;
       }
 

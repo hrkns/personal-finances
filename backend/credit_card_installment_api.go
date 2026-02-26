@@ -129,7 +129,7 @@ func (application app) createCreditCardInstallment(writer http.ResponseWriter, r
 	)
 	if err != nil {
 		if isUniqueConstraintError(err) {
-			writeError(writer, http.StatusConflict, "duplicate_credit_card_installment", "credit card and concept combination must be unique")
+			writeError(writer, http.StatusConflict, "duplicate_credit_card_installment", "credit card, currency and concept combination must be unique")
 			return
 		}
 		if isForeignKeyConstraintError(err) {
@@ -175,7 +175,7 @@ func (application app) updateCreditCardInstallment(writer http.ResponseWriter, r
 	)
 	if err != nil {
 		if isUniqueConstraintError(err) {
-			writeError(writer, http.StatusConflict, "duplicate_credit_card_installment", "credit card and concept combination must be unique")
+			writeError(writer, http.StatusConflict, "duplicate_credit_card_installment", "credit card, currency and concept combination must be unique")
 			return
 		}
 		if isForeignKeyConstraintError(err) {

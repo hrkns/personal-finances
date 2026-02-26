@@ -69,11 +69,21 @@ func TestCreditCardInstallmentCRUDFlow(t *testing.T) {
 	}
 }
 
-func TestCreditCardInstallmentUniqueCardConcept(t *testing.T) {
+func TestCreditCardInstallmentUniqueCardCurrencyConcept(t *testing.T) {
 	application := newTestApplication(t)
 	router := application.routes()
 
 	seedCreditCardInstallmentDependencies(t, router)
+
+	secondCurrency := performRequest(
+		router,
+		http.MethodPost,
+		"/api/currencies",
+		[]byte(`{"name":"Euro","code":"EUR"}`),
+	)
+	if secondCurrency.Code != http.StatusCreated {
+		t.Fatalf("expected second currency create to return 201, got %d", secondCurrency.Code)
+	}
 
 	firstCreate := performRequest(
 		router,
@@ -93,6 +103,16 @@ func TestCreditCardInstallmentUniqueCardConcept(t *testing.T) {
 	)
 	if duplicateCreate.Code != http.StatusConflict {
 		t.Fatalf("expected duplicate create to return 409, got %d", duplicateCreate.Code)
+	}
+
+	sameCardConceptDifferentCurrency := performRequest(
+		router,
+		http.MethodPost,
+		"/api/credit-card-installments",
+		[]byte(`{"credit_card_id":1,"currency_id":2,"concept":"Phone","amount":600,"start_date":"2026-07-01","count":6}`),
+	)
+	if sameCardConceptDifferentCurrency.Code != http.StatusCreated {
+		t.Fatalf("expected same concept on different currency to return 201, got %d", sameCardConceptDifferentCurrency.Code)
 	}
 }
 

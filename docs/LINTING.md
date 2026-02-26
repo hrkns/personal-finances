@@ -34,6 +34,12 @@ Run Go lint with formatting check:
 npm run lint:go:fmtcheck
 ```
 
+Auto-fix Go lint issues when possible:
+
+```bash
+npm run lint:go:fix
+```
+
 ## What each linter does
 
 - `lint:js` runs ESLint using `eslint.config.js` across project JavaScript files.
@@ -41,6 +47,7 @@ npm run lint:go:fmtcheck
 - `lint:go:fmtcheck` runs:
   - `gofmt -l` on all `.go` files
   - `go vet ./...`
+- `lint:go:fix` runs `gofmt -s -w`.
 
 ## Notes
 

@@ -7,13 +7,21 @@
  * - Angular: comparable to an `AppModule` + `AppComponent` initialization sequence.
  * - Vue: similar to `main.js` where plugins/composables are assembled and mounted.
  */
-const createAppDom = globalThis.createAppDom;
-const createAppState = globalThis.createAppState;
-const createApiRequest = globalThis.createApiRequest;
-const createAppModules = globalThis.createAppModules;
-const createAppRouting = globalThis.createAppRouting;
-const frontendUtils = globalThis.frontendUtils;
-const frontendRouter = globalThis.frontendRouter;
+function getRequiredGlobal(name) {
+  const value = globalThis[name];
+  if (typeof value === 'undefined') {
+    throw new Error(`Missing required global '${name}'. Ensure all bootstrap scripts are loaded in the correct order.`);
+  }
+  return value;
+}
+
+const createAppDom = getRequiredGlobal('createAppDom');
+const createAppState = getRequiredGlobal('createAppState');
+const createApiRequest = getRequiredGlobal('createApiRequest');
+const createAppModules = getRequiredGlobal('createAppModules');
+const createAppRouting = getRequiredGlobal('createAppRouting');
+const frontendUtils = getRequiredGlobal('frontendUtils');
+const frontendRouter = getRequiredGlobal('frontendRouter');
 
 const appDom = createAppDom(document);
 const appState = createAppState();

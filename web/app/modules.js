@@ -31,6 +31,39 @@
    */
   function createAppModules(config) {
     const {
+      createBankAccountsModule,
+      createCreditCardsModule,
+      createCreditCardInstallmentsModule,
+      createCreditCardCyclesModule,
+      createCreditCardSubscriptionsModule,
+      createCurrenciesModule,
+      createBanksModule,
+      createPeopleModule,
+      createTransactionCategoriesModule,
+      createTransactionsModule,
+    } = globalScope;
+
+    const moduleFactories = {
+      createBankAccountsModule,
+      createCreditCardsModule,
+      createCreditCardInstallmentsModule,
+      createCreditCardCyclesModule,
+      createCreditCardSubscriptionsModule,
+      createCurrenciesModule,
+      createBanksModule,
+      createPeopleModule,
+      createTransactionCategoriesModule,
+      createTransactionsModule,
+    };
+
+    Object.keys(moduleFactories).forEach((name) => {
+      const factory = moduleFactories[name];
+      if (typeof factory !== "function") {
+        throw new Error(`Missing or invalid module factory on global scope: ${name} (expected function, got ${String(factory)})`);
+      }
+    });
+
+    const {
       dom,
       state,
       apiRequest,

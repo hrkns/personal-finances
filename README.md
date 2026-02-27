@@ -93,3 +93,4 @@ This keeps schema changes versioned, reviewable, and repeatable without requirin
 - REST API documentation index: [docs/API.md](docs/API.md)
 - Split API resource docs: [docs/api/](docs/api)
 - Tests documentation: [docs/TESTS.md](docs/TESTS.md)
+- Linting documentation: [docs/LINTING.md](docs/LINTING.md)

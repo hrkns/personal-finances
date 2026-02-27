@@ -124,8 +124,9 @@ E2E details:
 
 ## Typical Local Validation Order
 
-1. `go test ./...`
-2. `npm run test:frontend`
-3. `npm run test:frontend:e2e`
+1. `npm run lint`
+2. `go test ./...`
+3. `npm run test:frontend`
+4. `npm run test:frontend:e2e`
 
 This order gives quick backend/frontend feedback before browser-level E2E.

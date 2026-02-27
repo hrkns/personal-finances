@@ -22,7 +22,7 @@ function collectGoFiles(rootDir) {
       }
 
       if (entry.isFile() && entry.name.endsWith(".go")) {
-        files.push(absolutePath);
+        files.push(path.relative(rootDir, absolutePath));
       }
     }
   }

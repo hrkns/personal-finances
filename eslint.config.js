@@ -67,7 +67,7 @@ module.exports = [
       },
     },
     rules: {
-      "no-undef": "off",
+      "no-undef": "error",
     },
   },
 ];

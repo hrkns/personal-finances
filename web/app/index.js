@@ -7,6 +7,14 @@
  * - Angular: comparable to an `AppModule` + `AppComponent` initialization sequence.
  * - Vue: similar to `main.js` where plugins/composables are assembled and mounted.
  */
+const createAppDom = globalThis.createAppDom;
+const createAppState = globalThis.createAppState;
+const createApiRequest = globalThis.createApiRequest;
+const createAppModules = globalThis.createAppModules;
+const createAppRouting = globalThis.createAppRouting;
+const frontendUtils = globalThis.frontendUtils;
+const frontendRouter = globalThis.frontendRouter;
+
 const appDom = createAppDom(document);
 const appState = createAppState();
 const apiRequest = createApiRequest(frontendUtils.parseApiResponse);

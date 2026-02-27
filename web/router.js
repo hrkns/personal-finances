@@ -30,7 +30,7 @@
   }
 
   function buildURLForRoute(route, options = {}) {
-    const url = new URL(window.location.href);
+    const url = new window.URL(window.location.href);
     if (route === "home") {
       url.searchParams.delete("view");
     } else {

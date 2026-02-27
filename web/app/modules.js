@@ -31,6 +31,19 @@
    */
   function createAppModules(config) {
     const {
+      createBankAccountsModule,
+      createCreditCardsModule,
+      createCreditCardInstallmentsModule,
+      createCreditCardCyclesModule,
+      createCreditCardSubscriptionsModule,
+      createCurrenciesModule,
+      createBanksModule,
+      createPeopleModule,
+      createTransactionCategoriesModule,
+      createTransactionsModule,
+    } = globalScope;
+
+    const {
       dom,
       state,
       apiRequest,

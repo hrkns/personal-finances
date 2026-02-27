@@ -2,7 +2,16 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { spawnSync } = require("node:child_process");
 
-const ignoredDirs = new Set([".git", "node_modules", "data", "test-results"]);
+const ignoredDirs = new Set([
+  ".git",
+  "node_modules",
+  "data",
+  "test-results",
+  "web",
+  "docs",
+  "e2e",
+  "migrations",
+]);
 
 function collectGoFiles(rootDir) {
   const stack = [rootDir];

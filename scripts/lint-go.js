@@ -49,13 +49,14 @@ function runOrExit(command, args, options = {}) {
 
 function main() {
   const shouldCheckFormatting = process.argv.includes("--fmtcheck");
-  const goFiles = collectGoFiles(process.cwd());
-  if (goFiles.length === 0) {
-    console.log("No Go files found.");
-    return;
-  }
 
   if (shouldCheckFormatting) {
+    const goFiles = collectGoFiles(process.cwd());
+    if (goFiles.length === 0) {
+      console.log("No Go files found.");
+      return;
+    }
+
     const gofmt = runOrExit("gofmt", ["-l", ...goFiles]);
     if (gofmt.status !== 0) {
       console.error("gofmt execution failed.");

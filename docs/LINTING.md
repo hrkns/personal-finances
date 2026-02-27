@@ -45,7 +45,7 @@ npm run lint:go:fix
 - `lint:js` runs ESLint using `eslint.config.js` across project JavaScript files.
 - `lint:go` runs `go vet ./...` through `scripts/lint-go.js`.
 - `lint:go:fmtcheck` runs:
-  - `gofmt -l` on all `.go` files
+  - `gofmt -l` on Go files while skipping certain directories (such as `web`, `docs`, `e2e`, and `migrations`) as configured in `scripts/lint-go.js`
   - `go vet ./...`
 - `lint:go:fix` runs `gofmt -s -w` on `./main.go` and all Go files under `./backend`.
 

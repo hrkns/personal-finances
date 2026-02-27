@@ -57,6 +57,17 @@ function main() {
 
   if (shouldCheckFormatting) {
     const gofmt = runOrExit("gofmt", ["-l", ...goFiles]);
+    if (gofmt.status !== 0) {
+      console.error("gofmt execution failed.");
+      if (gofmt.stdout) {
+        process.stdout.write(gofmt.stdout);
+      }
+      if (gofmt.stderr) {
+        process.stderr.write(gofmt.stderr);
+      }
+      process.exit(gofmt.status ?? 1);
+    }
+
     const notFormatted = gofmt.stdout.trim();
     if (notFormatted.length > 0) {
       console.error("gofmt check failed. The following files need formatting:");

@@ -61,28 +61,33 @@ function main() {
 
   if (shouldCheckFormatting) {
     const goFiles = collectGoFiles(process.cwd());
+
     if (goFiles.length === 0) {
       console.log("No Go files found.");
-      return;
-    }
+    } else {
+      const gofmt = runOrExit("gofmt", ["-l", ...goFiles]);
 
-    const gofmt = runOrExit("gofmt", ["-l", ...goFiles]);
-    if (gofmt.status !== 0) {
-      console.error("gofmt execution failed.");
-      if (gofmt.stdout) {
-        process.stdout.write(gofmt.stdout);
-      }
-      if (gofmt.stderr) {
-        process.stderr.write(gofmt.stderr);
-      }
-      process.exit(gofmt.status ?? 1);
-    }
+      if (gofmt.status !== 0) {
+        console.error("gofmt execution failed.");
 
-    const notFormatted = gofmt.stdout.trim();
-    if (notFormatted.length > 0) {
-      console.error("gofmt check failed. The following files need formatting:");
-      console.error(notFormatted);
-      process.exit(1);
+        if (gofmt.stdout) {
+          process.stdout.write(gofmt.stdout);
+        }
+
+        if (gofmt.stderr) {
+          process.stderr.write(gofmt.stderr);
+        }
+
+        process.exit(gofmt.status ?? 1);
+      }
+
+      const notFormatted = gofmt.stdout.trim();
+
+      if (notFormatted.length > 0) {
+        console.error("gofmt check failed. The following files need formatting:");
+        console.error(notFormatted);
+        process.exit(1);
+      }
     }
   }
 

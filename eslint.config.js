@@ -59,11 +59,13 @@ module.exports = [
         history: "readonly",
         location: "readonly",
         URLSearchParams: "readonly",
+        URL: "readonly",
         CustomEvent: "readonly",
         setTimeout: "readonly",
         clearTimeout: "readonly",
         console: "readonly",
         module: "readonly",
+        globalThis: "readonly",
       },
     },
     rules: {

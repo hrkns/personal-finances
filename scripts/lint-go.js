@@ -41,10 +41,12 @@ function collectGoFiles(rootDir) {
 }
 
 function runOrExit(command, args, options = {}) {
+  const stdio = options.stdio ?? "pipe";
   const result = spawnSync(command, args, {
-    stdio: "pipe",
+    stdio,
     shell: false,
     encoding: "utf8",
+    maxBuffer: options.maxBuffer ?? 10 * 1024 * 1024,
     ...options,
   });
 
@@ -91,14 +93,11 @@ function main() {
     }
   }
 
-  const govet = runOrExit("go", ["vet", "./..."], { cwd: process.cwd() });
+  const govet = runOrExit("go", ["vet", "./..."], {
+    cwd: process.cwd(),
+    stdio: "inherit",
+  });
   if (govet.status !== 0) {
-    if (govet.stdout) {
-      process.stdout.write(govet.stdout);
-    }
-    if (govet.stderr) {
-      process.stderr.write(govet.stderr);
-    }
     process.exit(govet.status ?? 1);
   }
 

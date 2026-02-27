@@ -18,6 +18,7 @@
     "test:frontend:e2e:headed": "playwright test --headed"
   },
   "devDependencies": {
+    "@eslint/js": "^9.22.0",
     "@playwright/test": "^1.54.1",
     "eslint": "^9.22.0",
     "jsdom": "^26.1.0"

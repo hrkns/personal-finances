@@ -163,7 +163,7 @@ test("normalizeTransactionInput normalizes type, amount, ids and nullable notes"
 });
 
 test("escapeHtml escapes unsafe characters", () => {
-  const escaped = escapeHtml(`<script>alert('x') & \"y\"</script>`);
+  const escaped = escapeHtml(`<script>alert('x') & "y"</script>`);
 
   assert.equal(
     escaped,

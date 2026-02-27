@@ -47,7 +47,7 @@ npm run lint:go:fix
 - `lint:go:fmtcheck` runs:
   - `gofmt -l` on all `.go` files
   - `go vet ./...`
-- `lint:go:fix` runs `gofmt -s -w`.
+- `lint:go:fix` runs `gofmt -s -w` on `./main.go` and all Go files under `./backend`.
 
 ## Notes
 

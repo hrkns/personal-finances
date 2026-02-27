@@ -53,3 +53,8 @@ npm run lint:go:fix
 
 - `lint` currently uses `lint:go` (without `gofmt` check) to avoid blocking on historical formatting in untouched Go files.
 - Use `lint:go:fmtcheck` when you want strict Go formatting validation.
+
+## Runtime Requirements
+
+- Node.js `>=18.18.0` (required by `eslint@9` and declared in `package.json` `engines.node`)
+- Go installed and available in `PATH` (required for `go vet`/`gofmt` commands)

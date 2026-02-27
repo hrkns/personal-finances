@@ -1,6 +1,9 @@
 {
   "name": "personal-finances",
   "private": true,
+  "engines": {
+    "node": ">=18.18.0"
+  },
   "scripts": {
     "lint": "npm run lint:js && npm run lint:go",
     "lint:js": "eslint .",

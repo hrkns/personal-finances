@@ -49,6 +49,7 @@ func (application app) registerAPIRoutes(mux *http.ServeMux) {
 	application.registerCreditCardCycleRoutes(mux)
 	application.registerCreditCardInstallmentRoutes(mux)
 	application.registerCreditCardSubscriptionRoutes(mux)
+	application.registerExpenseRoutes(mux)
 }
 
 func healthHandler(writer http.ResponseWriter, _ *http.Request) {

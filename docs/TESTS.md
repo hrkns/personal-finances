@@ -27,6 +27,7 @@ Covered areas include:
 - Bank CRUD and validations
 - Bank Account CRUD and validations
 - Credit Card CRUD and validations
+- Expense CRUD and validations
 - Credit Card currency association management
 - Countries endpoint behavior
 - Migration-backed test setup through temp SQLite DB
@@ -49,6 +50,7 @@ Current focus:
   - `normalizeTransactionInput`
   - `normalizeCurrencyInput`
   - `normalizeBankInput`
+  - `normalizeExpenseInput`
   - `escapeHtml`
   - `parseApiResponse`
 
@@ -69,6 +71,7 @@ These tests execute `index.html` + scripts in JSDOM with a mocked `fetch`, valid
 - Currency form/table flows
 - Bank form/table flows
 - Bank Account form/table flows
+- Expenses CRUD flow
 - Error handling on duplicate constraints
 - Country options loaded from `/api/countries`
 
@@ -84,6 +87,7 @@ Integration files are split by concern:
 - `web/modules/bank-accounts.integration.test.js`
 - `web/modules/credit-cards.integration.test.js`
 - `web/modules/credit-card-subscriptions.integration.test.js`
+- `web/modules/expenses.integration.test.js`
 
 ## Frontend Combined (Unit + Integration)
 
@@ -118,6 +122,7 @@ E2E details:
 - Spins up app with `go run .`
 - Uses isolated sqlite database via `DATABASE_PATH`
 - Covers browser-level Transactions, Transaction Categories, People, Currency, Banks, Bank Accounts, and Credit Cards flows
+- Covers browser-level Expenses CRUD flow
 - Covers browser-level Credit Card Subscriptions CRUD flow
 - Covers browser-level management of currencies assigned to each credit card inside Credit Cards view
 - Verifies conflict scenarios and UI messages

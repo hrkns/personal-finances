@@ -14,6 +14,9 @@ func TestExpenseCRUDFlow(t *testing.T) {
 	if createResponse.Code != http.StatusCreated {
 		t.Fatalf("expected 201 for create, got %d", createResponse.Code)
 	}
+	if createResponse.Header().Get("Location") == "" {
+		t.Fatal("expected Location header for created expense")
+	}
 
 	var created expense
 	if err := json.NewDecoder(createResponse.Body).Decode(&created); err != nil {

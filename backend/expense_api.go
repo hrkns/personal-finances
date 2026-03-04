@@ -83,6 +83,11 @@ func (application app) listExpenses(writer http.ResponseWriter) {
 		items = append(items, item)
 	}
 
+	if err = rows.Err(); err != nil {
+		writeError(writer, http.StatusInternalServerError, "internal_error", "failed to read expenses")
+		return
+	}
+
 	writeJSON(writer, http.StatusOK, items)
 }
 

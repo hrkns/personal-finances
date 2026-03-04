@@ -38,10 +38,12 @@ const appRouting = createAppRouting({
   tabButtonElements: appDom.tabButtonElements,
   settingsTabButtonElements: appDom.settingsTabButtonElements,
   creditCardTabButtonElements: appDom.creditCardTabButtonElements,
+  expenseTabButtonElements: appDom.expenseTabButtonElements,
   settingsSelectionMessageElement: appDom.settingsSelectionMessageElement,
   views: appDom.views,
   settingsViews: appDom.settingsViews,
   creditCardViews: appDom.creditCardViews,
+  expenseViews: appDom.expenseViews,
   frontendRouter,
 });
 
@@ -71,6 +73,7 @@ async function init() {
     appModules.currenciesModule.load(),
     appModules.banksModule.load(),
     appModules.bankAccountsModule.load(),
+    appModules.expensesModule.load(),
   ]);
 
   await appModules.creditCardsModule.load();
@@ -107,6 +110,9 @@ async function init() {
 
   appDom.creditCardCycles.formElement.addEventListener("submit", appModules.creditCardCyclesModule.onSubmit);
   appDom.creditCardCycles.cancelButtonElement.addEventListener("click", appModules.creditCardCyclesModule.resetForm);
+
+  appDom.expenses.formElement.addEventListener("submit", appModules.expensesModule.onSubmit);
+  appDom.expenses.cancelButtonElement.addEventListener("click", appModules.expensesModule.resetForm);
 
   appDom.creditCardCycleBalances.formElement.addEventListener("submit", appModules.creditCardCyclesModule.onBalanceSubmit);
   appDom.creditCardCycleBalances.cancelButtonElement.addEventListener("click", appModules.creditCardCyclesModule.resetBalanceForm);

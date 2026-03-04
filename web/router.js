@@ -1,7 +1,8 @@
 (function initFrontendRouter(globalScope) {
-  const validRoutes = new Set(["home", "transactions", "credit-cards", "settings"]);
+  const validRoutes = new Set(["home", "transactions", "credit-cards", "expenses", "settings"]);
   const validSettingsSections = new Set(["transaction-categories", "people", "bank-accounts", "banks", "currency"]);
   const validCreditCardSections = new Set(["cards", "cycles", "installments", "subscriptions"]);
+  const validExpenseSections = new Set(["master-data"]);
 
   function normalizeRoute(route) {
     return String(route ?? "").trim().toLowerCase();
@@ -27,6 +28,28 @@
 
     const section = normalizeRoute(sectionParam);
     return validSettingsSections.has(section) ? section : null;
+  }
+
+  function readCreditCardSectionFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    const sectionParam = params.get("creditCards");
+    if (!sectionParam) {
+      return null;
+    }
+
+    const section = normalizeRoute(sectionParam);
+    return validCreditCardSections.has(section) ? section : null;
+  }
+
+  function readExpenseSectionFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    const sectionParam = params.get("expenses");
+    if (!sectionParam) {
+      return null;
+    }
+
+    const section = normalizeRoute(sectionParam);
+    return validExpenseSections.has(section) ? section : null;
   }
 
   function buildURLForRoute(route, options = {}) {
@@ -59,26 +82,26 @@
       url.searchParams.delete("creditCards");
     }
 
+    if (route === "expenses") {
+      const requestedSection = normalizeRoute(options.expenseSection);
+      if (validExpenseSections.has(requestedSection)) {
+        url.searchParams.set("expenses", requestedSection);
+      } else {
+        url.searchParams.delete("expenses");
+      }
+    } else {
+      url.searchParams.delete("expenses");
+    }
+
     return `${url.pathname}${url.search}${url.hash}`;
   }
 
-  function dispatchRouteChange(route, settingsSection, creditCardSection) {
+  function dispatchRouteChange(route, settingsSection, creditCardSection, expenseSection) {
     window.dispatchEvent(
       new CustomEvent("app:route-changed", {
-        detail: { route, settingsSection, creditCardSection },
+        detail: { route, settingsSection, creditCardSection, expenseSection },
       })
     );
-  }
-
-  function readCreditCardSectionFromURL() {
-    const params = new URLSearchParams(window.location.search);
-    const sectionParam = params.get("creditCards");
-    if (!sectionParam) {
-      return null;
-    }
-
-    const section = normalizeRoute(sectionParam);
-    return validCreditCardSections.has(section) ? section : null;
   }
 
   function navigate(route, options = {}) {
@@ -94,9 +117,15 @@
         ? normalizeRoute(options.creditCardSection)
         : "cards")
       : null;
+    const targetExpenseSection = targetRoute === "expenses"
+      ? (validExpenseSections.has(normalizeRoute(options.expenseSection))
+        ? normalizeRoute(options.expenseSection)
+        : "master-data")
+      : null;
     const targetURL = buildURLForRoute(targetRoute, {
       settingsSection: targetSettingsSection,
       creditCardSection: targetCreditCardSection,
+      expenseSection: targetExpenseSection,
     });
     const method = options.replace ? "replaceState" : "pushState";
 
@@ -104,11 +133,12 @@
       window.history[method]({}, "", targetURL);
     }
 
-    dispatchRouteChange(targetRoute, targetSettingsSection, targetCreditCardSection);
+    dispatchRouteChange(targetRoute, targetSettingsSection, targetCreditCardSection, targetExpenseSection);
     return {
       route: targetRoute,
       settingsSection: targetSettingsSection,
       creditCardSection: targetCreditCardSection,
+      expenseSection: targetExpenseSection,
     };
   }
 
@@ -123,24 +153,38 @@
 
         const creditCardSection = readCreditCardSectionFromURL();
         if (creditCardSection) {
-          return { route, settingsSection: null, creditCardSection };
+          return { route, settingsSection: null, creditCardSection, expenseSection: null };
         }
 
         return navigate("credit-cards", { replace: true, creditCardSection: "cards" });
       }
 
+      if (route === "expenses") {
+        const params = new URLSearchParams(window.location.search);
+        if (!params.has("expenses")) {
+          return navigate("expenses", { replace: true, expenseSection: "master-data" });
+        }
+
+        const expenseSection = readExpenseSectionFromURL();
+        if (expenseSection) {
+          return { route, settingsSection: null, creditCardSection: null, expenseSection };
+        }
+
+        return navigate("expenses", { replace: true, expenseSection: "master-data" });
+      }
+
       if (route !== "settings") {
-        return { route, settingsSection: null, creditCardSection: null };
+        return { route, settingsSection: null, creditCardSection: null, expenseSection: null };
       }
 
       const params = new URLSearchParams(window.location.search);
       if (!params.has("settings")) {
-        return { route, settingsSection: null, creditCardSection: null };
+        return { route, settingsSection: null, creditCardSection: null, expenseSection: null };
       }
 
       const settingsSection = readSettingsSectionFromURL();
       if (settingsSection) {
-        return { route, settingsSection, creditCardSection: null };
+        return { route, settingsSection, creditCardSection: null, expenseSection: null };
       }
 
       return navigate("settings", { replace: true });
@@ -165,6 +209,7 @@
         route: event.detail.route,
         settingsSection: event.detail.settingsSection || null,
         creditCardSection: event.detail.creditCardSection || null,
+        expenseSection: event.detail.expenseSection || null,
       });
     };
 
@@ -181,6 +226,7 @@
     validRoutes: [...validRoutes],
     validSettingsSections: [...validSettingsSections],
     validCreditCardSections: [...validCreditCardSections],
+    validExpenseSections: [...validExpenseSections],
     navigate,
     ensureValidRoute,
     onRouteChange,

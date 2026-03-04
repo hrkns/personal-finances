@@ -14,6 +14,7 @@
       <button type="button" class="tab-button" data-route-tab="home">Home</button>
       <button type="button" class="tab-button" data-route-tab="transactions">Transactions</button>
       <button type="button" class="tab-button" data-route-tab="credit-cards">Credit Cards</button>
+      <button type="button" class="tab-button" data-route-tab="expenses">Expenses</button>
       <button type="button" class="tab-button" data-route-tab="settings">Settings</button>
     </nav>
 
@@ -351,6 +352,52 @@
       </section>
     </section>
 
+    <section id="view-expenses" class="view" data-view="expenses" hidden>
+      <h2>Expenses</h2>
+      <nav class="tabs" aria-label="Expenses Views">
+        <button type="button" class="tab-button" data-expense-tab="master-data">Master Data</button>
+      </nav>
+
+      <section id="view-expenses-master-data" class="expenses-view" hidden>
+        <h2>Master Data</h2>
+        <form id="expense-form">
+          <input type="hidden" id="expense-id" />
+
+          <label for="expense-name">Name</label>
+          <input id="expense-name" name="name" type="text" required />
+
+          <label for="expense-frequency">Frequency</label>
+          <select id="expense-frequency" name="frequency" required>
+            <option value="">Select frequency</option>
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+            <option value="annually">Annually</option>
+          </select>
+
+          <div class="actions">
+            <button id="expense-submit-button" type="submit">Create</button>
+            <button id="expense-cancel-button" type="button" hidden>Cancel edit</button>
+          </div>
+        </form>
+
+        <p id="expense-form-message" role="status"></p>
+
+        <h2>Expenses</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Frequency</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="expenses-body"></tbody>
+        </table>
+      </section>
+    </section>
+
     <section id="view-settings" class="view" data-view="settings" hidden>
       <h2>Settings</h2>
       <p id="settings-selection-message">Select a settings section to continue.</p>
@@ -560,6 +607,7 @@
   <script src="modules/banks.js"></script>
   <script src="modules/bank-accounts.js"></script>
   <script src="modules/credit-cards.js"></script>
+  <script src="modules/expenses.js"></script>
   <script src="modules/credit-card-installments.js"></script>
   <script src="modules/credit-card-cycles.js"></script>
   <script src="modules/credit-card-subscriptions.js"></script>

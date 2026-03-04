@@ -72,6 +72,8 @@ function createStores() {
     creditCardCycleBalancesStore: [],
     nextCreditCardCurrencyId: 1,
     creditCardCurrenciesStore: [],
+    nextExpenseId: 1,
+    expensesStore: [],
     nextTransactionId: 1,
     transactionsStore: [],
     countriesStore: [

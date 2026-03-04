@@ -13,6 +13,7 @@ const {
   normalizeCreditCardInstallmentInput,
   normalizeCreditCardSubscriptionInput,
   normalizeTransactionInput,
+  normalizeExpenseInput,
   escapeHtml,
   parseApiResponse,
 } = require("./utils.js");
@@ -160,6 +161,15 @@ test("normalizeTransactionInput normalizes type, amount, ids and nullable notes"
 
   const emptyNotes = normalizeTransactionInput("2026-02-18", "expense", "10", "   ", "1", "2", "3");
   assert.equal(emptyNotes.notes, null);
+});
+
+test("normalizeExpenseInput trims name and normalizes frequency", () => {
+  const payload = normalizeExpenseInput("  Rent  ", " Monthly ");
+
+  assert.deepEqual(payload, {
+    name: "Rent",
+    frequency: "monthly",
+  });
 });
 
 test("escapeHtml escapes unsafe characters", () => {

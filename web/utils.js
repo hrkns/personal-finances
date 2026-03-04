@@ -99,6 +99,13 @@
     };
   }
 
+  function normalizeExpenseInput(name, frequency) {
+    return {
+      name: String(name ?? "").trim(),
+      frequency: String(frequency ?? "").trim().toLowerCase(),
+    };
+  }
+
   function escapeHtml(value) {
     return String(value)
       .replaceAll("&", "&amp;")
@@ -135,6 +142,7 @@
     normalizeCreditCardInstallmentInput,
     normalizeCreditCardSubscriptionInput,
     normalizeTransactionInput,
+    normalizeExpenseInput,
     escapeHtml,
     parseApiResponse,
   };

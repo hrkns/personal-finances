@@ -1,30 +1,5 @@
 const { createResponse, normalize } = require("../../integration-http.js");
-const { parseBody, cloneItems, conflict, invalidPayload, trimmedValue } = require("../helpers.js");
-
-const validFrequencies = new Set(["daily", "weekly", "monthly", "annually"]);
-
-function normalizeFrequency(value) {
-  return String(value ?? "").trim().toLowerCase();
-}
-
-function validateExpensePayload(payload) {
-  const name = trimmedValue(payload.name);
-  const frequency = normalizeFrequency(payload.frequency);
-
-  if (!name) {
-    return { error: invalidPayload("name is required") };
-  }
-
-  if (!frequency) {
-    return { error: invalidPayload("frequency is required") };
-  }
-
-  if (!validFrequencies.has(frequency)) {
-    return { error: invalidPayload("frequency must be one of: daily, weekly, monthly, annually") };
-  }
-
-  return { payload: { name, frequency } };
-}
+const { parseBody, cloneItems, conflict, validateExpensePayload } = require("../helpers.js");
 
 function handleExpensesCollection(pathname, method, options, stores) {
   if (pathname === "/api/expenses" && method === "GET") {

@@ -112,6 +112,29 @@ function isValidISODate(value) {
   );
 }
 
+function validateExpensePayload(payload) {
+  const validFrequencies = new Set(["daily", "weekly", "monthly", "annually"]);
+
+  const normalizeFrequency = (value) => String(value ?? "").trim().toLowerCase();
+
+  const name = trimmedValue(payload.name);
+  const frequency = normalizeFrequency(payload.frequency);
+
+  if (!name) {
+    return { error: invalidPayload("name is required") };
+  }
+
+  if (!frequency) {
+    return { error: invalidPayload("frequency is required") };
+  }
+
+  if (!validFrequencies.has(frequency)) {
+    return { error: invalidPayload("frequency must be one of: daily, weekly, monthly, annually") };
+  }
+
+  return { payload: { name, frequency } };
+}
+
 module.exports = {
   parseBody,
   cloneItems,
@@ -124,4 +147,5 @@ module.exports = {
   createStores,
   parseParentID,
   isValidISODate,
+  validateExpensePayload,
 };

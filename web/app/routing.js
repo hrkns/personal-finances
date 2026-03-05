@@ -13,10 +13,12 @@
    *   tabButtonElements: NodeListOf<Element>,
    *   settingsTabButtonElements: NodeListOf<Element>,
    *   creditCardTabButtonElements: NodeListOf<Element>,
+   *   expenseTabButtonElements: NodeListOf<Element>,
    *   settingsSelectionMessageElement: HTMLElement,
    *   views: object,
    *   settingsViews: object,
    *   creditCardViews: object,
+   *   expenseViews: object,
    *   frontendRouter: object
    * }} config DOM and router dependencies.
    * @returns {{applyRoute: (routeState: any) => void, bindTabNavigation: () => void}}
@@ -26,10 +28,12 @@
       tabButtonElements,
       settingsTabButtonElements,
       creditCardTabButtonElements,
+      expenseTabButtonElements,
       settingsSelectionMessageElement,
       views,
       settingsViews,
       creditCardViews,
+      expenseViews,
       frontendRouter,
     } = config;
 
@@ -39,6 +43,7 @@
           route: routeState,
           settingsSection: null,
           creditCardSection: null,
+          expenseSection: null,
         };
       }
 
@@ -46,6 +51,7 @@
         route: routeState?.route || "home",
         settingsSection: routeState?.settingsSection || null,
         creditCardSection: routeState?.creditCardSection || null,
+        expenseSection: routeState?.expenseSection || null,
       };
     }
 
@@ -54,10 +60,12 @@
       const activeRoute = state.route;
       const activeSettingsSection = state.settingsSection;
       const activeCreditCardSection = state.creditCardSection;
+      const activeExpenseSection = state.expenseSection;
 
       views.home.hidden = activeRoute !== "home";
       views.transactions.hidden = activeRoute !== "transactions";
       views.creditCards.hidden = activeRoute !== "credit-cards";
+      views.expenses.hidden = activeRoute !== "expenses";
       views.settings.hidden = activeRoute !== "settings";
 
       settingsViews.transactionCategories.hidden =
@@ -71,6 +79,8 @@
       creditCardViews.installments.hidden = activeRoute !== "credit-cards" || activeCreditCardSection !== "installments";
       creditCardViews.cycles.hidden = activeRoute !== "credit-cards" || activeCreditCardSection !== "cycles";
       creditCardViews.subscriptions.hidden = activeRoute !== "credit-cards" || activeCreditCardSection !== "subscriptions";
+
+      expenseViews.masterData.hidden = activeRoute !== "expenses" || activeExpenseSection !== "master-data";
 
       settingsSelectionMessageElement.hidden =
         activeRoute !== "settings" || Boolean(activeSettingsSection);
@@ -88,6 +98,11 @@
       creditCardTabButtonElements.forEach((button) => {
         const section = button.getAttribute("data-credit-card-tab");
         button.classList.toggle("active", activeRoute === "credit-cards" && section === activeCreditCardSection);
+      });
+
+      expenseTabButtonElements.forEach((button) => {
+        const section = button.getAttribute("data-expense-tab");
+        button.classList.toggle("active", activeRoute === "expenses" && section === activeExpenseSection);
       });
     }
 
@@ -110,6 +125,13 @@
         button.addEventListener("click", () => {
           const creditCardSection = button.getAttribute("data-credit-card-tab");
           frontendRouter.navigate("credit-cards", { creditCardSection });
+        });
+      });
+
+      expenseTabButtonElements.forEach((button) => {
+        button.addEventListener("click", () => {
+          const expenseSection = button.getAttribute("data-expense-tab");
+          frontendRouter.navigate("expenses", { expenseSection });
         });
       });
     }

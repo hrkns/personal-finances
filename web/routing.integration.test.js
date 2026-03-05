@@ -10,6 +10,7 @@ test("frontend initializes at Home route and can route to transactions and setti
   const transactionCategoriesHiddenBefore = document.getElementById("view-transaction-categories").hidden;
   const transactionsHiddenBefore = document.getElementById("view-transactions").hidden;
   const creditCardsHiddenBefore = document.getElementById("view-credit-cards").hidden;
+  const expensesHiddenBefore = document.getElementById("view-expenses").hidden;
   const settingsHiddenBefore = document.getElementById("view-settings").hidden;
   const peopleHiddenBefore = document.getElementById("view-people").hidden;
   const bankAccountsHiddenBefore = document.getElementById("view-bank-accounts").hidden;
@@ -64,6 +65,11 @@ test("frontend initializes at Home route and can route to transactions and setti
   const subscriptionsSubViewHiddenAfterSubscriptionSelect = document.getElementById("view-credit-card-subscriptions").hidden;
   const emptyCreditCardSubscriptionsState = document.getElementById("credit-card-subscriptions-body").textContent;
 
+  document.querySelector('[data-route-tab="expenses"]').click();
+  const expensesHiddenAfter = document.getElementById("view-expenses").hidden;
+  const masterDataHiddenAfter = document.getElementById("view-expenses-master-data").hidden;
+  const emptyExpensesState = document.getElementById("expenses-body").textContent;
+
   document.querySelector('[data-route-tab="settings"]').click();
   document.querySelector('[data-settings-tab="currency"]').click();
 
@@ -82,6 +88,7 @@ test("frontend initializes at Home route and can route to transactions and setti
   assert.equal(peopleHiddenBefore, true);
   assert.equal(bankAccountsHiddenBefore, true);
   assert.equal(creditCardsHiddenBefore, true);
+  assert.equal(expensesHiddenBefore, true);
   assert.equal(banksHiddenBefore, true);
   assert.equal(currencyHiddenBefore, true);
   assert.equal(settingsMessageHiddenBefore, true);
@@ -121,6 +128,9 @@ test("frontend initializes at Home route and can route to transactions and setti
   assert.match(emptyCreditCardInstallmentsState, /No credit card installments yet/);
   assert.match(emptyCreditCardCyclesState, /No credit card cycles yet/);
   assert.match(emptyCreditCardSubscriptionsState, /No credit card subscriptions yet/);
+  assert.equal(expensesHiddenAfter, false);
+  assert.equal(masterDataHiddenAfter, false);
+  assert.match(emptyExpensesState, /No expenses yet/);
   assert.match(countryOptions, /US - United States/);
   assert.match(bankAccountCurrencyOptions, /Select currency/);
 

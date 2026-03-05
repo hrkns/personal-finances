@@ -24,14 +24,16 @@
    *   creditCards: object,
    *   creditCardCycles: object,
    *   creditCardInstallments: object,
-  *    creditCardSubscriptions: object,
+   *   creditCardSubscriptions: object,
    *   creditCardCycleBalances: object,
    *   settingsSelectionMessageElement: HTMLElement,
    *   tabButtonElements: NodeListOf<Element>,
    *   settingsTabButtonElements: NodeListOf<Element>,
    *   creditCardTabButtonElements: NodeListOf<Element>,
+   *   expenseTabButtonElements: NodeListOf<Element>,
    *   views: object,
    *   creditCardViews: object,
+   *   expenseViews: object,
    *   settingsViews: object
    * }}
    */
@@ -166,14 +168,26 @@
         messageElement: documentRef.getElementById("credit-card-cycle-balance-form-message"),
         bodyElement: documentRef.getElementById("credit-card-cycle-balances-body"),
       },
+      expenses: {
+        formElement: documentRef.getElementById("expense-form"),
+        idElement: documentRef.getElementById("expense-id"),
+        nameElement: documentRef.getElementById("expense-name"),
+        frequencyElement: documentRef.getElementById("expense-frequency"),
+        submitButtonElement: documentRef.getElementById("expense-submit-button"),
+        cancelButtonElement: documentRef.getElementById("expense-cancel-button"),
+        messageElement: documentRef.getElementById("expense-form-message"),
+        bodyElement: documentRef.getElementById("expenses-body"),
+      },
       settingsSelectionMessageElement: documentRef.getElementById("settings-selection-message"),
       tabButtonElements: documentRef.querySelectorAll("[data-route-tab]"),
       settingsTabButtonElements: documentRef.querySelectorAll("[data-settings-tab]"),
       creditCardTabButtonElements: documentRef.querySelectorAll("[data-credit-card-tab]"),
+      expenseTabButtonElements: documentRef.querySelectorAll("[data-expense-tab]"),
       views: {
         home: documentRef.getElementById("view-home"),
         transactions: documentRef.getElementById("view-transactions"),
         creditCards: documentRef.getElementById("view-credit-cards"),
+        expenses: documentRef.getElementById("view-expenses"),
         settings: documentRef.getElementById("view-settings"),
       },
       creditCardViews: {
@@ -181,6 +195,9 @@
         installments: documentRef.getElementById("view-credit-card-installments"),
         cycles: documentRef.getElementById("view-credit-card-cycles"),
         subscriptions: documentRef.getElementById("view-credit-card-subscriptions"),
+      },
+      expenseViews: {
+        masterData: documentRef.getElementById("view-expenses-master-data"),
       },
       settingsViews: {
         transactionCategories: documentRef.getElementById("view-transaction-categories"),

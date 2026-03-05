@@ -23,6 +23,7 @@
    *   currenciesModule: object,
    *   banksModule: object,
    *   bankAccountsModule: object,
+   *   expensesModule: object,
    *   creditCardsModule: object,
    *   creditCardInstallmentsModule: object,
    *   creditCardSubscriptionsModule: object,
@@ -39,6 +40,7 @@
       createCurrenciesModule,
       createBanksModule,
       createPeopleModule,
+      createExpensesModule,
       createTransactionCategoriesModule,
       createTransactionsModule,
     } = globalScope;
@@ -52,6 +54,7 @@
       createCurrenciesModule,
       createBanksModule,
       createPeopleModule,
+      createExpensesModule,
       createTransactionCategoriesModule,
       createTransactionsModule,
     };
@@ -82,6 +85,7 @@
       normalizeCreditCardSubscriptionInput,
       normalizeCreditCardCycleInput,
       normalizeCreditCardCycleBalanceInput,
+      normalizeExpenseInput,
       escapeHtml,
     } = frontendUtils;
 
@@ -240,6 +244,15 @@
       },
     });
 
+    const expensesModule = createExpensesModule({
+      elements: dom.expenses,
+      apiRequest,
+      normalizeExpenseInput,
+      escapeHtml,
+      getExpenses: state.getExpenses,
+      setExpenses: state.setExpenses,
+    });
+
     transactionsModule = createTransactionsModule({
       elements: dom.transactions,
       apiRequest,
@@ -261,6 +274,7 @@
       currenciesModule,
       banksModule,
       bankAccountsModule,
+      expensesModule,
       creditCardsModule,
       creditCardInstallmentsModule,
       creditCardSubscriptionsModule,

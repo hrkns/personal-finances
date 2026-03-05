@@ -42,6 +42,7 @@ Frontend views are tab-based and route through the `view` query parameter:
 - Home: `/?view=home` (or `/`)
 - Transactions: `/?view=transactions`
 - Credit Cards: `/?view=credit-cards`
+- Expenses: `/?view=expenses`
 - Settings: `/?view=settings`
 
 Within Credit Cards, `creditCards` query parameter controls which subsection is open:

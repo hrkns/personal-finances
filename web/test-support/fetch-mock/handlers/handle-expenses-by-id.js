@@ -7,9 +7,18 @@ function handleExpensesByID(pathname, method, options, stores) {
     return null;
   }
 
+  const id = Number(expenseMatch[1]);
+  const index = stores.expensesStore.findIndex((item) => item.id === id);
+
+  if (method === "GET") {
+    if (index === -1) {
+      return notFound("expense not found");
+    }
+
+    return createResponse(200, { ...stores.expensesStore[index] });
+  }
+
   if (method === "PUT") {
-    const id = Number(expenseMatch[1]);
-    const index = stores.expensesStore.findIndex((item) => item.id === id);
     if (index === -1) {
       return notFound("expense not found");
     }
@@ -36,8 +45,6 @@ function handleExpensesByID(pathname, method, options, stores) {
   }
 
   if (method === "DELETE") {
-    const id = Number(expenseMatch[1]);
-    const index = stores.expensesStore.findIndex((item) => item.id === id);
     if (index === -1) {
       return notFound("expense not found");
     }

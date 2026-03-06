@@ -160,6 +160,16 @@ func TestExpensePaymentPeriodValidation(t *testing.T) {
 		t.Fatalf("expected duplicate monthly payment to return 409, got %d", monthlyDuplicate.Code)
 	}
 
+	missingResourceUpdate := performRequest(
+		router,
+		http.MethodPut,
+		"/api/expense-payments/999",
+		[]byte(`{"expense_id":1,"amount":95,"currency_id":1,"date":"2026-03-25"}`),
+	)
+	if missingResourceUpdate.Code != http.StatusNotFound {
+		t.Fatalf("expected update of non-existent expense payment to return 404, got %d", missingResourceUpdate.Code)
+	}
+
 	nextMonth := performRequest(
 		router,
 		http.MethodPost,

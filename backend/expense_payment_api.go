@@ -171,6 +171,16 @@ func (application app) updateExpensePayment(writer http.ResponseWriter, request 
 		return
 	}
 
+	_, err := application.fetchExpensePayment(id)
+	if errors.Is(err, sql.ErrNoRows) {
+		writeError(writer, http.StatusNotFound, "not_found", "expense payment not found")
+		return
+	}
+	if err != nil {
+		writeError(writer, http.StatusInternalServerError, "internal_error", "failed to load expense payment")
+		return
+	}
+
 	expenseFrequency, err := application.fetchExpenseFrequency(payload.ExpenseID)
 	if errors.Is(err, sql.ErrNoRows) {
 		writeError(writer, http.StatusBadRequest, "invalid_payload", "expense and currency must exist")

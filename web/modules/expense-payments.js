@@ -187,7 +187,8 @@
       }
 
       const expense = getExpenses().find((item) => item.id === payload.expense_id);
-      if (!expense) {
+      const currency = getCurrencies().find((item) => item.id === payload.currency_id);
+      if (!expense || !currency) {
         return "expense and currency must exist";
       }
 

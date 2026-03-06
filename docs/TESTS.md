@@ -4,7 +4,7 @@
 
 The project includes:
 
-- Backend tests (Go, `go test`)
+- Backend tests
 - Frontend unit tests (Node test runner)
 - Frontend integration tests (Node + JSDOM)
 - Frontend E2E tests (Playwright)
@@ -14,7 +14,7 @@ The project includes:
 Run all backend tests:
 
 ```bash
-go test ./...
+npm run test:backend
 ```
 
 Covered areas include:

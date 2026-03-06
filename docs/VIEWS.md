@@ -13,6 +13,7 @@ Within Credit Cards, `creditCards` query parameter controls which subsection is 
 - Cards: `/?view=credit-cards&creditCards=cards`
 - Cycles: `/?view=credit-cards&creditCards=cycles`
 - Installments: `/?view=credit-cards&creditCards=installments`
+- Subscriptions: `/?view=credit-cards&creditCards=subscriptions`
 
 Within Expenses, `expenses` query parameter controls which subsection is open:
 

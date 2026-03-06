@@ -19,3 +19,4 @@ This API documentation is split by topic for easier navigation and maintenance.
 - [Credit Card Installments](api/12-credit-card-installments.md)
 - [Credit Card Subscriptions](api/13-credit-card-subscriptions.md)
 - [Expenses](api/14-expenses.md)
+- [Expense Payments](api/15-expense-payments.md)

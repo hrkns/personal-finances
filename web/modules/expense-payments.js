@@ -12,6 +12,7 @@
       elements,
       apiRequest,
       normalizeExpensePaymentInput,
+      isValidISODate,
       escapeHtml,
       getExpenses,
       getCurrencies,
@@ -182,7 +183,7 @@
       if (!Number.isInteger(payload.currency_id) || payload.currency_id <= 0) {
         return "currency_id must be a positive integer";
       }
-      if (!payload.date) {
+      if (!isValidISODate(payload.date)) {
         return "date must be a valid date in YYYY-MM-DD format";
       }
 

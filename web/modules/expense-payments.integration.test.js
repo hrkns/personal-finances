@@ -165,3 +165,29 @@ test("frontend supports expense payment edit and delete actions", async () => {
 
   dom.window.close();
 });
+
+test("frontend validates expense payment date using YYYY-MM-DD calendar rules", async () => {
+  const { dom, window, document } = await setupFrontendApp();
+
+  await createExpense(document, window, "Internet", "monthly");
+  await createCurrency(document, window, "US Dollar", "USD");
+
+  await openExpensePayments(document, window);
+  selectFirstAvailableOption(document.getElementById("expense-payment-expense-id"));
+  document.getElementById("expense-payment-amount").value = "40";
+  selectFirstAvailableOption(document.getElementById("expense-payment-currency-id"));
+  document.getElementById("expense-payment-date").value = "2026-02-30";
+
+  document
+    .getElementById("expense-payment-form")
+    .dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  const message = document.getElementById("expense-payment-form-message");
+  assert.equal(message.textContent, "date must be a valid date in YYYY-MM-DD format");
+  assert.equal(message.className, "error");
+  assert.match(document.getElementById("expense-payments-body").textContent, /No expense payments yet/);
+
+  dom.window.close();
+});

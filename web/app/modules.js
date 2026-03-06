@@ -90,6 +90,7 @@
       normalizeCreditCardCycleBalanceInput,
       normalizeExpenseInput,
       normalizeExpensePaymentInput,
+      isValidISODate,
       escapeHtml,
     } = frontendUtils;
 
@@ -267,6 +268,7 @@
       elements: dom.expensePayments,
       apiRequest,
       normalizeExpensePaymentInput,
+      isValidISODate,
       escapeHtml,
       getExpenses: state.getExpenses,
       getCurrencies: state.getCurrencies,

@@ -15,6 +15,7 @@ const {
   normalizeTransactionInput,
   normalizeExpenseInput,
   normalizeExpensePaymentInput,
+  isValidISODate,
   escapeHtml,
   parseApiResponse,
 } = require("./utils.js");
@@ -182,6 +183,13 @@ test("normalizeExpensePaymentInput parses ids, amount and date", () => {
     currency_id: 2,
     date: "2026-03-20",
   });
+});
+
+test("isValidISODate validates format and calendar date", () => {
+  assert.equal(isValidISODate("2026-03-20"), true);
+  assert.equal(isValidISODate("2026-02-30"), false);
+  assert.equal(isValidISODate("2026-3-2"), false);
+  assert.equal(isValidISODate("invalid"), false);
 });
 
 test("escapeHtml escapes unsafe characters", () => {

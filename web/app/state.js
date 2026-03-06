@@ -22,6 +22,7 @@
    *   getCreditCardCycles: () => any[], setCreditCardCycles: (items: any[]) => void,
    *   getCreditCardCycleBalances: () => any[], setCreditCardCycleBalances: (items: any[]) => void,
    *   getExpenses: () => any[], setExpenses: (items: any[]) => void,
+   *   getExpensePayments: () => any[], setExpensePayments: (items: any[]) => void,
    *   getTransactions: () => any[], setTransactions: (items: any[]) => void
    * }}
    */
@@ -37,6 +38,7 @@
     let creditCardCycles = [];
     let creditCardCycleBalances = [];
     let expenses = [];
+    let expensePayments = [];
     let transactions = [];
 
     return {
@@ -83,6 +85,10 @@
       getExpenses: () => expenses,
       setExpenses: (items) => {
         expenses = items;
+      },
+      getExpensePayments: () => expensePayments,
+      setExpensePayments: (items) => {
+        expensePayments = items;
       },
       getTransactions: () => transactions,
       setTransactions: (items) => {

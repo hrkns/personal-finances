@@ -7,7 +7,7 @@ test("frontend can create and list an expense", async () => {
   const { dom, window, document } = await setupFrontendApp();
 
   document.querySelector('[data-route-tab="expenses"]').click();
-  document.querySelector('[data-expense-tab="master-data"]').click();
+  document.querySelector('[data-expense-tab="expenses"]').click();
   document.getElementById("expense-name").value = "Rent";
   document.getElementById("expense-frequency").value = "monthly";
 
@@ -32,7 +32,7 @@ test("frontend supports expense edit and delete actions", async () => {
   const { dom, window, document } = await setupFrontendApp();
 
   document.querySelector('[data-route-tab="expenses"]').click();
-  document.querySelector('[data-expense-tab="master-data"]').click();
+  document.querySelector('[data-expense-tab="expenses"]').click();
 
   document.getElementById("expense-name").value = "Gym";
   document.getElementById("expense-frequency").value = "weekly";
@@ -76,7 +76,7 @@ test("frontend shows validation error for invalid expense frequency", async () =
   const { dom, window, document } = await setupFrontendApp();
 
   document.querySelector('[data-route-tab="expenses"]').click();
-  document.querySelector('[data-expense-tab="master-data"]').click();
+  document.querySelector('[data-expense-tab="expenses"]').click();
 
   document.getElementById("expense-name").value = "Streaming";
   document.getElementById("expense-frequency").value = "";

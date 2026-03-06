@@ -197,7 +197,7 @@
         subscriptions: documentRef.getElementById("view-credit-card-subscriptions"),
       },
       expenseViews: {
-        masterData: documentRef.getElementById("view-expenses-master-data"),
+        expenses: documentRef.getElementById("view-expenses-expenses"),
       },
       settingsViews: {
         transactionCategories: documentRef.getElementById("view-transaction-categories"),

@@ -80,7 +80,7 @@
       creditCardViews.cycles.hidden = activeRoute !== "credit-cards" || activeCreditCardSection !== "cycles";
       creditCardViews.subscriptions.hidden = activeRoute !== "credit-cards" || activeCreditCardSection !== "subscriptions";
 
-      expenseViews.masterData.hidden = activeRoute !== "expenses" || activeExpenseSection !== "master-data";
+      expenseViews.expenses.hidden = activeRoute !== "expenses" || activeExpenseSection !== "expenses";
 
       settingsSelectionMessageElement.hidden =
         activeRoute !== "settings" || Boolean(activeSettingsSection);

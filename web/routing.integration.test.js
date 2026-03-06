@@ -67,7 +67,7 @@ test("frontend initializes at Home route and can route to transactions and setti
 
   document.querySelector('[data-route-tab="expenses"]').click();
   const expensesHiddenAfter = document.getElementById("view-expenses").hidden;
-  const masterDataHiddenAfter = document.getElementById("view-expenses-master-data").hidden;
+  const expensesExpensesHiddenAfter = document.getElementById("view-expenses-expenses").hidden;
   const emptyExpensesState = document.getElementById("expenses-body").textContent;
 
   document.querySelector('[data-route-tab="settings"]').click();
@@ -129,7 +129,7 @@ test("frontend initializes at Home route and can route to transactions and setti
   assert.match(emptyCreditCardCyclesState, /No credit card cycles yet/);
   assert.match(emptyCreditCardSubscriptionsState, /No credit card subscriptions yet/);
   assert.equal(expensesHiddenAfter, false);
-  assert.equal(masterDataHiddenAfter, false);
+  assert.equal(expensesExpensesHiddenAfter, false);
   assert.match(emptyExpensesState, /No expenses yet/);
   assert.match(countryOptions, /US - United States/);
   assert.match(bankAccountCurrencyOptions, /Select currency/);

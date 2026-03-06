@@ -14,6 +14,7 @@ const {
   normalizeCreditCardSubscriptionInput,
   normalizeTransactionInput,
   normalizeExpenseInput,
+  normalizeExpensePaymentInput,
   escapeHtml,
   parseApiResponse,
 } = require("./utils.js");
@@ -169,6 +170,17 @@ test("normalizeExpenseInput trims name and normalizes frequency", () => {
   assert.deepEqual(payload, {
     name: "Rent",
     frequency: "monthly",
+  });
+});
+
+test("normalizeExpensePaymentInput parses ids, amount and date", () => {
+  const payload = normalizeExpensePaymentInput(" 4 ", " 99.95 ", " 2 ", " 2026-03-20 ");
+
+  assert.deepEqual(payload, {
+    expense_id: 4,
+    amount: 99.95,
+    currency_id: 2,
+    date: "2026-03-20",
   });
 });
 

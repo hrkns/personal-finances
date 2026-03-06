@@ -106,6 +106,15 @@
     };
   }
 
+  function normalizeExpensePaymentInput(expenseID, amount, currencyID, date) {
+    return {
+      expense_id: Number.parseInt(String(expenseID ?? ""), 10),
+      amount: Number.parseFloat(String(amount ?? "0")),
+      currency_id: Number.parseInt(String(currencyID ?? ""), 10),
+      date: String(date ?? "").trim(),
+    };
+  }
+
   function escapeHtml(value) {
     return String(value)
       .replaceAll("&", "&amp;")
@@ -143,6 +152,7 @@
     normalizeCreditCardSubscriptionInput,
     normalizeTransactionInput,
     normalizeExpenseInput,
+    normalizeExpensePaymentInput,
     escapeHtml,
     parseApiResponse,
   };

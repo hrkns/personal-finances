@@ -265,6 +265,8 @@ func decodeExpensePaymentPayload(request *http.Request) (expensePaymentPayload, 
 		return expensePaymentPayload{}, fmt.Errorf("request body must be valid JSON")
 	}
 
+	payload.Date = strings.TrimSpace(payload.Date)
+
 	if payload.ExpenseID <= 0 {
 		return expensePaymentPayload{}, fmt.Errorf("expense_id must be a positive integer")
 	}

@@ -356,6 +356,7 @@
       <h2>Expenses</h2>
       <nav class="tabs" aria-label="Expenses Views">
         <button type="button" class="tab-button" data-expense-tab="expenses">List of expenses</button>
+        <button type="button" class="tab-button" data-expense-tab="payments">Payments</button>
       </nav>
 
       <section id="view-expenses-expenses" class="expenses-view" hidden>
@@ -394,6 +395,51 @@
             </tr>
           </thead>
           <tbody id="expenses-body"></tbody>
+        </table>
+      </section>
+
+      <section id="view-expenses-payments" class="expenses-view" hidden>
+        <h2>Payments</h2>
+        <form id="expense-payment-form">
+          <input type="hidden" id="expense-payment-id" />
+
+          <label for="expense-payment-expense-id">Expense</label>
+          <select id="expense-payment-expense-id" name="expense_id" required>
+            <option value="">Select expense</option>
+          </select>
+
+          <label for="expense-payment-amount">Amount</label>
+          <input id="expense-payment-amount" name="amount" type="number" step="0.01" min="0.01" required />
+
+          <label for="expense-payment-currency-id">Currency</label>
+          <select id="expense-payment-currency-id" name="currency_id" required>
+            <option value="">Select currency</option>
+          </select>
+
+          <label for="expense-payment-date">Date</label>
+          <input id="expense-payment-date" name="date" type="date" required />
+
+          <div class="actions">
+            <button id="expense-payment-submit-button" type="submit">Create</button>
+            <button id="expense-payment-cancel-button" type="button" hidden>Cancel edit</button>
+          </div>
+        </form>
+
+        <p id="expense-payment-form-message" role="status"></p>
+
+        <h2>Expense Payments</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Expense</th>
+              <th>Amount</th>
+              <th>Currency</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="expense-payments-body"></tbody>
         </table>
       </section>
     </section>
@@ -608,6 +654,7 @@
   <script src="modules/bank-accounts.js"></script>
   <script src="modules/credit-cards.js"></script>
   <script src="modules/expenses.js"></script>
+  <script src="modules/expense-payments.js"></script>
   <script src="modules/credit-card-installments.js"></script>
   <script src="modules/credit-card-cycles.js"></script>
   <script src="modules/credit-card-subscriptions.js"></script>

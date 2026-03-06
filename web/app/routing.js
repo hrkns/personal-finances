@@ -81,6 +81,7 @@
       creditCardViews.subscriptions.hidden = activeRoute !== "credit-cards" || activeCreditCardSection !== "subscriptions";
 
       expenseViews.expenses.hidden = activeRoute !== "expenses" || activeExpenseSection !== "expenses";
+      expenseViews.payments.hidden = activeRoute !== "expenses" || activeExpenseSection !== "payments";
 
       settingsSelectionMessageElement.hidden =
         activeRoute !== "settings" || Boolean(activeSettingsSection);

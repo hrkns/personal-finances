@@ -24,6 +24,7 @@
    *   banksModule: object,
    *   bankAccountsModule: object,
    *   expensesModule: object,
+   *   expensePaymentsModule: object,
    *   creditCardsModule: object,
    *   creditCardInstallmentsModule: object,
    *   creditCardSubscriptionsModule: object,
@@ -41,6 +42,7 @@
       createBanksModule,
       createPeopleModule,
       createExpensesModule,
+      createExpensePaymentsModule,
       createTransactionCategoriesModule,
       createTransactionsModule,
     } = globalScope;
@@ -55,6 +57,7 @@
       createBanksModule,
       createPeopleModule,
       createExpensesModule,
+      createExpensePaymentsModule,
       createTransactionCategoriesModule,
       createTransactionsModule,
     };
@@ -86,6 +89,7 @@
       normalizeCreditCardCycleInput,
       normalizeCreditCardCycleBalanceInput,
       normalizeExpenseInput,
+      normalizeExpensePaymentInput,
       escapeHtml,
     } = frontendUtils;
 
@@ -186,6 +190,8 @@
         creditCardSubscriptionsModule.render();
         creditCardCyclesModule.populateBalanceCurrencyOptions();
         creditCardCyclesModule.renderBalances();
+        expensePaymentsModule.populateCurrencyOptions();
+        expensePaymentsModule.render();
         if (transactionsModule) {
           transactionsModule.populateBankAccountOptions();
           transactionsModule.render();
@@ -251,6 +257,21 @@
       escapeHtml,
       getExpenses: state.getExpenses,
       setExpenses: state.setExpenses,
+      onExpensesChanged: () => {
+        expensePaymentsModule.populateExpenseOptions();
+        expensePaymentsModule.render();
+      },
+    });
+
+    const expensePaymentsModule = createExpensePaymentsModule({
+      elements: dom.expensePayments,
+      apiRequest,
+      normalizeExpensePaymentInput,
+      escapeHtml,
+      getExpenses: state.getExpenses,
+      getCurrencies: state.getCurrencies,
+      getExpensePayments: state.getExpensePayments,
+      setExpensePayments: state.setExpensePayments,
     });
 
     transactionsModule = createTransactionsModule({
@@ -275,6 +296,7 @@
       banksModule,
       bankAccountsModule,
       expensesModule,
+      expensePaymentsModule,
       creditCardsModule,
       creditCardInstallmentsModule,
       creditCardSubscriptionsModule,

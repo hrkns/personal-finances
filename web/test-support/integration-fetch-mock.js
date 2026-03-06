@@ -23,6 +23,8 @@ const { handleCreditCardCycleBalancesCollection } = require("./fetch-mock/handle
 const { handleCreditCardCycleBalancesByID } = require("./fetch-mock/handlers/handle-credit-card-cycle-balances-by-id.js");
 const { handleExpensesCollection } = require("./fetch-mock/handlers/handle-expenses-collection.js");
 const { handleExpensesByID } = require("./fetch-mock/handlers/handle-expenses-by-id.js");
+const { handleExpensePaymentsCollection } = require("./fetch-mock/handlers/handle-expense-payments-collection.js");
+const { handleExpensePaymentsByID } = require("./fetch-mock/handlers/handle-expense-payments-by-id.js");
 const { handleTransactionsCollection } = require("./fetch-mock/handlers/handle-transactions-collection.js");
 const { handleTransactionsByID } = require("./fetch-mock/handlers/handle-transactions-by-id.js");
 
@@ -50,6 +52,8 @@ const handlers = [
   handleCreditCardCycleBalancesByID,
   handleExpensesCollection,
   handleExpensesByID,
+  handleExpensePaymentsCollection,
+  handleExpensePaymentsByID,
   handleTransactionsCollection,
   handleTransactionsByID,
 ];

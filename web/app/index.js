@@ -74,6 +74,7 @@ async function init() {
     appModules.banksModule.load(),
     appModules.bankAccountsModule.load(),
     appModules.expensesModule.load(),
+    appModules.expensePaymentsModule.load(),
   ]);
 
   await appModules.creditCardsModule.load();
@@ -113,6 +114,9 @@ async function init() {
 
   appDom.expenses.formElement.addEventListener("submit", appModules.expensesModule.onSubmit);
   appDom.expenses.cancelButtonElement.addEventListener("click", appModules.expensesModule.resetForm);
+
+  appDom.expensePayments.formElement.addEventListener("submit", appModules.expensePaymentsModule.onSubmit);
+  appDom.expensePayments.cancelButtonElement.addEventListener("click", appModules.expensePaymentsModule.resetForm);
 
   appDom.creditCardCycleBalances.formElement.addEventListener("submit", appModules.creditCardCyclesModule.onBalanceSubmit);
   appDom.creditCardCycleBalances.cancelButtonElement.addEventListener("click", appModules.creditCardCyclesModule.resetBalanceForm);

@@ -28,6 +28,7 @@
       escapeHtml,
       getExpenses,
       setExpenses,
+      onExpensesChanged = () => {},
     } = config;
 
     function setMessage(message, isError) {
@@ -80,6 +81,7 @@
         const expenses = await apiRequest("/api/expenses", { method: "GET" });
         setExpenses(expenses);
         render();
+        onExpensesChanged();
       } catch (error) {
         setMessage(error.message, true);
       }

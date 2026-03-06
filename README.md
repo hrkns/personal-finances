@@ -51,6 +51,11 @@ Within Credit Cards, `creditCards` query parameter controls which subsection is 
 - Cycles: `/?view=credit-cards&creditCards=cycles`
 - Installments: `/?view=credit-cards&creditCards=installments`
 
+Within Expenses, `expenses` query parameter controls which subsection is open:
+
+- List of expenses: `/?view=expenses&expenses=expenses`
+- Payments: `/?view=expenses&expenses=payments`
+
 Within Settings, `settings` query parameter controls which management section is open:
 
 - Transaction Categories: `/?view=settings&settings=transaction-categories`

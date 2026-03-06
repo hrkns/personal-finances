@@ -28,6 +28,7 @@ Covered areas include:
 - Bank Account CRUD and validations
 - Credit Card CRUD and validations
 - Expense CRUD and validations
+- Expense Payment CRUD, validations, and period-uniqueness rules
 - Credit Card currency association management
 - Countries endpoint behavior
 - Migration-backed test setup through temp SQLite DB
@@ -88,6 +89,7 @@ Integration files are split by concern:
 - `web/modules/credit-cards.integration.test.js`
 - `web/modules/credit-card-subscriptions.integration.test.js`
 - `web/modules/expenses.integration.test.js`
+- `web/modules/expense-payments.integration.test.js`
 
 ## Frontend Combined (Unit + Integration)
 
@@ -123,6 +125,7 @@ E2E details:
 - Uses isolated sqlite database via `DATABASE_PATH`
 - Covers browser-level Transactions, Transaction Categories, People, Currency, Banks, Bank Accounts, and Credit Cards flows
 - Covers browser-level Expenses CRUD flow
+- Covers browser-level Expense Payments CRUD and period-conflict flow
 - Covers browser-level Credit Card Subscriptions CRUD flow
 - Covers browser-level management of currencies assigned to each credit card inside Credit Cards view
 - Verifies conflict scenarios and UI messages

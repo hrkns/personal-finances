@@ -1,3 +1,4 @@
+const assert = require("node:assert/strict");
 const { createResponse } = require("../integration-http.js");
 const { isValidISODate } = require("../../utils.js");
 
@@ -197,6 +198,20 @@ function hasExpensePaymentInSamePeriod(stores, payload, excludeID) {
   });
 }
 
+async function readJSON(response) {
+  const text = await response.text();
+  return text ? JSON.parse(text) : null;
+}
+
+async function assertConflict(response, code, message) {
+  assert.ok(response, "expected handler response");
+  assert.equal(response.status, 409);
+
+  const body = await readJSON(response);
+  assert.equal(body.error.code, code);
+  assert.equal(body.error.message, message);
+}
+
 module.exports = {
   parseBody,
   cloneItems,
@@ -212,4 +227,6 @@ module.exports = {
   validateExpensePayload,
   validateExpensePaymentPayload,
   hasExpensePaymentInSamePeriod,
+  readJSON,
+  assertConflict,
 };

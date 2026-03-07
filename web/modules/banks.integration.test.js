@@ -2,6 +2,9 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 
 const { setupFrontendApp } = require("../integration-test-setup.js");
+const { createStores, assertConflict } = require("../test-support/fetch-mock/helpers.js");
+const { handleBanksCollection } = require("../test-support/fetch-mock/handlers/handle-banks-collection.js");
+const { handleBanksByID } = require("../test-support/fetch-mock/handlers/handle-banks-by-id.js");
 
 test("frontend can create and list a bank", async () => {
   const { dom, window, document } = await setupFrontendApp();
@@ -92,4 +95,32 @@ test("frontend shows error message on duplicate bank conflict", async () => {
   assert.equal(message.className, "error");
 
   dom.window.close();
+});
+
+test("banks collection conflict path", async () => {
+  const stores = createStores();
+  stores.banksStore.push({ id: 1, name: "Alpha", country: "US" });
+
+  const response = handleBanksCollection(
+    "/api/banks",
+    "POST",
+    { body: JSON.stringify({ name: "Alpha", country: "US" }) },
+    stores
+  );
+
+  await assertConflict(response, "duplicate_bank", "name and country combination must be unique");
+});
+
+test("banks by-id conflict path", async () => {
+  const stores = createStores();
+  stores.banksStore.push({ id: 1, name: "Alpha", country: "US" }, { id: 2, name: "Beta", country: "US" });
+
+  const response = handleBanksByID(
+    "/api/banks/2",
+    "PUT",
+    { body: JSON.stringify({ name: "Alpha", country: "US" }) },
+    stores
+  );
+
+  await assertConflict(response, "duplicate_bank", "name and country combination must be unique");
 });

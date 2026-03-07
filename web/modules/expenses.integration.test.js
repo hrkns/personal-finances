@@ -2,6 +2,9 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 
 const { setupFrontendApp } = require("../integration-test-setup.js");
+const { createStores, assertConflict } = require("../test-support/fetch-mock/helpers.js");
+const { handleExpensesCollection } = require("../test-support/fetch-mock/handlers/handle-expenses-collection.js");
+const { handleExpensesByID } = require("../test-support/fetch-mock/handlers/handle-expenses-by-id.js");
 
 test("frontend can create and list an expense", async () => {
   const { dom, window, document } = await setupFrontendApp();
@@ -91,4 +94,35 @@ test("frontend shows validation error for invalid expense frequency", async () =
   assert.equal(message.className, "error");
 
   dom.window.close();
+});
+
+test("expenses collection conflict path", async () => {
+  const stores = createStores();
+  stores.expensesStore.push({ id: 1, name: "Rent", frequency: "monthly" });
+
+  const response = handleExpensesCollection(
+    "/api/expenses",
+    "POST",
+    { body: JSON.stringify({ name: "rent", frequency: "monthly" }) },
+    stores
+  );
+
+  await assertConflict(response, "duplicate_expense", "expense name must be unique");
+});
+
+test("expenses by-id conflict path", async () => {
+  const stores = createStores();
+  stores.expensesStore.push(
+    { id: 1, name: "Rent", frequency: "monthly" },
+    { id: 2, name: "Gym", frequency: "weekly" }
+  );
+
+  const response = handleExpensesByID(
+    "/api/expenses/2",
+    "PUT",
+    { body: JSON.stringify({ name: "Rent", frequency: "weekly" }) },
+    stores
+  );
+
+  await assertConflict(response, "duplicate_expense", "expense name must be unique");
 });

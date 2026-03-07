@@ -2,6 +2,9 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 
 const { setupFrontendApp } = require("../integration-test-setup.js");
+const { createStores, assertConflict } = require("../test-support/fetch-mock/helpers.js");
+const { handleCurrenciesCollection } = require("../test-support/fetch-mock/handlers/handle-currencies-collection.js");
+const { handleCurrenciesByID } = require("../test-support/fetch-mock/handlers/handle-currencies-by-id.js");
 
 test("frontend can create and list a currency", async () => {
   const { dom, window, document } = await setupFrontendApp();
@@ -91,4 +94,32 @@ test("frontend shows error message on duplicate currency conflict", async () => 
   assert.equal(message.className, "error");
 
   dom.window.close();
+});
+
+test("currencies collection conflict path", async () => {
+  const stores = createStores();
+  stores.currenciesStore.push({ id: 1, name: "US Dollar", code: "USD" });
+
+  const response = handleCurrenciesCollection(
+    "/api/currencies",
+    "POST",
+    { body: JSON.stringify({ name: "US Dollar", code: "EUR" }) },
+    stores
+  );
+
+  await assertConflict(response, "duplicate_currency", "name and code must be unique");
+});
+
+test("currencies by-id conflict path", async () => {
+  const stores = createStores();
+  stores.currenciesStore.push({ id: 1, name: "US Dollar", code: "USD" }, { id: 2, name: "Euro", code: "EUR" });
+
+  const response = handleCurrenciesByID(
+    "/api/currencies/2",
+    "PUT",
+    { body: JSON.stringify({ name: "US Dollar", code: "EUR" }) },
+    stores
+  );
+
+  await assertConflict(response, "duplicate_currency", "name and code must be unique");
 });

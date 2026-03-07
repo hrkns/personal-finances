@@ -2,6 +2,9 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 
 const { setupFrontendApp } = require("../integration-test-setup.js");
+const { createStores, assertConflict } = require("../test-support/fetch-mock/helpers.js");
+const { handleCreditCardInstallmentsCollection } = require("../test-support/fetch-mock/handlers/handle-credit-card-installments-collection.js");
+const { handleCreditCardInstallmentsByID } = require("../test-support/fetch-mock/handlers/handle-credit-card-installments-by-id.js");
 
 async function createBankPersonAndCreditCard(window, document) {
   document.getElementById("bank-name").value = "Installment Bank";
@@ -161,4 +164,47 @@ test("frontend validates unique concept per credit card and currency installment
   assert.equal(document.querySelectorAll("#credit-card-installments-body tr").length, 2);
 
   dom.window.close();
+});
+
+test("credit card installments collection conflict path", async () => {
+  const stores = createStores();
+  stores.creditCardsStore.push({ id: 1, bank_id: 1, person_id: 1, number: "4111", name: null });
+  stores.currenciesStore.push({ id: 1, name: "US Dollar", code: "USD" });
+  stores.creditCardInstallmentsStore.push({
+    id: 1,
+    credit_card_id: 1,
+    currency_id: 1,
+    concept: "Laptop",
+    amount: 100,
+    start_date: "2026-03-01",
+    count: 6,
+  });
+
+  const response = handleCreditCardInstallmentsCollection(
+    "/api/credit-card-installments",
+    "POST",
+    { body: JSON.stringify({ credit_card_id: 1, currency_id: 1, concept: "Laptop", amount: 150, start_date: "2026-04-01", count: 8 }) },
+    stores
+  );
+
+  await assertConflict(response, "duplicate_credit_card_installment", "credit card, currency and concept combination must be unique");
+});
+
+test("credit card installments by-id conflict path", async () => {
+  const stores = createStores();
+  stores.creditCardsStore.push({ id: 1, bank_id: 1, person_id: 1, number: "4111", name: null });
+  stores.currenciesStore.push({ id: 1, name: "US Dollar", code: "USD" });
+  stores.creditCardInstallmentsStore.push(
+    { id: 1, credit_card_id: 1, currency_id: 1, concept: "Laptop", amount: 100, start_date: "2026-03-01", count: 6 },
+    { id: 2, credit_card_id: 1, currency_id: 1, concept: "Phone", amount: 80, start_date: "2026-03-01", count: 4 }
+  );
+
+  const response = handleCreditCardInstallmentsByID(
+    "/api/credit-card-installments/2",
+    "PUT",
+    { body: JSON.stringify({ credit_card_id: 1, currency_id: 1, concept: "Laptop", amount: 80, start_date: "2026-03-01", count: 4 }) },
+    stores
+  );
+
+  await assertConflict(response, "duplicate_credit_card_installment", "credit card, currency and concept combination must be unique");
 });

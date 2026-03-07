@@ -2,6 +2,9 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 
 const { setupFrontendApp } = require("../integration-test-setup.js");
+const { createStores, assertConflict } = require("../test-support/fetch-mock/helpers.js");
+const { handleCreditCardSubscriptionsCollection } = require("../test-support/fetch-mock/handlers/handle-credit-card-subscriptions-collection.js");
+const { handleCreditCardSubscriptionsByID } = require("../test-support/fetch-mock/handlers/handle-credit-card-subscriptions-by-id.js");
 
 async function seedDependencies(window, document) {
   document.getElementById("bank-name").value = "Subscription Bank";
@@ -126,4 +129,39 @@ test("frontend blocks duplicate credit card subscription by card currency and co
   assert.equal(document.querySelectorAll("#credit-card-subscriptions-body tr").length, 1);
 
   dom.window.close();
+});
+
+test("credit card subscriptions collection conflict path", async () => {
+  const stores = createStores();
+  stores.creditCardsStore.push({ id: 1, bank_id: 1, person_id: 1, number: "4111", name: null });
+  stores.currenciesStore.push({ id: 1, name: "US Dollar", code: "USD" });
+  stores.creditCardSubscriptionsStore.push({ id: 1, credit_card_id: 1, currency_id: 1, concept: "Netflix", amount: 10 });
+
+  const response = handleCreditCardSubscriptionsCollection(
+    "/api/credit-card-subscriptions",
+    "POST",
+    { body: JSON.stringify({ credit_card_id: 1, currency_id: 1, concept: "Netflix", amount: 12 }) },
+    stores
+  );
+
+  await assertConflict(response, "duplicate_credit_card_subscription", "credit card, currency and concept combination must be unique");
+});
+
+test("credit card subscriptions by-id conflict path", async () => {
+  const stores = createStores();
+  stores.creditCardsStore.push({ id: 1, bank_id: 1, person_id: 1, number: "4111", name: null });
+  stores.currenciesStore.push({ id: 1, name: "US Dollar", code: "USD" });
+  stores.creditCardSubscriptionsStore.push(
+    { id: 1, credit_card_id: 1, currency_id: 1, concept: "Netflix", amount: 10 },
+    { id: 2, credit_card_id: 1, currency_id: 1, concept: "Spotify", amount: 8 }
+  );
+
+  const response = handleCreditCardSubscriptionsByID(
+    "/api/credit-card-subscriptions/2",
+    "PUT",
+    { body: JSON.stringify({ credit_card_id: 1, currency_id: 1, concept: "Netflix", amount: 8 }) },
+    stores
+  );
+
+  await assertConflict(response, "duplicate_credit_card_subscription", "credit card, currency and concept combination must be unique");
 });

@@ -121,7 +121,8 @@
     }
 
     const [year, month, day] = value.split("-").map((part) => Number(part));
-    const parsed = new Date(Date.UTC(year, month - 1, day));
+    const parsed = new Date(Date.UTC(0, month - 1, day));
+    parsed.setUTCFullYear(year);
 
     return (
       parsed.getUTCFullYear() === year &&

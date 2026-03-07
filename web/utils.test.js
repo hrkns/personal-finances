@@ -187,6 +187,8 @@ test("normalizeExpensePaymentInput parses ids, amount and date", () => {
 
 test("isValidISODate validates format and calendar date", () => {
   assert.equal(isValidISODate("2026-03-20"), true);
+  assert.equal(isValidISODate("0001-01-01"), true);
+  assert.equal(isValidISODate("0099-12-31"), true);
   assert.equal(isValidISODate("2026-02-30"), false);
   assert.equal(isValidISODate("2026-3-2"), false);
   assert.equal(isValidISODate("invalid"), false);

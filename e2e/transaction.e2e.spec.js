@@ -97,3 +97,79 @@ test("transaction CRUD flow works end-to-end", async ({ page }) => {
   await expect(page.locator("#transaction-form-message")).toHaveText("Transaction deleted");
   await expect(page.locator("#transactions-body")).not.toContainText("Lunch");
 });
+
+test("transaction list shows running balance after each transaction", async ({ page }) => {
+  const suffix = uniqueSuffix();
+  const personName = `Transaction Balance Person ${suffix}`;
+  const categoryName = `Transaction Balance Category ${suffix}`;
+  const currencyName = `Transaction Balance Currency ${suffix}`;
+  const currencyCode = uniqueCurrencyCode("B");
+  const bankName = `Transaction Balance Bank ${suffix}`;
+  const accountNumber = `TXB-${suffix}`;
+
+  await openApp(page);
+
+  await openSettingsSection(page, "People");
+  const peopleForm = page.locator("#people-form");
+  await peopleForm.getByLabel("Name").fill(personName);
+  await peopleForm.getByRole("button", { name: "Create" }).click();
+  await expect(page.locator("#person-form-message")).toHaveText("Person created");
+
+  await openSettingsSection(page, "Transaction Categories");
+  const categoryForm = page.locator("#transaction-category-form");
+  await categoryForm.getByLabel("Name").fill(categoryName);
+  await categoryForm.getByRole("button", { name: "Create" }).click();
+  await expect(page.locator("#transaction-category-form-message")).toHaveText("Transaction category created");
+
+  await openSettingsSection(page, "Currency");
+  const currencyForm = page.locator("#currency-form");
+  await currencyForm.getByLabel("Name").fill(currencyName);
+  await currencyForm.getByLabel("Code").fill(currencyCode);
+  await currencyForm.getByRole("button", { name: "Create" }).click();
+  await expect(page.locator("#form-message")).toHaveText("Currency created");
+
+  await openSettingsSection(page, "Banks");
+  const bankForm = page.locator("#bank-form");
+  await bankForm.getByLabel("Name").fill(bankName);
+  await bankForm.getByLabel("Country").selectOption("US");
+  await bankForm.getByRole("button", { name: "Create" }).click();
+  await expect(page.locator("#bank-form-message")).toHaveText("Bank created");
+
+  await openSettingsSection(page, "Bank Accounts");
+  const bankAccountForm = page.locator("#bank-account-form");
+  await bankAccountForm.getByLabel("Bank").selectOption({ label: `${bankName} (US)` });
+  await bankAccountForm.getByLabel("Currency").selectOption({ label: `${currencyCode} - ${currencyName}` });
+  await bankAccountForm.getByLabel("Account Number").fill(accountNumber);
+  await bankAccountForm.getByLabel("Balance").fill("100");
+  await bankAccountForm.getByRole("button", { name: "Create" }).click();
+  await expect(page.locator("#bank-account-form-message")).toHaveText("Bank account created");
+
+  await page.getByRole("button", { name: "Transactions" }).click();
+  await expect(page.locator("#view-transactions thead tr th").nth(6)).toHaveText("Balance");
+
+  const transactionForm = page.locator("#transaction-form");
+
+  await transactionForm.getByLabel("Date").fill("2026-02-18");
+  await transactionForm.getByLabel("Type").selectOption("income");
+  await transactionForm.getByLabel("Amount").fill("300");
+  await selectOptionContaining(transactionForm.getByLabel("Person"), personName);
+  await selectOptionContaining(transactionForm.getByLabel("Bank Account"), accountNumber);
+  await selectOptionContaining(transactionForm.getByLabel("Category"), categoryName);
+  await transactionForm.getByRole("button", { name: "Create" }).click();
+  await expect(page.locator("#transaction-form-message")).toHaveText("Transaction created");
+
+  await transactionForm.getByLabel("Date").fill("2026-02-19");
+  await transactionForm.getByLabel("Type").selectOption("expense");
+  await transactionForm.getByLabel("Amount").fill("120");
+  await selectOptionContaining(transactionForm.getByLabel("Person"), personName);
+  await selectOptionContaining(transactionForm.getByLabel("Bank Account"), accountNumber);
+  await selectOptionContaining(transactionForm.getByLabel("Category"), categoryName);
+  await transactionForm.getByRole("button", { name: "Create" }).click();
+  await expect(page.locator("#transaction-form-message")).toHaveText("Transaction created");
+
+  const firstRow = page.locator("#transactions-body tr", { hasText: "2026-02-18" });
+  const secondRow = page.locator("#transactions-body tr", { hasText: "2026-02-19" });
+
+  await expect(firstRow.locator("td").nth(6)).toHaveText("400.00");
+  await expect(secondRow.locator("td").nth(6)).toHaveText("280.00");
+});

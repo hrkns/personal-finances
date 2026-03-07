@@ -75,6 +75,44 @@ test("frontend can create and list a transaction", async () => {
   assert.match(rowsText, /Salary payment/);
   assert.match(rowsText, /Jane Doe/);
   assert.match(rowsText, /Salary/);
+  assert.match(rowsText, /1300.50/);
+
+  dom.window.close();
+});
+
+test("frontend shows running bank-account balance per transaction row", async () => {
+  const { dom, window, document } = await setupFrontendApp();
+
+  await seedTransactionDependencies(window, document);
+
+  document.querySelector('[data-route-tab="transactions"]').click();
+
+  document.getElementById("transaction-date").value = "2026-02-18";
+  document.getElementById("transaction-type").value = "income";
+  document.getElementById("transaction-amount").value = "300";
+  document.getElementById("transaction-person-id").value = "1";
+  document.getElementById("transaction-bank-account-id").value = "1";
+  document.getElementById("transaction-category-id-input").value = "1";
+  document.getElementById("transaction-form").dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+  await flush();
+
+  document.getElementById("transaction-date").value = "2026-02-19";
+  document.getElementById("transaction-type").value = "expense";
+  document.getElementById("transaction-amount").value = "120";
+  document.getElementById("transaction-person-id").value = "1";
+  document.getElementById("transaction-bank-account-id").value = "1";
+  document.getElementById("transaction-category-id-input").value = "1";
+  document.getElementById("transaction-form").dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+  await flush();
+
+  const rows = document.querySelectorAll("#transactions-body tr");
+  assert.equal(rows.length, 2);
+
+  const firstRowCells = rows[0].querySelectorAll("td");
+  const secondRowCells = rows[1].querySelectorAll("td");
+
+  assert.equal(firstRowCells[6].textContent, "400.00");
+  assert.equal(secondRowCells[6].textContent, "280.00");
 
   dom.window.close();
 });

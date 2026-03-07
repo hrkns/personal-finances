@@ -1,4 +1,6 @@
+const assert = require("node:assert/strict");
 const { createResponse } = require("../integration-http.js");
+const { isValidISODate } = require("../../utils.js");
 
 function parseBody(options) {
   return JSON.parse(options.body || "{}");
@@ -74,6 +76,8 @@ function createStores() {
     creditCardCurrenciesStore: [],
     nextExpenseId: 1,
     expensesStore: [],
+    nextExpensePaymentId: 1,
+    expensePaymentsStore: [],
     nextTransactionId: 1,
     transactionsStore: [],
     countriesStore: [
@@ -95,21 +99,6 @@ function parseParentID(value) {
   }
 
   return parsed;
-}
-
-function isValidISODate(value) {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
-    return false;
-  }
-
-  const [year, month, day] = value.split("-").map((part) => Number(part));
-  const parsed = new Date(Date.UTC(year, month - 1, day));
-
-  return (
-    parsed.getUTCFullYear() === year &&
-    parsed.getUTCMonth() === month - 1 &&
-    parsed.getUTCDate() === day
-  );
 }
 
 function validateExpensePayload(payload) {
@@ -135,6 +124,96 @@ function validateExpensePayload(payload) {
   return { payload: { name, frequency } };
 }
 
+function validateExpensePaymentPayload(payload, stores) {
+  const expenseID = Number(payload.expense_id);
+  const amount = Number(payload.amount);
+  const currencyID = Number(payload.currency_id);
+  const date = trimmedValue(payload.date);
+
+  if (!Number.isInteger(expenseID) || expenseID <= 0) {
+    return { error: invalidPayload("expense_id must be a positive integer") };
+  }
+  if (!(amount > 0)) {
+    return { error: invalidPayload("amount must be greater than zero") };
+  }
+  if (!Number.isInteger(currencyID) || currencyID <= 0) {
+    return { error: invalidPayload("currency_id must be a positive integer") };
+  }
+  if (!isValidISODate(date)) {
+    return { error: invalidPayload("date must be a valid date in YYYY-MM-DD format") };
+  }
+
+  const expense = stores.expensesStore.find((item) => item.id === expenseID);
+  const currency = stores.currenciesStore.find((item) => item.id === currencyID);
+  if (!expense || !currency) {
+    return { error: invalidPayload("expense and currency must exist") };
+  }
+
+  return {
+    payload: {
+      expense_id: expenseID,
+      amount,
+      currency_id: currencyID,
+      date,
+      expense_frequency: expense.frequency,
+    },
+  };
+}
+
+function buildExpenseFrequencyPeriodKey(date, frequency) {
+  const [year, month, day] = date.split("-").map((part) => Number(part));
+  if (frequency === "daily") {
+    return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+  }
+
+  const base = new Date(Date.UTC(0, month - 1, day));
+  base.setUTCFullYear(year);
+
+  if (frequency === "weekly") {
+    const dayOfWeek = base.getUTCDay() || 7;
+    base.setUTCDate(base.getUTCDate() + 4 - dayOfWeek);
+    const weekYear = base.getUTCFullYear();
+    const yearStart = new Date(Date.UTC(0, 0, 1));
+    yearStart.setUTCFullYear(weekYear);
+    const week = Math.ceil((((base - yearStart) / 86400000) + 1) / 7);
+    return `${weekYear}-W${String(week).padStart(2, "0")}`;
+  }
+
+  if (frequency === "monthly") {
+    return `${year}-${String(month).padStart(2, "0")}`;
+  }
+
+  return String(year);
+}
+
+function hasExpensePaymentInSamePeriod(stores, payload, excludeID) {
+  const periodKey = buildExpenseFrequencyPeriodKey(payload.date, payload.expense_frequency);
+  return stores.expensePaymentsStore.some((item) => {
+    if (excludeID && item.id === excludeID) {
+      return false;
+    }
+    if (item.expense_id !== payload.expense_id) {
+      return false;
+    }
+
+    return buildExpenseFrequencyPeriodKey(item.date, payload.expense_frequency) === periodKey;
+  });
+}
+
+async function readJSON(response) {
+  const text = await response.text();
+  return text ? JSON.parse(text) : null;
+}
+
+async function assertConflict(response, code, message) {
+  assert.ok(response, "expected handler response");
+  assert.equal(response.status, 409);
+
+  const body = await readJSON(response);
+  assert.equal(body.error.code, code);
+  assert.equal(body.error.message, message);
+}
+
 module.exports = {
   parseBody,
   cloneItems,
@@ -148,4 +227,9 @@ module.exports = {
   parseParentID,
   isValidISODate,
   validateExpensePayload,
+  validateExpensePaymentPayload,
+  buildExpenseFrequencyPeriodKey,
+  hasExpensePaymentInSamePeriod,
+  readJSON,
+  assertConflict,
 };

@@ -178,6 +178,18 @@
         messageElement: documentRef.getElementById("expense-form-message"),
         bodyElement: documentRef.getElementById("expenses-body"),
       },
+      expensePayments: {
+        formElement: documentRef.getElementById("expense-payment-form"),
+        idElement: documentRef.getElementById("expense-payment-id"),
+        expenseIdElement: documentRef.getElementById("expense-payment-expense-id"),
+        amountElement: documentRef.getElementById("expense-payment-amount"),
+        currencyIdElement: documentRef.getElementById("expense-payment-currency-id"),
+        dateElement: documentRef.getElementById("expense-payment-date"),
+        submitButtonElement: documentRef.getElementById("expense-payment-submit-button"),
+        cancelButtonElement: documentRef.getElementById("expense-payment-cancel-button"),
+        messageElement: documentRef.getElementById("expense-payment-form-message"),
+        bodyElement: documentRef.getElementById("expense-payments-body"),
+      },
       settingsSelectionMessageElement: documentRef.getElementById("settings-selection-message"),
       tabButtonElements: documentRef.querySelectorAll("[data-route-tab]"),
       settingsTabButtonElements: documentRef.querySelectorAll("[data-settings-tab]"),
@@ -197,7 +209,8 @@
         subscriptions: documentRef.getElementById("view-credit-card-subscriptions"),
       },
       expenseViews: {
-        masterData: documentRef.getElementById("view-expenses-master-data"),
+        expenses: documentRef.getElementById("view-expenses-expenses"),
+        payments: documentRef.getElementById("view-expenses-payments"),
       },
       settingsViews: {
         transactionCategories: documentRef.getElementById("view-transaction-categories"),

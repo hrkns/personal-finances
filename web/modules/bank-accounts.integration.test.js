@@ -2,6 +2,9 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 
 const { setupFrontendApp } = require("../integration-test-setup.js");
+const { createStores, assertConflict } = require("../test-support/fetch-mock/helpers.js");
+const { handleBankAccountsCollection } = require("../test-support/fetch-mock/handlers/handle-bank-accounts-collection.js");
+const { handleBankAccountsByID } = require("../test-support/fetch-mock/handlers/handle-bank-accounts-by-id.js");
 
 test("frontend can create and list a bank account", async () => {
   const { dom, window, document } = await setupFrontendApp();
@@ -153,4 +156,35 @@ test("frontend shows error message on duplicate bank account conflict", async ()
   assert.equal(message.className, "error");
 
   dom.window.close();
+});
+
+test("bank accounts collection conflict path", async () => {
+  const stores = createStores();
+  stores.bankAccountsStore.push({ id: 1, bank_id: 1, currency_id: 1, account_number: "ACC-1", balance: 0 });
+
+  const response = handleBankAccountsCollection(
+    "/api/bank-accounts",
+    "POST",
+    { body: JSON.stringify({ bank_id: 1, currency_id: 1, account_number: "ACC-1", balance: 10 }) },
+    stores
+  );
+
+  await assertConflict(response, "duplicate_bank_account", "bank, currency and account number combination must be unique");
+});
+
+test("bank accounts by-id conflict path", async () => {
+  const stores = createStores();
+  stores.bankAccountsStore.push(
+    { id: 1, bank_id: 1, currency_id: 1, account_number: "ACC-1", balance: 0 },
+    { id: 2, bank_id: 2, currency_id: 1, account_number: "ACC-2", balance: 0 }
+  );
+
+  const response = handleBankAccountsByID(
+    "/api/bank-accounts/2",
+    "PUT",
+    { body: JSON.stringify({ bank_id: 1, currency_id: 1, account_number: "ACC-1", balance: 5 }) },
+    stores
+  );
+
+  await assertConflict(response, "duplicate_bank_account", "bank, currency and account number combination must be unique");
 });

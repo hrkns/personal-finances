@@ -14,6 +14,8 @@ const {
   normalizeCreditCardSubscriptionInput,
   normalizeTransactionInput,
   normalizeExpenseInput,
+  normalizeExpensePaymentInput,
+  isValidISODate,
   escapeHtml,
   parseApiResponse,
 } = require("./utils.js");
@@ -170,6 +172,26 @@ test("normalizeExpenseInput trims name and normalizes frequency", () => {
     name: "Rent",
     frequency: "monthly",
   });
+});
+
+test("normalizeExpensePaymentInput parses ids, amount and date", () => {
+  const payload = normalizeExpensePaymentInput(" 4 ", " 99.95 ", " 2 ", " 2026-03-20 ");
+
+  assert.deepEqual(payload, {
+    expense_id: 4,
+    amount: 99.95,
+    currency_id: 2,
+    date: "2026-03-20",
+  });
+});
+
+test("isValidISODate validates format and calendar date", () => {
+  assert.equal(isValidISODate("2026-03-20"), true);
+  assert.equal(isValidISODate("0001-01-01"), true);
+  assert.equal(isValidISODate("0099-12-31"), true);
+  assert.equal(isValidISODate("2026-02-30"), false);
+  assert.equal(isValidISODate("2026-3-2"), false);
+  assert.equal(isValidISODate("invalid"), false);
 });
 
 test("escapeHtml escapes unsafe characters", () => {

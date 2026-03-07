@@ -13,7 +13,7 @@ test("expense CRUD flow works end-to-end", async ({ page }) => {
 
   await openApp(page);
   await page.getByRole("button", { name: "Expenses" }).click();
-  await page.getByRole("button", { name: "Master Data" }).click();
+  await page.getByRole("button", { name: "List of expenses" }).click();
 
   await expenseForm.getByLabel("Name").fill(initialName);
   await expenseForm.getByLabel("Frequency").selectOption("monthly");
@@ -49,7 +49,7 @@ test("duplicate expense name shows backend conflict message", async ({ page }) =
 
   await openApp(page);
   await page.getByRole("button", { name: "Expenses" }).click();
-  await page.getByRole("button", { name: "Master Data" }).click();
+  await page.getByRole("button", { name: "List of expenses" }).click();
 
   await expenseForm.getByLabel("Name").fill(name);
   await expenseForm.getByLabel("Frequency").selectOption("monthly");

@@ -2,6 +2,9 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 
 const { setupFrontendApp } = require("../integration-test-setup.js");
+const { createStores, assertConflict } = require("../test-support/fetch-mock/helpers.js");
+const { handleCreditCardsCollection } = require("../test-support/fetch-mock/handlers/handle-credit-cards-collection.js");
+const { handleCreditCardsByID } = require("../test-support/fetch-mock/handlers/handle-credit-cards-by-id.js");
 
 async function createBankAndPerson(window, document) {
   document.getElementById("bank-name").value = "Credit Card Bank";
@@ -129,4 +132,35 @@ test("frontend shows error message on duplicate credit card number", async () =>
   assert.equal(message.className, "error");
 
   dom.window.close();
+});
+
+test("credit cards collection conflict path", async () => {
+  const stores = createStores();
+  stores.creditCardsStore.push({ id: 1, bank_id: 1, person_id: 1, number: "4111", name: null });
+
+  const response = handleCreditCardsCollection(
+    "/api/credit-cards",
+    "POST",
+    { body: JSON.stringify({ bank_id: 1, person_id: 1, number: "4111", name: "Card" }) },
+    stores
+  );
+
+  await assertConflict(response, "duplicate_credit_card", "credit card number must be unique");
+});
+
+test("credit cards by-id conflict path", async () => {
+  const stores = createStores();
+  stores.creditCardsStore.push(
+    { id: 1, bank_id: 1, person_id: 1, number: "4111", name: null },
+    { id: 2, bank_id: 1, person_id: 1, number: "4222", name: null }
+  );
+
+  const response = handleCreditCardsByID(
+    "/api/credit-cards/2",
+    "PUT",
+    { body: JSON.stringify({ bank_id: 1, person_id: 1, number: "4111", name: "Card" }) },
+    stores
+  );
+
+  await assertConflict(response, "duplicate_credit_card", "credit card number must be unique");
 });

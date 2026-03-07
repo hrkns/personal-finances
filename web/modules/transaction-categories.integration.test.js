@@ -2,6 +2,9 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 
 const { setupFrontendApp } = require("../integration-test-setup.js");
+const { createStores, assertConflict } = require("../test-support/fetch-mock/helpers.js");
+const { handleTransactionCategoriesCollection } = require("../test-support/fetch-mock/handlers/handle-transaction-categories-collection.js");
+const { handleTransactionCategoriesByID } = require("../test-support/fetch-mock/handlers/handle-transaction-categories-by-id.js");
 
 test("frontend can create and list a root transaction category", async () => {
   const { dom, window, document } = await setupFrontendApp();
@@ -108,4 +111,52 @@ test("frontend shows validation error for blank transaction category name", asyn
   assert.equal(message.className, "error");
 
   dom.window.close();
+});
+
+test("transaction categories collection conflict path", async () => {
+  const stores = createStores();
+  stores.transactionCategoriesStore.push({ id: 1, name: "Salary", parent_id: null });
+
+  const response = handleTransactionCategoriesCollection(
+    "/api/transaction-categories",
+    "POST",
+    { body: JSON.stringify({ name: "Salary", parent_id: null }) },
+    stores
+  );
+
+  await assertConflict(response, "duplicate_transaction_category", "category name must be unique under the same parent");
+});
+
+test("transaction categories by-id update conflict path", async () => {
+  const stores = createStores();
+  stores.transactionCategoriesStore.push(
+    { id: 1, name: "Salary", parent_id: null },
+    { id: 2, name: "Bonus", parent_id: null }
+  );
+
+  const response = handleTransactionCategoriesByID(
+    "/api/transaction-categories/2",
+    "PUT",
+    { body: JSON.stringify({ name: "Salary", parent_id: null }) },
+    stores
+  );
+
+  await assertConflict(response, "duplicate_transaction_category", "category name must be unique under the same parent");
+});
+
+test("transaction categories by-id delete in-use conflict path", async () => {
+  const stores = createStores();
+  stores.transactionCategoriesStore.push(
+    { id: 1, name: "Salary", parent_id: null },
+    { id: 2, name: "Monthly Salary", parent_id: 1 }
+  );
+
+  const response = handleTransactionCategoriesByID(
+    "/api/transaction-categories/1",
+    "DELETE",
+    {},
+    stores
+  );
+
+  await assertConflict(response, "category_in_use", "transaction category is in use");
 });

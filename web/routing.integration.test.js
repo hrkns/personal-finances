@@ -67,8 +67,14 @@ test("frontend initializes at Home route and can route to transactions and setti
 
   document.querySelector('[data-route-tab="expenses"]').click();
   const expensesHiddenAfter = document.getElementById("view-expenses").hidden;
-  const masterDataHiddenAfter = document.getElementById("view-expenses-master-data").hidden;
+  const expensesExpensesHiddenAfter = document.getElementById("view-expenses-expenses").hidden;
+  const expensesPaymentsHiddenAfter = document.getElementById("view-expenses-payments").hidden;
   const emptyExpensesState = document.getElementById("expenses-body").textContent;
+
+  document.querySelector('[data-expense-tab="payments"]').click();
+  const expensesExpensesHiddenAfterPaymentsSelect = document.getElementById("view-expenses-expenses").hidden;
+  const expensesPaymentsHiddenAfterPaymentsSelect = document.getElementById("view-expenses-payments").hidden;
+  const emptyExpensePaymentsState = document.getElementById("expense-payments-body").textContent;
 
   document.querySelector('[data-route-tab="settings"]').click();
   document.querySelector('[data-settings-tab="currency"]').click();
@@ -129,8 +135,12 @@ test("frontend initializes at Home route and can route to transactions and setti
   assert.match(emptyCreditCardCyclesState, /No credit card cycles yet/);
   assert.match(emptyCreditCardSubscriptionsState, /No credit card subscriptions yet/);
   assert.equal(expensesHiddenAfter, false);
-  assert.equal(masterDataHiddenAfter, false);
+  assert.equal(expensesExpensesHiddenAfter, false);
+  assert.equal(expensesPaymentsHiddenAfter, true);
+  assert.equal(expensesExpensesHiddenAfterPaymentsSelect, true);
+  assert.equal(expensesPaymentsHiddenAfterPaymentsSelect, false);
   assert.match(emptyExpensesState, /No expenses yet/);
+  assert.match(emptyExpensePaymentsState, /No expense payments yet/);
   assert.match(countryOptions, /US - United States/);
   assert.match(bankAccountCurrencyOptions, /Select currency/);
 

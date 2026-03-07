@@ -60,7 +60,7 @@ test("frontend can create and list an expense payment", async () => {
   await createExpense(document, window, "Rent", "monthly");
   await createCurrency(document, window, "US Dollar", "USD");
 
-  await openExpensePayments(document, window);
+  await openExpensePayments(document);
   selectFirstAvailableOption(document.getElementById("expense-payment-expense-id"));
   document.getElementById("expense-payment-amount").value = "100.50";
   selectFirstAvailableOption(document.getElementById("expense-payment-currency-id"));
@@ -90,7 +90,7 @@ test("frontend enforces one payment per expense period", async () => {
   await createExpense(document, window, "Gym", "monthly");
   await createCurrency(document, window, "US Dollar", "USD");
 
-  await openExpensePayments(document, window);
+  await openExpensePayments(document);
 
   selectFirstAvailableOption(document.getElementById("expense-payment-expense-id"));
   document.getElementById("expense-payment-amount").value = "50";
@@ -126,7 +126,7 @@ test("frontend supports expense payment edit and delete actions", async () => {
   await createExpense(document, window, "Fuel", "weekly");
   await createCurrency(document, window, "US Dollar", "USD");
 
-  await openExpensePayments(document, window);
+  await openExpensePayments(document);
   selectFirstAvailableOption(document.getElementById("expense-payment-expense-id"));
   document.getElementById("expense-payment-amount").value = "70";
   selectFirstAvailableOption(document.getElementById("expense-payment-currency-id"));
@@ -172,7 +172,7 @@ test("frontend validates expense payment date using YYYY-MM-DD calendar rules", 
   await createExpense(document, window, "Internet", "monthly");
   await createCurrency(document, window, "US Dollar", "USD");
 
-  await openExpensePayments(document, window);
+  await openExpensePayments(document);
   selectFirstAvailableOption(document.getElementById("expense-payment-expense-id"));
   document.getElementById("expense-payment-amount").value = "40";
   selectFirstAvailableOption(document.getElementById("expense-payment-currency-id"));

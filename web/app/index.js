@@ -66,13 +66,21 @@ async function init() {
   frontendRouter.onRouteChange(appRouting.applyRoute);
   appRouting.bindTabNavigation();
 
+  // Load reference data first so bank-account labels resolve before dependent views render.
+  await Promise.all([
+    appModules.currenciesModule.load(),
+    appModules.banksModule.load(),
+  ]);
+
+  // Transactions running-balance rendering depends on bank-account seed balances.
+  // Keep this load before transactionsModule.load() to avoid transient 0-based balances on first paint.
+  await appModules.bankAccountsModule.load();
+
+  // Remaining modules can load in parallel after bank accounts are available.
   await Promise.all([
     appModules.transactionCategoriesModule.load(),
     appModules.transactionsModule.load(),
     appModules.peopleModule.load(),
-    appModules.currenciesModule.load(),
-    appModules.banksModule.load(),
-    appModules.bankAccountsModule.load(),
     appModules.expensesModule.load(),
     appModules.expensePaymentsModule.load(),
   ]);

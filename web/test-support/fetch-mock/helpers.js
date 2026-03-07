@@ -166,13 +166,15 @@ function buildExpenseFrequencyPeriodKey(date, frequency) {
     return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
   }
 
-  const base = new Date(Date.UTC(year, month - 1, day));
+  const base = new Date(Date.UTC(0, month - 1, day));
+  base.setUTCFullYear(year);
 
   if (frequency === "weekly") {
     const dayOfWeek = base.getUTCDay() || 7;
     base.setUTCDate(base.getUTCDate() + 4 - dayOfWeek);
     const weekYear = base.getUTCFullYear();
-    const yearStart = new Date(Date.UTC(weekYear, 0, 1));
+    const yearStart = new Date(Date.UTC(0, 0, 1));
+    yearStart.setUTCFullYear(weekYear);
     const week = Math.ceil((((base - yearStart) / 86400000) + 1) / 7);
     return `${weekYear}-W${String(week).padStart(2, "0")}`;
   }
@@ -226,6 +228,7 @@ module.exports = {
   isValidISODate,
   validateExpensePayload,
   validateExpensePaymentPayload,
+  buildExpenseFrequencyPeriodKey,
   hasExpensePaymentInSamePeriod,
   readJSON,
   assertConflict,

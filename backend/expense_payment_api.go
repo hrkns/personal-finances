@@ -308,7 +308,10 @@ func scanExpensePayment(source scanner) (expensePayment, error) {
 }
 
 func (application app) hasExpensePaymentInSamePeriod(payload expensePaymentPayload, expenseFrequency string, paymentID int64) (bool, error) {
-	payloadDate, _ := time.Parse("2006-01-02", payload.Date)
+	payloadDate, err := time.Parse("2006-01-02", payload.Date)
+	if err != nil {
+		return false, err
+	}
 
 	query := `SELECT id, payment_date FROM expense_payments WHERE expense_id = ?`
 	args := []any{payload.ExpenseID}

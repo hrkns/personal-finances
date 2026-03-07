@@ -141,7 +141,7 @@
           <td>${transaction.id}</td>
           <td>${escapeHtml(transaction.transaction_date)}</td>
           <td>${escapeHtml(transaction.type)}</td>
-          <td>${escapeHtml(Number(transaction.amount).toFixed(2))}</td>
+          <td>${escapeHtml(transaction.amount.toFixed(2))}</td>
           <td>${escapeHtml(formatPersonLabel(transaction.person_id))}</td>
           <td>${escapeHtml(formatBankAccountLabel(transaction.bank_account_id))}</td>
           <td>${escapeHtml(nextBalance.toFixed(2))}</td>

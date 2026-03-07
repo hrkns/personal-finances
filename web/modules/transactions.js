@@ -119,22 +119,32 @@
       if (transactions.length === 0) {
         const row = document.createElement("tr");
         const cell = document.createElement("td");
-        cell.colSpan = 9;
+        cell.colSpan = 10;
         cell.textContent = "No transactions yet";
         row.appendChild(cell);
         elements.bodyElement.appendChild(row);
         return;
       }
 
+      const runningBalanceByBankAccountID = new Map(
+        getBankAccounts().map((bankAccount) => [bankAccount.id, Number(bankAccount.balance)])
+      );
+
       for (const transaction of transactions) {
+        const previousBalance = runningBalanceByBankAccountID.get(transaction.bank_account_id) ?? 0;
+        const amount = Number(transaction.amount);
+        const nextBalance = transaction.type === "income" ? previousBalance + amount : previousBalance - amount;
+        runningBalanceByBankAccountID.set(transaction.bank_account_id, nextBalance);
+
         const row = document.createElement("tr");
         row.innerHTML = `
           <td>${transaction.id}</td>
           <td>${escapeHtml(transaction.transaction_date)}</td>
           <td>${escapeHtml(transaction.type)}</td>
-          <td>${escapeHtml(Number(transaction.amount).toFixed(2))}</td>
+          <td>${escapeHtml(transaction.amount.toFixed(2))}</td>
           <td>${escapeHtml(formatPersonLabel(transaction.person_id))}</td>
           <td>${escapeHtml(formatBankAccountLabel(transaction.bank_account_id))}</td>
+          <td>${escapeHtml(nextBalance.toFixed(2))}</td>
           <td>${escapeHtml(formatCategoryLabel(transaction.category_id))}</td>
           <td>${escapeHtml(transaction.notes || "—")}</td>
           <td>

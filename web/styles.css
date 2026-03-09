@@ -52,6 +52,20 @@ section {
 
 .nav-pills {
   --bs-nav-pills-link-active-bg: var(--app-color-primary);
+  --bs-nav-pills-link-active-color: #ffffff;
+}
+
+nav[aria-label="Views"] .nav-link {
+  color: var(--app-color-text);
+}
+
+nav[aria-label="Views"] .nav-link:not(.active):hover,
+nav[aria-label="Views"] .nav-link:not(.active):focus {
+  color: var(--app-color-text);
+}
+
+nav[aria-label="Views"] .nav-link.active {
+  color: #ffffff;
 }
 
 .view[hidden],

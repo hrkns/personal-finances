@@ -1,8 +1,24 @@
+:root {
+  --app-color-primary: #0d9488;
+  --app-color-primary-rgb: 13, 148, 136;
+  --app-color-background: #f5f5f5;
+  --app-color-surface: #ffffff;
+  --app-color-text: #222222;
+  --app-color-border: #dddddd;
+  --app-color-border-strong: #cccccc;
+  --app-color-muted-surface: #eeeeee;
+  --app-color-error: #b00020;
+  --app-color-success: #0a7a2d;
+
+  --bs-primary: var(--app-color-primary);
+  --bs-primary-rgb: var(--app-color-primary-rgb);
+}
+
 body {
   margin: 0;
   font-family: Arial, Helvetica, sans-serif;
-  background: #f5f5f5;
-  color: #222;
+  background: var(--app-color-background);
+  color: var(--app-color-text);
   padding-bottom: 96px;
 }
 
@@ -10,8 +26,8 @@ main {
   max-width: 1080px;
   margin: 64px auto;
   padding: 24px;
-  background: #fff;
-  border: 1px solid #ddd;
+  background: var(--app-color-surface);
+  border: 1px solid var(--app-color-border);
   border-radius: 8px;
 }
 
@@ -26,12 +42,16 @@ section {
 }
 
 .tab-button {
-  border: 1px solid #ccc;
-  background: #fff;
+  border: 1px solid var(--app-color-border-strong);
+  background: var(--app-color-surface);
 }
 
 .tab-button.active {
-  background: #eee;
+  background: var(--app-color-muted-surface);
+}
+
+.nav-pills {
+  --bs-nav-pills-link-active-bg: var(--app-color-primary);
 }
 
 .view[hidden],
@@ -82,7 +102,7 @@ table {
 
 th,
 td {
-  border: 1px solid #ddd;
+  border: 1px solid var(--app-color-border);
   padding: 8px;
   text-align: left;
 }
@@ -103,11 +123,11 @@ td {
 }
 
 .error {
-  color: #b00020;
+  color: var(--app-color-error);
 }
 
 .success {
-  color: #0a7a2d;
+  color: var(--app-color-success);
 }
 
 .creator-credit {
@@ -118,8 +138,8 @@ td {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  background: #fff;
-  border: 1px solid #ddd;
+  background: var(--app-color-surface);
+  border: 1px solid var(--app-color-border);
   border-radius: 999px;
   padding: 8px 14px;
   font-size: 14px;

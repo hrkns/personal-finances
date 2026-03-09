@@ -18,7 +18,8 @@
    *   getCurrencies: () => any[],
    *   getBankAccounts: () => any[],
    *   setBankAccounts: (items: any[]) => void,
-   *   onBankAccountsChanged?: () => void
+   *   onBankAccountsChanged?: () => void,
+   *   generateActionsCell: (item: any) => string
    * }} config
    * @returns {{load: Function, render: Function, onSubmit: Function, onRowAction: Function, resetForm: Function, setMessage: Function, populateBankOptions: Function, populateCurrencyOptions: Function}}
    */
@@ -33,6 +34,7 @@
       getBankAccounts,
       setBankAccounts,
       onBankAccountsChanged,
+      generateActionsCell,
     } = config;
 
     function setMessage(message, isError) {
@@ -87,10 +89,7 @@
           <td>${escapeHtml(formatCurrencyLabel(bankAccount.currency_id))}</td>
           <td>${escapeHtml(bankAccount.account_number)}</td>
           <td>${escapeHtml(Number(bankAccount.balance).toFixed(2))}</td>
-          <td>
-            <button type="button" data-action="edit" data-id="${bankAccount.id}">Edit</button>
-            <button type="button" data-action="delete" data-id="${bankAccount.id}">Delete</button>
-          </td>
+          ${generateActionsCell(bankAccount)}
         `;
         elements.bodyElement.appendChild(row);
       }

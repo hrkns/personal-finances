@@ -148,8 +148,8 @@
           <td>${escapeHtml(formatCategoryLabel(transaction.category_id))}</td>
           <td>${escapeHtml(transaction.notes || "—")}</td>
           <td>
-            <button type="button" data-action="edit" data-id="${transaction.id}">Edit</button>
-            <button type="button" data-action="delete" data-id="${transaction.id}">Delete</button>
+            <button class="btn btn-primary bi bi-pencil" type="button" data-action="edit" data-id="${transaction.id}"></button>
+            <button class="btn btn-danger bi bi-trash" type="button" data-action="delete" data-id="${transaction.id}"></button>
           </td>
         `;
         elements.bodyElement.appendChild(row);

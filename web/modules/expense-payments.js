@@ -7,6 +7,23 @@
  * - Vue: similar to a composable-backed management section.
  */
 (function initExpensePaymentsModule(globalScope) {
+  /**
+   * Creates the expense payments controller for CRUD UI interactions.
+   *
+   * @param {{
+   *   elements: object,
+   *   apiRequest: (url: string, options?: RequestInit) => Promise<any>,
+   *   normalizeExpensePaymentInput: (expenseId: string, amount: string, currencyId: string, date: string) => object,
+   *   isValidISODate: (date: string) => boolean,
+   *   escapeHtml: (value: any) => string,
+   *   getExpenses: () => any[],
+   *   getCurrencies: () => any[],
+   *   getExpensePayments: () => any[],
+   *   setExpensePayments: (items: any[]) => void,
+   *   generateActionsCell: (item: any) => string
+   * }} config
+   * @returns {{load: Function, render: Function, onSubmit: Function, onRowAction: Function, resetForm: Function, setMessage: Function}}
+   */
   function createExpensePaymentsModule(config) {
     const {
       elements,
@@ -18,6 +35,7 @@
       getCurrencies,
       getExpensePayments,
       setExpensePayments,
+      generateActionsCell,
     } = config;
 
     function setMessage(message, isError) {
@@ -74,10 +92,7 @@
           <td>${escapeHtml(Number(payment.amount).toFixed(2))}</td>
           <td>${escapeHtml(formatCurrencyLabel(payment.currency_id))}</td>
           <td>${escapeHtml(payment.date)}</td>
-          <td>
-            <button type="button" data-action="edit" data-id="${payment.id}">Edit</button>
-            <button type="button" data-action="delete" data-id="${payment.id}">Delete</button>
-          </td>
+          ${generateActionsCell(payment)}
         `;
         elements.bodyElement.appendChild(row);
       }

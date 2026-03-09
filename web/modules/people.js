@@ -16,7 +16,8 @@
    *   escapeHtml: (value: any) => string,
    *   getPeople: () => any[],
    *   setPeople: (items: any[]) => void,
-   *   onPeopleChanged?: () => void
+   *   onPeopleChanged?: () => void,
+   *   generateActionsCell: (item: any) => string
    * }} config
    * @returns {{load: Function, render: Function, onSubmit: Function, onRowAction: Function, resetForm: Function, setMessage: Function}}
    */
@@ -29,6 +30,7 @@
       getPeople,
       setPeople,
       onPeopleChanged,
+      generateActionsCell,
     } = config;
 
     function setMessage(message, isError) {
@@ -62,10 +64,7 @@
         row.innerHTML = `
           <td>${person.id}</td>
           <td>${escapeHtml(person.name)}</td>
-          <td>
-            <button type="button" data-action="edit" data-id="${person.id}">Edit</button>
-            <button type="button" data-action="delete" data-id="${person.id}">Delete</button>
-          </td>
+          ${generateActionsCell(person)}
         `;
         elements.bodyElement.appendChild(row);
       }

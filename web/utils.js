@@ -155,6 +155,15 @@
     return body;
   }
 
+  function generateActionsCell(item) {
+    return `
+      <td>
+        <button class="btn btn-primary bi bi-pencil" type="button" data-action="edit" data-id="${item.id}"></button>
+        <button class="btn btn-danger bi bi-trash" type="button" data-action="delete" data-id="${item.id}"></button>
+      </td>
+    `;
+  }
+
   const exported = {
     normalizeCurrencyInput,
     normalizeBankInput,
@@ -172,6 +181,7 @@
     isValidISODate,
     escapeHtml,
     parseApiResponse,
+    generateActionsCell,
   };
 
   if (typeof module !== "undefined" && module.exports) {

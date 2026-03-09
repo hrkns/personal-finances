@@ -17,7 +17,8 @@
    *   escapeHtml: (value: any) => string,
    *   getTransactionCategories: () => any[],
    *   setTransactionCategories: (items: any[]) => void,
-   *   onTransactionCategoriesChanged?: () => void
+   *   onTransactionCategoriesChanged?: () => void,
+   *   generateActionsCell: (item: any) => string
    * }} config
    * @returns {{load: Function, render: Function, onSubmit: Function, onRowAction: Function, resetForm: Function, setMessage: Function, populateParentOptions: Function}}
    */
@@ -30,6 +31,7 @@
       getTransactionCategories,
       setTransactionCategories,
       onTransactionCategoriesChanged,
+      generateActionsCell,
     } = config;
 
     function setMessage(message, isError) {
@@ -66,10 +68,7 @@
           <td>${category.id}</td>
           <td>${escapeHtml(category.name)}</td>
           <td>${escapeHtml(parentLabel)}</td>
-          <td>
-            <button type="button" data-action="edit" data-id="${category.id}">Edit</button>
-            <button type="button" data-action="delete" data-id="${category.id}">Delete</button>
-          </td>
+          ${generateActionsCell(category)}
         `;
         elements.bodyElement.appendChild(row);
       }

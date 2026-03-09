@@ -92,6 +92,7 @@
       normalizeExpensePaymentInput,
       isValidISODate,
       escapeHtml,
+      generateActionsCell,
     } = frontendUtils;
 
     let transactionsModule = null;
@@ -114,6 +115,7 @@
           transactionsModule.render();
         }
       },
+      generateActionsCell,
     });
 
     const creditCardsModule = createCreditCardsModule({
@@ -136,6 +138,7 @@
           await creditCardSubscriptionsModule.load();
         }
       },
+      generateActionsCell,
     });
 
     creditCardInstallmentsModule = createCreditCardInstallmentsModule({
@@ -147,6 +150,7 @@
       getCurrencies: state.getCurrencies,
       getCreditCardInstallments: state.getCreditCardInstallments,
       setCreditCardInstallments: state.setCreditCardInstallments,
+      generateActionsCell,
     });
 
     creditCardCyclesModule = createCreditCardCyclesModule({
@@ -173,6 +177,7 @@
       getCurrencies: state.getCurrencies,
       getCreditCardSubscriptions: state.getCreditCardSubscriptions,
       setCreditCardSubscriptions: state.setCreditCardSubscriptions,
+      generateActionsCell,
     });
 
     const currenciesModule = createCurrenciesModule({
@@ -198,6 +203,7 @@
           transactionsModule.render();
         }
       },
+      generateActionsCell,
     });
 
     const banksModule = createBanksModule({
@@ -217,6 +223,7 @@
           transactionsModule.render();
         }
       },
+      generateActionsCell,
     });
 
     const peopleModule = createPeopleModule({
@@ -234,6 +241,7 @@
           transactionsModule.render();
         }
       },
+      generateActionsCell,
     });
 
     const transactionCategoriesModule = createTransactionCategoriesModule({
@@ -249,6 +257,7 @@
           transactionsModule.render();
         }
       },
+      generateActionsCell,
     });
 
     const expensesModule = createExpensesModule({
@@ -262,6 +271,7 @@
         expensePaymentsModule.populateExpenseOptions();
         expensePaymentsModule.render();
       },
+      generateActionsCell,
     });
 
     const expensePaymentsModule = createExpensePaymentsModule({
@@ -274,6 +284,7 @@
       getCurrencies: state.getCurrencies,
       getExpensePayments: state.getExpensePayments,
       setExpensePayments: state.setExpensePayments,
+      generateActionsCell,
     });
 
     transactionsModule = createTransactionsModule({

@@ -18,7 +18,8 @@
    *   getCreditCards: () => any[],
    *   getCurrencies: () => any[],
    *   getCreditCardInstallments: () => any[],
-   *   setCreditCardInstallments: (items: any[]) => void
+   *   setCreditCardInstallments: (items: any[]) => void,
+   *   generateActionsCell: (item: any) => string
    * }} config
    * @returns {{load: Function, render: Function, onSubmit: Function, onRowAction: Function, resetForm: Function, setMessage: Function, populateCreditCardOptions: Function, populateCurrencyOptions: Function}}
    */
@@ -32,6 +33,7 @@
       getCurrencies,
       getCreditCardInstallments,
       setCreditCardInstallments,
+      generateActionsCell,
     } = config;
 
     function setMessage(message, isError) {
@@ -132,10 +134,7 @@
           <td>${escapeHtml(installment.amount)}</td>
           <td>${escapeHtml(installment.start_date)}</td>
           <td>${escapeHtml(installment.count)}</td>
-          <td>
-            <button type="button" data-action="edit" data-id="${installment.id}">Edit</button>
-            <button type="button" data-action="delete" data-id="${installment.id}">Delete</button>
-          </td>
+          ${generateActionsCell(installment)}
         `;
         elements.bodyElement.appendChild(row);
       }

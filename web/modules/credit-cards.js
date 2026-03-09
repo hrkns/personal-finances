@@ -19,7 +19,8 @@
    *   getPeople: () => any[],
    *   getCreditCards: () => any[],
    *   setCreditCards: (items: any[]) => void,
-   *   onCreditCardsChanged?: () => Promise<void>
+   *   onCreditCardsChanged?: () => Promise<void>,
+   *   generateActionsCell: (item: any) => string
    * }} config
    * @returns {{load: Function, render: Function, onSubmit: Function, onRowAction: Function, resetForm: Function, setMessage: Function, populateBankOptions: Function, populatePersonOptions: Function}}
    */
@@ -34,6 +35,7 @@
       getCreditCards,
       setCreditCards,
       onCreditCardsChanged,
+      generateActionsCell,
     } = config;
 
     function setMessage(message, isError) {
@@ -90,10 +92,7 @@
           <td>${escapeHtml(formatPersonLabel(creditCard.person_id))}</td>
           <td>${escapeHtml(creditCard.number)}</td>
           <td>${escapeHtml(creditCard.name || "—")}</td>
-          <td>
-            <button type="button" data-action="edit" data-id="${creditCard.id}">Edit</button>
-            <button type="button" data-action="delete" data-id="${creditCard.id}">Delete</button>
-          </td>
+          ${generateActionsCell(creditCard)}
         `;
         elements.bodyElement.appendChild(row);
       }

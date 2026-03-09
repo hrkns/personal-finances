@@ -53,7 +53,7 @@
       getCreditCardCycles,
       setCreditCardCycles,
       getCreditCardCycleBalances,
-      setCreditCardCycleBalances,
+      setCreditCardCycleBalances
     } = config;
 
     let selectedCycleID = null;
@@ -126,9 +126,9 @@
           <td>${escapeHtml(cycle.closing_date)}</td>
           <td>${escapeHtml(cycle.due_date)}</td>
           <td>
-            <button type="button" data-action="balances" data-id="${cycle.id}">Balances</button>
-            <button type="button" data-action="edit" data-id="${cycle.id}">Edit</button>
-            <button type="button" data-action="delete" data-id="${cycle.id}">Delete</button>
+            <button class="btn btn-info text-light" type="button" data-action="balances" data-id="${cycle.id}">Balances</button>
+            <button class="btn btn-primary bi bi-pencil" type="button" data-action="edit" data-id="${cycle.id}"></button>
+            <button class="btn btn-danger bi bi-trash" type="button" data-action="delete" data-id="${cycle.id}"></button>
           </td>
         `;
         elements.bodyElement.appendChild(row);
@@ -225,8 +225,8 @@
           <td>${escapeHtml(balance.balance)}</td>
           <td>${balance.paid ? "Yes" : "No"}</td>
           <td>
-            <button type="button" data-balance-action="edit" data-id="${balance.id}">Edit</button>
-            <button type="button" data-balance-action="delete" data-id="${balance.id}">Delete</button>
+            <button class="btn btn-primary bi bi-pencil" type="button" data-balance-action="edit" data-id="${balance.id}"></button>
+            <button class="btn btn-danger bi bi-trash" type="button" data-balance-action="delete" data-id="${balance.id}"></button>
           </td>
         `;
         balanceElements.bodyElement.appendChild(row);

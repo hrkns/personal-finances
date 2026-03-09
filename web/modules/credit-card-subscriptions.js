@@ -17,7 +17,8 @@
    *   getCreditCards: () => any[],
    *   getCurrencies: () => any[],
    *   getCreditCardSubscriptions: () => any[],
-   *   setCreditCardSubscriptions: (items: any[]) => void
+   *   setCreditCardSubscriptions: (items: any[]) => void,
+   *   generateActionsCell: (item: any) => string
    * }} config
    * @returns {{load: Function, render: Function, onSubmit: Function, onRowAction: Function, resetForm: Function, setMessage: Function, populateCreditCardOptions: Function, populateCurrencyOptions: Function}}
    */
@@ -31,6 +32,7 @@
       getCurrencies,
       getCreditCardSubscriptions,
       setCreditCardSubscriptions,
+      generateActionsCell,
     } = config;
 
     function setMessage(message, isError) {
@@ -129,10 +131,7 @@
           <td>${escapeHtml(formatCurrencyLabel(subscription.currency_id))}</td>
           <td>${escapeHtml(subscription.concept)}</td>
           <td>${escapeHtml(subscription.amount)}</td>
-          <td>
-            <button type="button" data-action="edit" data-id="${subscription.id}">Edit</button>
-            <button type="button" data-action="delete" data-id="${subscription.id}">Delete</button>
-          </td>
+          ${generateActionsCell(subscription)}
         `;
         elements.bodyElement.appendChild(row);
       }

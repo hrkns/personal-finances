@@ -17,7 +17,8 @@
    *   escapeHtml: (value: any) => string,
    *   getCurrencies: () => any[],
    *   setCurrencies: (items: any[]) => void,
-   *   onCurrenciesChanged?: () => void
+   *   onCurrenciesChanged?: () => void,
+   *   generateActionsCell: (item: any) => string
    * }} config
    * @returns {{load: Function, render: Function, onSubmit: Function, onRowAction: Function, resetForm: Function, setMessage: Function}}
    */
@@ -30,6 +31,7 @@
       getCurrencies,
       setCurrencies,
       onCurrenciesChanged,
+      generateActionsCell,
     } = config;
 
     function setMessage(message, isError) {
@@ -64,10 +66,7 @@
           <td>${currency.id}</td>
           <td>${escapeHtml(currency.name)}</td>
           <td>${escapeHtml(currency.code)}</td>
-          <td>
-            <button type="button" data-action="edit" data-id="${currency.id}">Edit</button>
-            <button type="button" data-action="delete" data-id="${currency.id}">Delete</button>
-          </td>
+          ${generateActionsCell(currency)}
         `;
         elements.bodyElement.appendChild(row);
       }

@@ -33,7 +33,13 @@ function extractScriptFileNamesFromHtml(html) {
   const scriptTagRegex = /<script\s+[^>]*src=["']([^"']+)["'][^>]*>\s*<\/script>/gi;
 
   for (const match of html.matchAll(scriptTagRegex)) {
-    scriptSources.push(match[1]);
+    const source = match[1];
+    const isExternalSource = /^(?:[a-z]+:)?\/\//i.test(source);
+    if (isExternalSource) {
+      continue;
+    }
+
+    scriptSources.push(source);
   }
 
   return scriptSources;

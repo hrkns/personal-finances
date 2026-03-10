@@ -33,6 +33,31 @@ Validation rules:
 - `balance` optional number (float); if omitted, defaults to `0`
 - `paid` optional boolean; if omitted, defaults to `false`
 
+### `GET /api/credit-card-cycle-balances`
+
+Lists all credit card cycle balances across all cycles.
+
+#### Success (`200 OK`)
+
+```json
+[
+  {
+    "id": 1,
+    "credit_card_cycle_id": 1,
+    "currency_id": 1,
+    "balance": 500.25,
+    "paid": false
+  },
+  {
+    "id": 2,
+    "credit_card_cycle_id": 2,
+    "currency_id": 1,
+    "balance": 125.0,
+    "paid": true
+  }
+]
+```
+
 ### `GET /api/credit-card-cycles/{cycle_id}/balances`
 
 #### Success (`200 OK`)

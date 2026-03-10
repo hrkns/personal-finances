@@ -11,6 +11,7 @@ import (
 )
 
 var (
+	creditCardCycleBalancesPath                  = "/api/credit-card-cycle-balances"
 	creditCardCycleBalancesCollectionPathPattern = regexp.MustCompile(`^/api/credit-card-cycles/(\d+)/balances$`)
 	creditCardCycleBalancesByIDPathPattern       = regexp.MustCompile(`^/api/credit-card-cycles/(\d+)/balances/(\d+)$`)
 )
@@ -28,6 +29,19 @@ type creditCardCycleBalancePayload struct {
 	CurrencyID        int64   `json:"currency_id"`
 	Balance           float64 `json:"balance"`
 	Paid              bool    `json:"paid"`
+}
+
+func (application app) registerCreditCardCycleBalanceRoutes(mux *http.ServeMux) {
+	mux.HandleFunc(creditCardCycleBalancesPath, application.creditCardCycleBalancesCollectionHandler)
+}
+
+func (application app) creditCardCycleBalancesCollectionHandler(writer http.ResponseWriter, request *http.Request) {
+	switch request.Method {
+	case http.MethodGet:
+		application.listAllCreditCardCycleBalances(writer)
+	default:
+		methodNotAllowed(writer, http.MethodGet)
+	}
 }
 
 func (application app) creditCardCycleBalancesHandler(writer http.ResponseWriter, request *http.Request) {
@@ -107,6 +121,34 @@ func (application app) listCreditCardCycleBalances(writer http.ResponseWriter, c
 	rows, err := application.db.Query(
 		`SELECT id, credit_card_cycle_id, currency_id, balance, paid FROM credit_card_cycle_balances WHERE credit_card_cycle_id = ? ORDER BY id`,
 		cycleID,
+	)
+	if err != nil {
+		writeError(writer, http.StatusInternalServerError, "internal_error", "failed to load credit card cycle balances")
+		return
+	}
+	defer rows.Close()
+
+	items := make([]creditCardCycleBalance, 0)
+	for rows.Next() {
+		item, scanErr := scanCreditCardCycleBalance(rows)
+		if scanErr != nil {
+			writeError(writer, http.StatusInternalServerError, "internal_error", "failed to read credit card cycle balances")
+			return
+		}
+		items = append(items, item)
+	}
+
+	if err = rows.Err(); err != nil {
+		writeError(writer, http.StatusInternalServerError, "internal_error", "failed to read credit card cycle balances")
+		return
+	}
+
+	writeJSON(writer, http.StatusOK, items)
+}
+
+func (application app) listAllCreditCardCycleBalances(writer http.ResponseWriter) {
+	rows, err := application.db.Query(
+		`SELECT id, credit_card_cycle_id, currency_id, balance, paid FROM credit_card_cycle_balances ORDER BY id`,
 	)
 	if err != nil {
 		writeError(writer, http.StatusInternalServerError, "internal_error", "failed to load credit card cycle balances")

@@ -158,6 +158,61 @@ func TestCreditCardCycleBalanceUniqueCycleCurrency(t *testing.T) {
 	}
 }
 
+func TestCreditCardCycleBalanceListAll(t *testing.T) {
+	application := newTestApplication(t)
+	router := application.routes()
+
+	seedCreditCardCycleBalanceDependencies(t, router)
+
+	secondCycle := performRequest(
+		router,
+		http.MethodPost,
+		"/api/credit-card-cycles",
+		[]byte(`{"credit_card_id":1,"closing_date":"2026-02-01","due_date":"2026-02-10"}`),
+	)
+	if secondCycle.Code != http.StatusCreated {
+		t.Fatalf("expected second cycle seed to return 201, got %d", secondCycle.Code)
+	}
+
+	firstBalance := performRequest(
+		router,
+		http.MethodPost,
+		"/api/credit-card-cycles/1/balances",
+		[]byte(`{"credit_card_cycle_id":1,"currency_id":1,"balance":100.5,"paid":false}`),
+	)
+	if firstBalance.Code != http.StatusCreated {
+		t.Fatalf("expected first balance create to return 201, got %d", firstBalance.Code)
+	}
+
+	secondBalance := performRequest(
+		router,
+		http.MethodPost,
+		"/api/credit-card-cycles/2/balances",
+		[]byte(`{"credit_card_cycle_id":2,"currency_id":1,"balance":220.75,"paid":true}`),
+	)
+	if secondBalance.Code != http.StatusCreated {
+		t.Fatalf("expected second balance create to return 201, got %d", secondBalance.Code)
+	}
+
+	listAllResponse := performRequest(router, http.MethodGet, "/api/credit-card-cycle-balances", nil)
+	if listAllResponse.Code != http.StatusOK {
+		t.Fatalf("expected list all to return 200, got %d", listAllResponse.Code)
+	}
+
+	var balances []creditCardCycleBalance
+	if err := json.NewDecoder(listAllResponse.Body).Decode(&balances); err != nil {
+		t.Fatalf("decode list all response: %v", err)
+	}
+
+	if len(balances) != 2 {
+		t.Fatalf("expected 2 balances, got %d", len(balances))
+	}
+
+	if balances[0].CreditCardCycleID != 1 || balances[1].CreditCardCycleID != 2 {
+		t.Fatalf("expected balances sorted by id with cycle ids 1 then 2, got %+v", balances)
+	}
+}
+
 func seedCreditCardCycleBalanceDependencies(t *testing.T, router http.Handler) {
 	t.Helper()
 

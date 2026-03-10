@@ -40,16 +40,22 @@
   function createAppDom(documentRef) {
     return {
       currency: {
+        openModalButtonElement: documentRef.getElementById("currency-open-modal-button"),
+        modalElement: documentRef.getElementById("currency-modal"),
+        modalTitleElement: documentRef.getElementById("currency-modal-title"),
         formElement: documentRef.getElementById("currency-form"),
         idElement: documentRef.getElementById("currency-id"),
         nameElement: documentRef.getElementById("currency-name"),
         codeElement: documentRef.getElementById("currency-code"),
-        submitButtonElement: documentRef.getElementById("submit-button"),
-        cancelButtonElement: documentRef.getElementById("cancel-button"),
-        messageElement: documentRef.getElementById("form-message"),
+        submitButtonElement: documentRef.getElementById("currency-submit-button"),
+        cancelButtonElement: documentRef.getElementById("currency-cancel-button"),
+        messageElement: documentRef.getElementById("currency-form-message"),
         bodyElement: documentRef.getElementById("currencies-body"),
       },
       bank: {
+        openModalButtonElement: documentRef.getElementById("bank-open-modal-button"),
+        modalElement: documentRef.getElementById("bank-modal"),
+        modalTitleElement: documentRef.getElementById("bank-modal-title"),
         formElement: documentRef.getElementById("bank-form"),
         idElement: documentRef.getElementById("bank-id"),
         nameElement: documentRef.getElementById("bank-name"),
@@ -60,7 +66,10 @@
         bodyElement: documentRef.getElementById("banks-body"),
       },
       people: {
-        formElement: documentRef.getElementById("people-form"),
+        openModalButtonElement: documentRef.getElementById("person-open-modal-button"),
+        modalElement: documentRef.getElementById("person-modal"),
+        modalTitleElement: documentRef.getElementById("person-modal-title"),
+        formElement: documentRef.getElementById("person-form"),
         idElement: documentRef.getElementById("person-id"),
         nameElement: documentRef.getElementById("person-name"),
         submitButtonElement: documentRef.getElementById("person-submit-button"),
@@ -69,6 +78,9 @@
         bodyElement: documentRef.getElementById("people-body"),
       },
       transactionCategories: {
+        openModalButtonElement: documentRef.getElementById("transaction-category-open-modal-button"),
+        modalElement: documentRef.getElementById("transaction-category-modal"),
+        modalTitleElement: documentRef.getElementById("transaction-category-modal-title"),
         formElement: documentRef.getElementById("transaction-category-form"),
         idElement: documentRef.getElementById("transaction-category-id"),
         nameElement: documentRef.getElementById("transaction-category-name"),
@@ -94,6 +106,9 @@
         bodyElement: documentRef.getElementById("transactions-body"),
       },
       bankAccounts: {
+        openModalButtonElement: documentRef.getElementById("bank-account-open-modal-button"),
+        modalElement: documentRef.getElementById("bank-account-modal"),
+        modalTitleElement: documentRef.getElementById("bank-account-modal-title"),
         formElement: documentRef.getElementById("bank-account-form"),
         idElement: documentRef.getElementById("bank-account-id"),
         bankIdElement: documentRef.getElementById("bank-account-bank-id"),
@@ -106,6 +121,9 @@
         bodyElement: documentRef.getElementById("bank-accounts-body"),
       },
       creditCards: {
+        openModalButtonElement: documentRef.getElementById("credit-card-open-modal-button"),
+        modalElement: documentRef.getElementById("credit-card-modal"),
+        modalTitleElement: documentRef.getElementById("credit-card-modal-title"),
         formElement: documentRef.getElementById("credit-card-form"),
         idElement: documentRef.getElementById("credit-card-id"),
         bankIdElement: documentRef.getElementById("credit-card-bank-id"),
@@ -169,6 +187,9 @@
         bodyElement: documentRef.getElementById("credit-card-cycle-balances-body"),
       },
       expenses: {
+        openModalButtonElement: documentRef.getElementById("expense-open-modal-button"),
+        modalElement: documentRef.getElementById("expense-modal"),
+        modalTitleElement: documentRef.getElementById("expense-modal-title"),
         formElement: documentRef.getElementById("expense-form"),
         idElement: documentRef.getElementById("expense-id"),
         nameElement: documentRef.getElementById("expense-name"),
@@ -179,6 +200,9 @@
         bodyElement: documentRef.getElementById("expenses-body"),
       },
       expensePayments: {
+        openModalButtonElement: documentRef.getElementById("expense-payment-open-modal-button"),
+        modalElement: documentRef.getElementById("expense-payment-modal"),
+        modalTitleElement: documentRef.getElementById("expense-payment-modal-title"),
         formElement: documentRef.getElementById("expense-payment-form"),
         idElement: documentRef.getElementById("expense-payment-id"),
         expenseIdElement: documentRef.getElementById("expense-payment-expense-id"),

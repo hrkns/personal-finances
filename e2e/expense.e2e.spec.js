@@ -15,6 +15,8 @@ test("expense CRUD flow works end-to-end", async ({ page }) => {
   await page.getByRole("button", { name: "Expenses" }).click();
   await page.getByRole("button", { name: "List of expenses" }).click();
 
+  await page.getByRole("button", { name: "Create expense" }).click();
+
   await expenseForm.getByLabel("Name").fill(initialName);
   await expenseForm.getByLabel("Frequency").selectOption("monthly");
   await expenseForm.getByRole("button", { name: "Create" }).click();
@@ -51,10 +53,14 @@ test("duplicate expense name shows backend conflict message", async ({ page }) =
   await page.getByRole("button", { name: "Expenses" }).click();
   await page.getByRole("button", { name: "List of expenses" }).click();
 
+  await page.getByRole("button", { name: "Create expense" }).click();
+
   await expenseForm.getByLabel("Name").fill(name);
   await expenseForm.getByLabel("Frequency").selectOption("monthly");
   await expenseForm.getByRole("button", { name: "Create" }).click();
   await expect(page.locator("#expense-form-message")).toHaveText("Expense created");
+
+  await page.getByRole("button", { name: "Create expense" }).click();
 
   await expenseForm.getByLabel("Name").fill(name);
   await expenseForm.getByLabel("Frequency").selectOption("annually");

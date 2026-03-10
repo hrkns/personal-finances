@@ -38,9 +38,54 @@
       generateActionsCell,
     } = config;
 
+    const bootstrapModal = globalScope.bootstrap?.Modal;
+    const hasModalSupport = Boolean(bootstrapModal && elements.modalElement);
+    const modalInstance = hasModalSupport ? bootstrapModal.getOrCreateInstance(elements.modalElement) : null;
+    let modalBindingsInitialized = false;
+
     function setMessage(message, isError) {
       elements.messageElement.textContent = message;
       elements.messageElement.className = isError ? "error" : "success";
+    }
+
+    function showModal() {
+      if (modalInstance) {
+        modalInstance.show();
+      }
+    }
+
+    function hideModal() {
+      if (modalInstance) {
+        modalInstance.hide();
+      }
+    }
+
+    function initializeModalBindings() {
+      if (modalBindingsInitialized) {
+        return;
+      }
+
+      if (elements.openModalButtonElement) {
+        elements.openModalButtonElement.addEventListener("click", () => {
+          resetForm();
+          showModal();
+        });
+      }
+
+      if (elements.cancelButtonElement) {
+        elements.cancelButtonElement.addEventListener("click", () => {
+          hideModal();
+          resetForm();
+        });
+      }
+
+      if (elements.modalElement) {
+        elements.modalElement.addEventListener("hidden.bs.modal", () => {
+          resetForm();
+        });
+      }
+
+      modalBindingsInitialized = true;
     }
 
     function resetForm() {
@@ -48,6 +93,9 @@
       elements.idElement.value = "";
       elements.submitButtonElement.textContent = "Create";
       elements.cancelButtonElement.hidden = true;
+      if (elements.modalTitleElement) {
+        elements.modalTitleElement.textContent = "Create credit card";
+      }
       populateBankOptions();
       populatePersonOptions();
     }
@@ -141,6 +189,8 @@
     }
 
     async function load() {
+      initializeModalBindings();
+
       try {
         const creditCards = await apiRequest("/api/credit-cards", { method: "GET" });
         setCreditCards(creditCards);
@@ -181,6 +231,7 @@
           setMessage("Credit card created", false);
         }
 
+        hideModal();
         resetForm();
         await load();
       } catch (error) {
@@ -218,7 +269,10 @@
         elements.numberElement.value = creditCard.number;
         elements.nameElement.value = creditCard.name || "";
         elements.submitButtonElement.textContent = "Update";
-        elements.cancelButtonElement.hidden = false;
+        if (elements.modalTitleElement) {
+          elements.modalTitleElement.textContent = "Edit credit card";
+        }
+        showModal();
         setMessage(`Editing credit card #${creditCard.id}`, false);
         return;
       }

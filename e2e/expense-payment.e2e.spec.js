@@ -9,6 +9,8 @@ async function createExpense(page, name, frequency) {
   await page.getByRole("button", { name: "Expenses" }).click();
   await page.getByRole("button", { name: "List of expenses" }).click();
 
+  await page.getByRole("button", { name: "Create expense" }).click();
+
   const expenseForm = page.locator("#expense-form");
   await expenseForm.getByLabel("Name").fill(name);
   await expenseForm.getByLabel("Frequency").selectOption(frequency);
@@ -21,12 +23,13 @@ async function createCurrency(page, name, code) {
   await page.getByRole("button", { name: "Settings" }).click();
   await page.getByRole("button", { name: "Currency" }).click();
 
+  await page.getByRole("button", { name: "Create currency" }).click();
   const currencyForm = page.locator("#currency-form");
   await currencyForm.getByLabel("Name").fill(name);
   await currencyForm.getByLabel("Code").fill(code);
   await currencyForm.getByRole("button", { name: "Create" }).click();
 
-  await expect(page.locator("#form-message")).toHaveText("Currency created");
+  await expect(page.locator("#currency-form-message")).toHaveText("Currency created");
 }
 
 test("expense payment CRUD flow works end-to-end", async ({ page }) => {
@@ -42,6 +45,8 @@ test("expense payment CRUD flow works end-to-end", async ({ page }) => {
 
   await page.getByRole("button", { name: "Expenses" }).click();
   await page.getByRole("button", { name: "Payments" }).click();
+
+  await page.getByRole("button", { name: "Create expense payment" }).click();
 
   const form = page.locator("#expense-payment-form");
   await form.getByLabel("Expense").selectOption(`${expenseName} (${expenseFrequency})`);
@@ -85,6 +90,8 @@ test("expense payment duplicate period is blocked", async ({ page }) => {
   await page.getByRole("button", { name: "Expenses" }).click();
   await page.getByRole("button", { name: "Payments" }).click();
 
+  await page.getByRole("button", { name: "Create expense payment" }).click();
+
   const form = page.locator("#expense-payment-form");
 
   await form.getByLabel("Expense").selectOption(`${expenseName} (${expenseFrequency})`);
@@ -93,6 +100,8 @@ test("expense payment duplicate period is blocked", async ({ page }) => {
   await form.getByLabel("Date").fill("2026-03-01");
   await form.getByRole("button", { name: "Create" }).click();
   await expect(page.locator("#expense-payment-form-message")).toHaveText("Expense payment created");
+
+  await page.getByRole("button", { name: "Create expense payment" }).click();
 
   await form.getByLabel("Expense").selectOption(`${expenseName} (${expenseFrequency})`);
   await form.getByLabel("Amount").fill("120");

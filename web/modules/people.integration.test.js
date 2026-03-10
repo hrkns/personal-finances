@@ -10,7 +10,7 @@ test("frontend can create and list a person", async () => {
   document.querySelector('[data-settings-tab="people"]').click();
   document.getElementById("person-name").value = "John Doe";
 
-  const form = document.getElementById("people-form");
+  const form = document.getElementById("person-form");
   form.dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
 
   await new Promise((resolve) => setTimeout(resolve, 0));
@@ -32,7 +32,7 @@ test("frontend supports person edit and delete actions", async () => {
   document.querySelector('[data-settings-tab="people"]').click();
   document.getElementById("person-name").value = "Jane Doe";
   document
-    .getElementById("people-form")
+    .getElementById("person-form")
     .dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
 
   await new Promise((resolve) => setTimeout(resolve, 0));
@@ -46,7 +46,7 @@ test("frontend supports person edit and delete actions", async () => {
 
   document.getElementById("person-name").value = "Jane Updated";
   document
-    .getElementById("people-form")
+    .getElementById("person-form")
     .dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
 
   await new Promise((resolve) => setTimeout(resolve, 0));
@@ -72,7 +72,7 @@ test("frontend shows validation error for blank person name", async () => {
   document.querySelector('[data-settings-tab="people"]').click();
   document.getElementById("person-name").value = "   ";
   document
-    .getElementById("people-form")
+    .getElementById("person-form")
     .dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
 
   await new Promise((resolve) => setTimeout(resolve, 0));

@@ -66,6 +66,7 @@ test("credit card CRUD flow works end-to-end", async ({ page }) => {
   await openApp(page);
 
   await openSettingsSection(page, "Banks");
+  await page.getByRole("button", { name: "Create bank" }).click();
   const bankForm = page.locator("#bank-form");
   await bankForm.getByLabel("Name").fill(bankName);
   await bankForm.getByLabel("Country").selectOption("US");
@@ -76,7 +77,8 @@ test("credit card CRUD flow works end-to-end", async ({ page }) => {
   );
 
   await openSettingsSection(page, "People");
-  const peopleForm = page.locator("#people-form");
+  await page.getByRole("button", { name: "Create person" }).click();
+  const peopleForm = page.locator("#person-form");
   await peopleForm.getByLabel("Name").fill(personName);
   await submitExpectSuccessWithRetry(
     () => peopleForm.getByRole("button", { name: "Create" }).click(),
@@ -85,6 +87,7 @@ test("credit card CRUD flow works end-to-end", async ({ page }) => {
   );
 
   await page.getByRole("button", { name: "Credit Cards" }).click();
+  await page.getByRole("button", { name: "Create credit card" }).click();
   const creditCardForm = page.locator("#credit-card-form");
   await creditCardForm.getByLabel("Bank").selectOption({ label: `${bankName} (US)` });
   await selectOptionContaining(creditCardForm.getByLabel("Person"), personName);
@@ -123,6 +126,7 @@ test("duplicate credit card number shows backend conflict message", async ({ pag
   await openApp(page);
 
   await openSettingsSection(page, "Banks");
+  await page.getByRole("button", { name: "Create bank" }).click();
   const bankForm = page.locator("#bank-form");
   await bankForm.getByLabel("Name").fill(bankName);
   await bankForm.getByLabel("Country").selectOption("US");
@@ -133,7 +137,8 @@ test("duplicate credit card number shows backend conflict message", async ({ pag
   );
 
   await openSettingsSection(page, "People");
-  const peopleForm = page.locator("#people-form");
+  await page.getByRole("button", { name: "Create person" }).click();
+  const peopleForm = page.locator("#person-form");
   await peopleForm.getByLabel("Name").fill(personName);
   await submitExpectSuccessWithRetry(
     () => peopleForm.getByRole("button", { name: "Create" }).click(),
@@ -142,6 +147,7 @@ test("duplicate credit card number shows backend conflict message", async ({ pag
   );
 
   await page.getByRole("button", { name: "Credit Cards" }).click();
+  await page.getByRole("button", { name: "Create credit card" }).click();
   const creditCardForm = page.locator("#credit-card-form");
   await creditCardForm.getByLabel("Bank").selectOption({ label: `${bankName} (US)` });
   await selectOptionContaining(creditCardForm.getByLabel("Person"), personName);
@@ -152,7 +158,7 @@ test("duplicate credit card number shows backend conflict message", async ({ pag
     "Credit card created"
   );
   await expect(page.locator("#credit-cards-body")).toContainText(duplicatedNumber);
-
+  await page.getByRole("button", { name: "Create credit card" }).click();
   await creditCardForm.getByLabel("Bank").selectOption({ label: `${bankName} (US)` });
   await selectOptionContaining(creditCardForm.getByLabel("Person"), personName);
   await creditCardForm.getByLabel("Number").fill(duplicatedNumber);

@@ -16,13 +16,15 @@ test("bank account CRUD flow works end-to-end", async ({ page }) => {
   await openApp(page);
 
   await openSettingsSection(page, "Currency");
+  await page.getByRole("button", { name: "Create currency" }).click();
   const currencyForm = page.locator("#currency-form");
   await currencyForm.getByLabel("Name").fill(currencyName);
   await currencyForm.getByLabel("Code").fill(currencyCode);
   await currencyForm.getByRole("button", { name: "Create" }).click();
-  await expect(page.locator("#form-message")).toHaveText("Currency created");
+  await expect(page.locator("#currency-form-message")).toHaveText("Currency created");
 
   await openSettingsSection(page, "Banks");
+  await page.getByRole("button", { name: "Create bank" }).click();
   const bankForm = page.locator("#bank-form");
   await bankForm.getByLabel("Name").fill(bankName);
   await bankForm.getByLabel("Country").selectOption("US");
@@ -30,6 +32,7 @@ test("bank account CRUD flow works end-to-end", async ({ page }) => {
   await expect(page.locator("#bank-form-message")).toHaveText("Bank created");
 
   await openSettingsSection(page, "Bank Accounts");
+  await page.getByRole("button", { name: "Create bank account" }).click();
   const bankAccountForm = page.locator("#bank-account-form");
 
   await bankAccountForm.getByLabel("Bank").selectOption({ label: `${bankName} (US)` });
@@ -68,13 +71,15 @@ test("duplicate bank account shows backend conflict message", async ({ page }) =
   await openApp(page);
 
   await openSettingsSection(page, "Currency");
+  await page.getByRole("button", { name: "Create currency" }).click();
   const currencyForm = page.locator("#currency-form");
   await currencyForm.getByLabel("Name").fill(currencyName);
   await currencyForm.getByLabel("Code").fill(currencyCode);
   await currencyForm.getByRole("button", { name: "Create" }).click();
-  await expect(page.locator("#form-message")).toHaveText("Currency created");
+  await expect(page.locator("#currency-form-message")).toHaveText("Currency created");
 
   await openSettingsSection(page, "Banks");
+  await page.getByRole("button", { name: "Create bank" }).click();
   const bankForm = page.locator("#bank-form");
   await bankForm.getByLabel("Name").fill(bankName);
   await bankForm.getByLabel("Country").selectOption("US");
@@ -82,6 +87,7 @@ test("duplicate bank account shows backend conflict message", async ({ page }) =
   await expect(page.locator("#bank-form-message")).toHaveText("Bank created");
 
   await openSettingsSection(page, "Bank Accounts");
+  await page.getByRole("button", { name: "Create bank account" }).click();
   const bankAccountForm = page.locator("#bank-account-form");
 
   await bankAccountForm.getByLabel("Bank").selectOption({ label: `${bankName} (US)` });
@@ -90,6 +96,8 @@ test("duplicate bank account shows backend conflict message", async ({ page }) =
   await bankAccountForm.getByLabel("Balance").fill("50");
   await bankAccountForm.getByRole("button", { name: "Create" }).click();
   await expect(page.locator("#bank-account-form-message")).toHaveText("Bank account created");
+
+  await page.getByRole("button", { name: "Create bank account" }).click();
 
   await bankAccountForm.getByLabel("Bank").selectOption({ label: `${bankName} (US)` });
   await bankAccountForm.getByLabel("Currency").selectOption({ label: `${currencyCode} - ${currencyName}` });

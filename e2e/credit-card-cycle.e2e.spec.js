@@ -24,6 +24,7 @@ test("credit card cycle CRUD flow works end-to-end", async ({ page }) => {
   await openApp(page);
 
   await openSettingsSection(page, "Banks");
+  await page.getByRole("button", { name: "Create bank" }).click();
   const bankForm = page.locator("#bank-form");
   await bankForm.getByLabel("Name").fill(bankName);
   await bankForm.getByLabel("Country").selectOption("US");
@@ -31,20 +32,24 @@ test("credit card cycle CRUD flow works end-to-end", async ({ page }) => {
   await expect(page.locator("#bank-form-message")).toHaveText("Bank created");
 
   await openSettingsSection(page, "People");
-  const peopleForm = page.locator("#people-form");
+  await page.getByRole("button", { name: "Create person" }).click();
+  const peopleForm = page.locator("#person-form");
   await peopleForm.getByLabel("Name").fill(personName);
   await peopleForm.getByRole("button", { name: "Create" }).click();
   await expect(page.locator("#person-form-message")).toHaveText("Person created");
 
   await openSettingsSection(page, "Currency");
+  await page.getByRole("button", { name: "Create currency" }).click();
   const currencyForm = page.locator("#currency-form");
   await currencyForm.getByLabel("Name").fill("US Dollar");
   await currencyForm.getByLabel("Code").fill("USD");
   await currencyForm.getByRole("button", { name: "Create" }).click();
-  await expect(page.locator("#form-message")).toHaveText("Currency created");
+  await expect(page.locator("#currency-form-message")).toHaveText("Currency created");
 
   await page.getByRole("button", { name: "Credit Cards" }).click();
   await page.locator('[data-credit-card-tab="cards"]').click();
+
+  await page.getByRole("button", { name: "Create credit card" }).click();
 
   const creditCardForm = page.locator("#credit-card-form");
   await creditCardForm.getByLabel("Bank").selectOption({ label: `${bankName} (US)` });
@@ -125,6 +130,7 @@ test("credit card cycle validates due date is on or after closing date", async (
   await openApp(page);
 
   await openSettingsSection(page, "Banks");
+  await page.getByRole("button", { name: "Create bank" }).click();
   const bankForm = page.locator("#bank-form");
   await bankForm.getByLabel("Name").fill(bankName);
   await bankForm.getByLabel("Country").selectOption("US");
@@ -132,13 +138,16 @@ test("credit card cycle validates due date is on or after closing date", async (
   await expect(page.locator("#bank-form-message")).toHaveText("Bank created");
 
   await openSettingsSection(page, "People");
-  const peopleForm = page.locator("#people-form");
+  await page.getByRole("button", { name: "Create person" }).click();
+  const peopleForm = page.locator("#person-form");
   await peopleForm.getByLabel("Name").fill(personName);
   await peopleForm.getByRole("button", { name: "Create" }).click();
   await expect(page.locator("#person-form-message")).toHaveText("Person created");
 
   await page.getByRole("button", { name: "Credit Cards" }).click();
   await page.locator('[data-credit-card-tab="cards"]').click();
+
+  await page.getByRole("button", { name: "Create credit card" }).click();
 
   const creditCardForm = page.locator("#credit-card-form");
   await creditCardForm.getByLabel("Bank").selectOption({ label: `${bankName} (US)` });

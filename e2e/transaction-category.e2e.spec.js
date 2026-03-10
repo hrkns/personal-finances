@@ -15,11 +15,13 @@ test("transaction category CRUD flow works end-to-end", async ({ page }) => {
   await openApp(page);
   await openSettingsSection(page, "Transaction Categories");
 
+  await page.getByRole("button", { name: "Create transaction category" }).click();
   await form.getByLabel("Name").fill(rootName);
   await form.getByRole("button", { name: "Create" }).click();
   await expect(page.locator("#transaction-category-form-message")).toHaveText("Transaction category created");
   await expect(page.locator("#transaction-categories-body")).toContainText(rootName);
 
+  await page.getByRole("button", { name: "Create transaction category" }).click();
   await form.getByLabel("Name").fill(childName);
   const parentSelectForFirstChild = form.getByLabel("Parent Category");
   await expect(parentSelectForFirstChild).toContainText(rootName);
@@ -65,10 +67,12 @@ test("transaction category with child cannot be deleted", async ({ page }) => {
   await openApp(page);
   await openSettingsSection(page, "Transaction Categories");
 
+  await page.getByRole("button", { name: "Create transaction category" }).click();
   await form.getByLabel("Name").fill(rootName);
   await form.getByRole("button", { name: "Create" }).click();
   await expect(page.locator("#transaction-category-form-message")).toHaveText("Transaction category created");
 
+  await page.getByRole("button", { name: "Create transaction category" }).click();
   await form.getByLabel("Name").fill(childName);
   const parentSelectForSecondChild = form.getByLabel("Parent Category");
   await expect(parentSelectForSecondChild).toContainText(rootName);

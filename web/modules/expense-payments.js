@@ -38,9 +38,54 @@
       generateActionsCell,
     } = config;
 
+    const bootstrapModal = globalScope.bootstrap?.Modal;
+    const hasModalSupport = Boolean(bootstrapModal && elements.modalElement);
+    const modalInstance = hasModalSupport ? bootstrapModal.getOrCreateInstance(elements.modalElement) : null;
+    let modalBindingsInitialized = false;
+
     function setMessage(message, isError) {
       elements.messageElement.textContent = message;
       elements.messageElement.className = isError ? "error" : "success";
+    }
+
+    function showModal() {
+      if (modalInstance) {
+        modalInstance.show();
+      }
+    }
+
+    function hideModal() {
+      if (modalInstance) {
+        modalInstance.hide();
+      }
+    }
+
+    function initializeModalBindings() {
+      if (modalBindingsInitialized) {
+        return;
+      }
+
+      if (elements.openModalButtonElement) {
+        elements.openModalButtonElement.addEventListener("click", () => {
+          resetForm();
+          showModal();
+        });
+      }
+
+      if (elements.cancelButtonElement) {
+        elements.cancelButtonElement.addEventListener("click", () => {
+          hideModal();
+          resetForm();
+        });
+      }
+
+      if (elements.modalElement) {
+        elements.modalElement.addEventListener("hidden.bs.modal", () => {
+          resetForm();
+        });
+      }
+
+      modalBindingsInitialized = true;
     }
 
     function resetForm() {
@@ -48,6 +93,9 @@
       elements.idElement.value = "";
       elements.submitButtonElement.textContent = "Create";
       elements.cancelButtonElement.hidden = true;
+      if (elements.modalTitleElement) {
+        elements.modalTitleElement.textContent = "Create expense payment";
+      }
       populateExpenseOptions();
       populateCurrencyOptions();
     }
@@ -216,6 +264,8 @@
     }
 
     async function load() {
+      initializeModalBindings();
+
       try {
         const payments = await apiRequest("/api/expense-payments", { method: "GET" });
         setExpensePayments(payments);
@@ -260,6 +310,7 @@
           setMessage("Expense payment created", false);
         }
 
+        hideModal();
         resetForm();
         await load();
       } catch (error) {
@@ -297,7 +348,10 @@
         elements.currencyIdElement.value = String(payment.currency_id);
         elements.dateElement.value = payment.date;
         elements.submitButtonElement.textContent = "Update";
-        elements.cancelButtonElement.hidden = false;
+        if (elements.modalTitleElement) {
+          elements.modalTitleElement.textContent = "Edit expense payment";
+        }
+        showModal();
         setMessage(`Editing expense payment #${payment.id}`, false);
         return;
       }

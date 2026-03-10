@@ -17,7 +17,7 @@ async function createBankPersonAndCreditCard(window, document) {
 
   document.getElementById("person-name").value = "Cycle Person";
   document
-    .getElementById("people-form")
+    .getElementById("person-form")
     .dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
 
   await new Promise((resolve) => setTimeout(resolve, 0));

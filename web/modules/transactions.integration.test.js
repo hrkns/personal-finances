@@ -12,7 +12,7 @@ async function seedTransactionDependencies(window, document) {
   document.querySelector('[data-route-tab="settings"]').click();
   document.querySelector('[data-settings-tab="people"]').click();
   document.getElementById("person-name").value = "Jane Doe";
-  document.getElementById("people-form").dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+  document.getElementById("person-form").dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
   await flush();
 
   document.querySelector('[data-route-tab="settings"]').click();

@@ -33,6 +33,11 @@
       generateActionsCell,
     } = config;
 
+    const bootstrapModal = globalScope.bootstrap?.Modal;
+    const hasModalSupport = Boolean(bootstrapModal && elements.modalElement);
+    const modalInstance = hasModalSupport ? bootstrapModal.getOrCreateInstance(elements.modalElement) : null;
+    let modalBindingsInitialized = false;
+
     function setMessage(message, isError) {
       elements.messageElement.textContent = message;
       elements.messageElement.className = isError ? "error" : "success";
@@ -43,6 +48,49 @@
       elements.idElement.value = "";
       elements.submitButtonElement.textContent = "Create";
       elements.cancelButtonElement.hidden = true;
+      if (elements.modalTitleElement) {
+        elements.modalTitleElement.textContent = "Create person";
+      }
+    }
+
+    function showModal() {
+      if (modalInstance) {
+        modalInstance.show();
+      }
+    }
+
+    function hideModal() {
+      if (modalInstance) {
+        modalInstance.hide();
+      }
+    }
+
+    function initializeModalBindings() {
+      if (modalBindingsInitialized) {
+        return;
+      }
+
+      if (elements.openModalButtonElement) {
+        elements.openModalButtonElement.addEventListener("click", () => {
+          resetForm();
+          showModal();
+        });
+      }
+
+      if (elements.cancelButtonElement) {
+        elements.cancelButtonElement.addEventListener("click", () => {
+          hideModal();
+          resetForm();
+        });
+      }
+
+      if (elements.modalElement) {
+        elements.modalElement.addEventListener("hidden.bs.modal", () => {
+          resetForm();
+        });
+      }
+
+      modalBindingsInitialized = true;
     }
 
     function render() {
@@ -75,6 +123,8 @@
     }
 
     async function load() {
+      initializeModalBindings();
+
       try {
         const people = await apiRequest("/api/people", { method: "GET" });
         setPeople(people);
@@ -108,6 +158,7 @@
           setMessage("Person created", false);
         }
 
+        hideModal();
         resetForm();
         await load();
       } catch (error) {
@@ -142,7 +193,10 @@
         elements.idElement.value = String(person.id);
         elements.nameElement.value = person.name;
         elements.submitButtonElement.textContent = "Update";
-        elements.cancelButtonElement.hidden = false;
+        if (elements.modalTitleElement) {
+          elements.modalTitleElement.textContent = "Edit person";
+        }
+        showModal();
         setMessage(`Editing person #${person.id}`, false);
         return;
       }

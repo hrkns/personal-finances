@@ -37,6 +37,11 @@
       generateActionsCell,
     } = config;
 
+    const bootstrapModal = globalScope.bootstrap?.Modal;
+    const hasModalSupport = Boolean(bootstrapModal && elements.modalElement);
+    const modalInstance = hasModalSupport ? bootstrapModal.getOrCreateInstance(elements.modalElement) : null;
+    let modalBindingsInitialized = false;
+
     function setMessage(message, isError) {
       elements.messageElement.textContent = message;
       elements.messageElement.className = isError ? "error" : "success";
@@ -47,6 +52,49 @@
       elements.idElement.value = "";
       elements.submitButtonElement.textContent = "Create";
       elements.cancelButtonElement.hidden = true;
+      if (elements.modalTitleElement) {
+        elements.modalTitleElement.textContent = "Create bank account";
+      }
+    }
+
+    function showModal() {
+      if (modalInstance) {
+        modalInstance.show();
+      }
+    }
+
+    function hideModal() {
+      if (modalInstance) {
+        modalInstance.hide();
+      }
+    }
+
+    function initializeModalBindings() {
+      if (modalBindingsInitialized) {
+        return;
+      }
+
+      if (elements.openModalButtonElement) {
+        elements.openModalButtonElement.addEventListener("click", () => {
+          resetForm();
+          showModal();
+        });
+      }
+
+      if (elements.cancelButtonElement) {
+        elements.cancelButtonElement.addEventListener("click", () => {
+          hideModal();
+          resetForm();
+        });
+      }
+
+      if (elements.modalElement) {
+        elements.modalElement.addEventListener("hidden.bs.modal", () => {
+          resetForm();
+        });
+      }
+
+      modalBindingsInitialized = true;
     }
 
     function formatBankLabel(bankID) {
@@ -100,6 +148,8 @@
     }
 
     async function load() {
+      initializeModalBindings();
+
       try {
         const bankAccounts = await apiRequest("/api/bank-accounts", { method: "GET" });
         setBankAccounts(bankAccounts);
@@ -138,6 +188,7 @@
           setMessage("Bank account created", false);
         }
 
+        hideModal();
         resetForm();
         await load();
       } catch (error) {
@@ -175,7 +226,10 @@
         elements.accountNumberElement.value = bankAccount.account_number;
         elements.balanceElement.value = String(bankAccount.balance);
         elements.submitButtonElement.textContent = "Update";
-        elements.cancelButtonElement.hidden = false;
+        if (elements.modalTitleElement) {
+          elements.modalTitleElement.textContent = "Edit bank account";
+        }
+        showModal();
         setMessage(`Editing bank account #${bankAccount.id}`, false);
         return;
       }

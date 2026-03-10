@@ -1,7 +1,7 @@
 (function initFrontendRouter(globalScope) {
   const validRoutes = new Set(["home", "transactions", "credit-cards", "expenses", "settings"]);
   const validSettingsSections = new Set(["transaction-categories", "people", "bank-accounts", "banks", "currency"]);
-  const validCreditCardSections = new Set(["cards", "cycles", "installments", "subscriptions"]);
+  const validCreditCardSections = new Set(["cards", "cycles", "balances", "installments", "subscriptions"]);
   const validExpenseSections = new Set(["expenses", "payments"]);
 
   function normalizeRoute(route) {

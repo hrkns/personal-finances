@@ -172,7 +172,7 @@ test("frontend validates due date is on or after closing date", async () => {
   dom.window.close();
 });
 
-test("frontend can manage cycle balances under a selected cycle", async () => {
+test("frontend can manage cycle balances from balances tab", async () => {
   const { dom, window, document } = await setupFrontendApp();
 
   document.querySelector('[data-route-tab="settings"]').click();
@@ -201,12 +201,14 @@ test("frontend can manage cycle balances under a selected cycle", async () => {
   await new Promise((resolve) => setTimeout(resolve, 0));
   await new Promise((resolve) => setTimeout(resolve, 0));
 
-  const balancesButton = document.querySelector('#credit-card-cycles-body button[data-action="balances"]');
-  balancesButton.dispatchEvent(new window.Event("click", { bubbles: true }));
+  document.querySelector('[data-credit-card-tab="balances"]').click();
 
   await new Promise((resolve) => setTimeout(resolve, 0));
   await new Promise((resolve) => setTimeout(resolve, 0));
 
+  document.getElementById("credit-card-cycle-balance-open-modal-button").dispatchEvent(new window.Event("click", { bubbles: true }));
+
+  document.getElementById("credit-card-cycle-balance-cycle-id").value = "1";
   document.getElementById("credit-card-cycle-balance-currency-id").value = "1";
   document.getElementById("credit-card-cycle-balance-balance").value = "500.5";
   document.getElementById("credit-card-cycle-balance-paid").checked = false;
@@ -221,7 +223,7 @@ test("frontend can manage cycle balances under a selected cycle", async () => {
   assert.match(document.getElementById("credit-card-cycle-balances-body").textContent, /USD/);
   assert.match(document.getElementById("credit-card-cycle-balances-body").textContent, /500.5/);
 
-  const balanceEditButton = document.querySelector('#credit-card-cycle-balances-body button[data-balance-action="edit"]');
+  const balanceEditButton = document.querySelector('#credit-card-cycle-balances-body button[data-action="edit"]');
   balanceEditButton.dispatchEvent(new window.Event("click", { bubbles: true }));
 
   document.getElementById("credit-card-cycle-balance-balance").value = "350.25";
@@ -237,14 +239,14 @@ test("frontend can manage cycle balances under a selected cycle", async () => {
   assert.match(document.getElementById("credit-card-cycle-balances-body").textContent, /350.25/);
   assert.match(document.getElementById("credit-card-cycle-balances-body").textContent, /Yes/);
 
-  const balanceDeleteButton = document.querySelector('#credit-card-cycle-balances-body button[data-balance-action="delete"]');
+  const balanceDeleteButton = document.querySelector('#credit-card-cycle-balances-body button[data-action="delete"]');
   balanceDeleteButton.dispatchEvent(new window.Event("click", { bubbles: true }));
 
   await new Promise((resolve) => setTimeout(resolve, 0));
   await new Promise((resolve) => setTimeout(resolve, 0));
 
   assert.equal(document.getElementById("credit-card-cycle-balance-form-message").textContent, "Credit card cycle balance deleted");
-  assert.match(document.getElementById("credit-card-cycle-balances-body").textContent, /No cycle balances yet/);
+  assert.match(document.getElementById("credit-card-cycle-balances-body").textContent, /No credit card cycle balances yet/);
 
   dom.window.close();
 });
@@ -278,12 +280,13 @@ test("frontend validates unique currency per cycle balance", async () => {
   await new Promise((resolve) => setTimeout(resolve, 0));
   await new Promise((resolve) => setTimeout(resolve, 0));
 
-  const balancesButton = document.querySelector('#credit-card-cycles-body button[data-action="balances"]');
-  balancesButton.dispatchEvent(new window.Event("click", { bubbles: true }));
+  document.querySelector('[data-credit-card-tab="balances"]').click();
 
   await new Promise((resolve) => setTimeout(resolve, 0));
   await new Promise((resolve) => setTimeout(resolve, 0));
 
+  document.getElementById("credit-card-cycle-balance-open-modal-button").dispatchEvent(new window.Event("click", { bubbles: true }));
+  document.getElementById("credit-card-cycle-balance-cycle-id").value = "1";
   document.getElementById("credit-card-cycle-balance-currency-id").value = "1";
   document.getElementById("credit-card-cycle-balance-balance").value = "120";
   document.getElementById("credit-card-cycle-balance-paid").checked = false;
@@ -294,6 +297,8 @@ test("frontend validates unique currency per cycle balance", async () => {
   await new Promise((resolve) => setTimeout(resolve, 0));
   await new Promise((resolve) => setTimeout(resolve, 0));
 
+  document.getElementById("credit-card-cycle-balance-open-modal-button").dispatchEvent(new window.Event("click", { bubbles: true }));
+  document.getElementById("credit-card-cycle-balance-cycle-id").value = "1";
   document.getElementById("credit-card-cycle-balance-currency-id").value = "1";
   document.getElementById("credit-card-cycle-balance-balance").value = "220";
   document.getElementById("credit-card-cycle-balance-paid").checked = true;

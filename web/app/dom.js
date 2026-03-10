@@ -18,7 +18,7 @@
    *  transactions: object,
    *  creditCards: object,
    *  creditCardCycles: object,
-   *  creditCardCycleBalances: object,
+  *  creditCardCycleBalances: object,
    *  creditCardInstallments: object,
    *  creditCardSubscriptions: object,
    *  expenses: object,
@@ -82,8 +82,9 @@
         bodyElement: documentRef.getElementById("credit-card-cycles-body"),
       },
       creditCardCycleBalances: {
-        sectionElement: documentRef.getElementById("credit-card-cycle-balances-section"),
-        selectionMessageElement: documentRef.getElementById("credit-card-cycle-balances-selection-message"),
+        openModalButtonElement: documentRef.getElementById("credit-card-cycle-balance-open-modal-button"),
+        modalElement: documentRef.getElementById("credit-card-cycle-balance-modal"),
+        modalTitleElement: documentRef.getElementById("credit-card-cycle-balance-modal-title"),
         formElement: documentRef.getElementById("credit-card-cycle-balance-form"),
         idElement: documentRef.getElementById("credit-card-cycle-balance-id"),
         cycleIdElement: documentRef.getElementById("credit-card-cycle-balance-cycle-id"),
@@ -230,6 +231,7 @@
       creditCardViews: {
         cards: documentRef.getElementById("view-credit-cards-cards"),
         cycles: documentRef.getElementById("view-credit-card-cycles"),
+        balances: documentRef.getElementById("view-credit-card-balances"),
         installments: documentRef.getElementById("view-credit-card-installments"),
         subscriptions: documentRef.getElementById("view-credit-card-subscriptions"),
       },

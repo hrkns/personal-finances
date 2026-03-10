@@ -12,6 +12,7 @@ Within Credit Cards, `creditCards` query parameter controls which subsection is 
 
 - Cards: `/?view=credit-cards&creditCards=cards`
 - Cycles: `/?view=credit-cards&creditCards=cycles`
+- Balances: `/?view=credit-cards&creditCards=balances`
 - Installments: `/?view=credit-cards&creditCards=installments`
 - Subscriptions: `/?view=credit-cards&creditCards=subscriptions`
 

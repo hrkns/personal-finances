@@ -17,6 +17,7 @@ const scriptFileNames = [
   "modules/transactions.js",
   "modules/credit-cards.js",
   "modules/credit-card-cycles.js",
+  "modules/credit-card-cycle-balances.js",
   "modules/credit-card-installments.js",
   "modules/credit-card-subscriptions.js",
   "modules/expenses.js",

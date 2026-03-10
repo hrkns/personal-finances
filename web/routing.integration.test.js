@@ -40,6 +40,7 @@ test("frontend initializes at Home route and can route to transactions and setti
   const creditCardsHiddenAfter = document.getElementById("view-credit-cards").hidden;
   const cardsSubViewHiddenAfter = document.getElementById("view-credit-cards-cards").hidden;
   const installmentsSubViewHiddenAfter = document.getElementById("view-credit-card-installments").hidden;
+  const balancesSubViewHiddenAfter = document.getElementById("view-credit-card-balances").hidden;
   const cyclesSubViewHiddenAfter = document.getElementById("view-credit-card-cycles").hidden;
   const subscriptionsSubViewHiddenAfter = document.getElementById("view-credit-card-subscriptions").hidden;
   const emptyCreditCardsState = document.getElementById("credit-cards-body").textContent;
@@ -47,6 +48,7 @@ test("frontend initializes at Home route and can route to transactions and setti
   document.querySelector('[data-credit-card-tab="installments"]').click();
   const cardsSubViewHiddenAfterInstallmentSelect = document.getElementById("view-credit-cards-cards").hidden;
   const installmentsSubViewHiddenAfterInstallmentSelect = document.getElementById("view-credit-card-installments").hidden;
+  const balancesSubViewHiddenAfterInstallmentSelect = document.getElementById("view-credit-card-balances").hidden;
   const cyclesSubViewHiddenAfterInstallmentSelect = document.getElementById("view-credit-card-cycles").hidden;
   const subscriptionsSubViewHiddenAfterInstallmentSelect = document.getElementById("view-credit-card-subscriptions").hidden;
   const emptyCreditCardInstallmentsState = document.getElementById("credit-card-installments-body").textContent;
@@ -54,13 +56,23 @@ test("frontend initializes at Home route and can route to transactions and setti
   document.querySelector('[data-credit-card-tab="cycles"]').click();
   const cardsSubViewHiddenAfterCycleSelect = document.getElementById("view-credit-cards-cards").hidden;
   const installmentsSubViewHiddenAfterCycleSelect = document.getElementById("view-credit-card-installments").hidden;
+  const balancesSubViewHiddenAfterCycleSelect = document.getElementById("view-credit-card-balances").hidden;
   const cyclesSubViewHiddenAfterCycleSelect = document.getElementById("view-credit-card-cycles").hidden;
   const subscriptionsSubViewHiddenAfterCycleSelect = document.getElementById("view-credit-card-subscriptions").hidden;
   const emptyCreditCardCyclesState = document.getElementById("credit-card-cycles-body").textContent;
 
+  document.querySelector('[data-credit-card-tab="balances"]').click();
+  const cardsSubViewHiddenAfterBalanceSelect = document.getElementById("view-credit-cards-cards").hidden;
+  const installmentsSubViewHiddenAfterBalanceSelect = document.getElementById("view-credit-card-installments").hidden;
+  const balancesSubViewHiddenAfterBalanceSelect = document.getElementById("view-credit-card-balances").hidden;
+  const cyclesSubViewHiddenAfterBalanceSelect = document.getElementById("view-credit-card-cycles").hidden;
+  const subscriptionsSubViewHiddenAfterBalanceSelect = document.getElementById("view-credit-card-subscriptions").hidden;
+  const emptyCreditCardBalancesState = document.getElementById("credit-card-cycle-balances-body").textContent;
+
   document.querySelector('[data-credit-card-tab="subscriptions"]').click();
   const cardsSubViewHiddenAfterSubscriptionSelect = document.getElementById("view-credit-cards-cards").hidden;
   const installmentsSubViewHiddenAfterSubscriptionSelect = document.getElementById("view-credit-card-installments").hidden;
+  const balancesSubViewHiddenAfterSubscriptionSelect = document.getElementById("view-credit-card-balances").hidden;
   const cyclesSubViewHiddenAfterSubscriptionSelect = document.getElementById("view-credit-card-cycles").hidden;
   const subscriptionsSubViewHiddenAfterSubscriptionSelect = document.getElementById("view-credit-card-subscriptions").hidden;
   const emptyCreditCardSubscriptionsState = document.getElementById("credit-card-subscriptions-body").textContent;
@@ -115,22 +127,32 @@ test("frontend initializes at Home route and can route to transactions and setti
 
   assert.equal(creditCardsHiddenAfter, false);
   assert.equal(cardsSubViewHiddenAfter, false);
+  assert.equal(balancesSubViewHiddenAfter, true);
   assert.equal(installmentsSubViewHiddenAfter, true);
   assert.equal(cyclesSubViewHiddenAfter, true);
   assert.equal(subscriptionsSubViewHiddenAfter, true);
   assert.equal(cardsSubViewHiddenAfterInstallmentSelect, true);
+  assert.equal(balancesSubViewHiddenAfterInstallmentSelect, true);
   assert.equal(installmentsSubViewHiddenAfterInstallmentSelect, false);
   assert.equal(cyclesSubViewHiddenAfterInstallmentSelect, true);
   assert.equal(subscriptionsSubViewHiddenAfterInstallmentSelect, true);
   assert.equal(cardsSubViewHiddenAfterCycleSelect, true);
   assert.equal(installmentsSubViewHiddenAfterCycleSelect, true);
+  assert.equal(balancesSubViewHiddenAfterCycleSelect, true);
   assert.equal(cyclesSubViewHiddenAfterCycleSelect, false);
   assert.equal(subscriptionsSubViewHiddenAfterCycleSelect, true);
+  assert.equal(cardsSubViewHiddenAfterBalanceSelect, true);
+  assert.equal(installmentsSubViewHiddenAfterBalanceSelect, true);
+  assert.equal(balancesSubViewHiddenAfterBalanceSelect, false);
+  assert.equal(cyclesSubViewHiddenAfterBalanceSelect, true);
+  assert.equal(subscriptionsSubViewHiddenAfterBalanceSelect, true);
   assert.equal(cardsSubViewHiddenAfterSubscriptionSelect, true);
   assert.equal(installmentsSubViewHiddenAfterSubscriptionSelect, true);
+  assert.equal(balancesSubViewHiddenAfterSubscriptionSelect, true);
   assert.equal(cyclesSubViewHiddenAfterSubscriptionSelect, true);
   assert.equal(subscriptionsSubViewHiddenAfterSubscriptionSelect, false);
   assert.match(emptyCreditCardsState, /No credit cards yet/);
+  assert.match(emptyCreditCardBalancesState, /No credit card cycle balances yet/);
   assert.match(emptyCreditCardInstallmentsState, /No credit card installments yet/);
   assert.match(emptyCreditCardCyclesState, /No credit card cycles yet/);
   assert.match(emptyCreditCardSubscriptionsState, /No credit card subscriptions yet/);

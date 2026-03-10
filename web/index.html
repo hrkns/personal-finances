@@ -137,6 +137,7 @@
       <nav class="nav nav-pills gap-2 mt-3" aria-label="Credit Cards Views">
         <button type="button" class="nav-link" data-credit-card-tab="cards">Cards</button>
         <button type="button" class="nav-link" data-credit-card-tab="cycles">Cycles</button>
+        <button type="button" class="nav-link" data-credit-card-tab="balances">Balances</button>
         <button type="button" class="nav-link" data-credit-card-tab="installments">Installments</button>
         <button type="button" class="nav-link" data-credit-card-tab="subscriptions">Subscriptions</button>
       </nav>
@@ -231,49 +232,64 @@
           </thead>
           <tbody id="credit-card-cycles-body"></tbody>
         </table>
+      </section>
 
-        <section id="credit-card-cycle-balances-section">
-          <h2>Cycle Balances</h2>
-          <p id="credit-card-cycle-balances-selection-message">Select a cycle balance context to continue.</p>
+      <section id="view-credit-card-balances" class="credit-cards-view" hidden>
+        <h2>Balances</h2>
+        <button class="btn btn-success" id="credit-card-cycle-balance-open-modal-button" type="button">Create credit card cycle balance</button>
+        <p id="credit-card-cycle-balance-form-message" role="status"></p>
 
-          <form id="credit-card-cycle-balance-form">
-            <input type="hidden" id="credit-card-cycle-balance-id" />
-            <input type="hidden" id="credit-card-cycle-balance-cycle-id" />
+        <h2>Credit Card Cycle Balances</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Cycle</th>
+              <th>Currency</th>
+              <th>Balance</th>
+              <th>Paid</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="credit-card-cycle-balances-body"></tbody>
+        </table>
 
-            <label for="credit-card-cycle-balance-currency-id">Currency</label>
-            <select class="form-select" id="credit-card-cycle-balance-currency-id" name="currency_id" required>
-              <option value="">Select currency</option>
-            </select>
+        <div class="modal fade" id="credit-card-cycle-balance-modal" tabindex="-1" aria-labelledby="credit-card-cycle-balance-modal-title" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="credit-card-cycle-balance-modal-title">Create credit card cycle balance</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <form id="credit-card-cycle-balance-form">
+                <input type="hidden" id="credit-card-cycle-balance-id" />
+                <div class="modal-body">
+                  <label for="credit-card-cycle-balance-cycle-id">Cycle</label>
+                  <select class="form-select" id="credit-card-cycle-balance-cycle-id" name="credit_card_cycle_id" required>
+                    <option value="">Select credit card cycle</option>
+                  </select>
 
-            <label for="credit-card-cycle-balance-balance">Balance</label>
-            <input class="form-control" id="credit-card-cycle-balance-balance" name="balance" type="number" step="0.01" required />
+                  <label for="credit-card-cycle-balance-currency-id">Currency</label>
+                  <select class="form-select" id="credit-card-cycle-balance-currency-id" name="currency_id" required>
+                    <option value="">Select currency</option>
+                  </select>
 
-            <label for="credit-card-cycle-balance-paid">
-              <input id="credit-card-cycle-balance-paid" name="paid" type="checkbox" />
-              Paid
-            </label>
+                  <label for="credit-card-cycle-balance-balance">Balance</label>
+                  <input class="form-control" id="credit-card-cycle-balance-balance" name="balance" type="number" step="0.01" required />
 
-            <div class="actions">
-              <button class="btn btn-success" id="credit-card-cycle-balance-submit-button" type="submit">Create</button>
-              <button class="btn btn-secondary" id="credit-card-cycle-balance-cancel-button" type="button" hidden>Cancel edit</button>
+                  <label for="credit-card-cycle-balance-paid">
+                    <input id="credit-card-cycle-balance-paid" name="paid" type="checkbox" />
+                    Paid
+                  </label>
+                </div>
+                <div class="modal-footer">
+                  <button class="btn btn-secondary" id="credit-card-cycle-balance-cancel-button" type="button" data-bs-dismiss="modal">Cancel</button>
+                  <button class="btn btn-success" id="credit-card-cycle-balance-submit-button" type="submit">Create</button>
+                </div>
+              </form>
             </div>
-          </form>
-
-          <p id="credit-card-cycle-balance-form-message" role="status"></p>
-
-          <table>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Currency</th>
-                <th>Balance</th>
-                <th>Paid</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="credit-card-cycle-balances-body"></tbody>
-          </table>
-        </section>
+          </div>
+        </div>
       </section>
 
       <section id="view-credit-card-installments" class="credit-cards-view" hidden>
@@ -741,6 +757,7 @@
   <script src="modules/transactions.js"></script>
   <script src="modules/credit-cards.js"></script>
   <script src="modules/credit-card-cycles.js"></script>
+  <script src="modules/credit-card-cycle-balances.js"></script>
   <script src="modules/credit-card-installments.js"></script>
   <script src="modules/credit-card-subscriptions.js"></script>
   <script src="modules/expenses.js"></script>

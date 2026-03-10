@@ -73,10 +73,11 @@ test("credit card cycle CRUD flow works end-to-end", async ({ page }) => {
   await expect(page.locator("#credit-card-cycles-body")).toContainText("2026-03-20");
   await expect(page.locator("#credit-card-cycles-body")).toContainText("2026-03-30");
 
-  const cycleRow = page.locator("#credit-card-cycles-body tr", { hasText: "2026-03-20" });
-  await cycleRow.locator('button[data-action="balances"]').click();
+  await page.locator('[data-credit-card-tab="balances"]').click();
+  await page.getByRole("button", { name: "Create credit card cycle balance" }).click();
 
   const balanceForm = page.locator("#credit-card-cycle-balance-form");
+  await selectOptionContaining(balanceForm.getByLabel("Cycle"), "2026-03-20");
   await balanceForm.getByLabel("Currency").selectOption({ label: "USD (US Dollar)" });
   await balanceForm.getByLabel("Balance").fill("450.75");
   await balanceForm.getByLabel("Paid").setChecked(false);
@@ -87,7 +88,7 @@ test("credit card cycle CRUD flow works end-to-end", async ({ page }) => {
   await expect(page.locator("#credit-card-cycle-balances-body")).toContainText("450.75");
 
   const balanceRow = page.locator("#credit-card-cycle-balances-body tr", { hasText: "450.75" });
-  await balanceRow.locator('button[data-balance-action="edit"]').click();
+  await balanceRow.locator('button[data-action="edit"]').click();
   await expect(page.locator("#credit-card-cycle-balance-submit-button")).toHaveText("Update");
 
   await balanceForm.getByLabel("Balance").fill("210.5");
@@ -99,10 +100,11 @@ test("credit card cycle CRUD flow works end-to-end", async ({ page }) => {
   await expect(page.locator("#credit-card-cycle-balances-body")).toContainText("Yes");
 
   const updatedBalanceRow = page.locator("#credit-card-cycle-balances-body tr", { hasText: "210.5" });
-  await updatedBalanceRow.locator('button[data-balance-action="delete"]').click();
+  await updatedBalanceRow.locator('button[data-action="delete"]').click();
   await expect(page.locator("#credit-card-cycle-balance-form-message")).toHaveText("Credit card cycle balance deleted");
-  await expect(page.locator("#credit-card-cycle-balances-body")).toContainText("No cycle balances yet");
+  await expect(page.locator("#credit-card-cycle-balances-body")).toContainText("No credit card cycle balances yet");
 
+  await page.locator('[data-credit-card-tab="cycles"]').click();
   const initialRow = page.locator("#credit-card-cycles-body tr", { hasText: "2026-03-20" });
   await initialRow.locator('button[data-action="edit"]').click();
   await expect(page.locator("#credit-card-cycle-submit-button")).toHaveText("Update");

@@ -357,7 +357,7 @@ test("credit card cycle balances collection conflict path", async () => {
   stores.creditCardCycleBalancesStore.push({ id: 1, credit_card_cycle_id: 1, currency_id: 1, balance: 10, paid: false });
 
   const response = handleCreditCardCycleBalancesCollection(
-    "/api/credit-card-cycles/1/balances",
+    "/api/credit-card-cycle-balances",
     "POST",
     { body: JSON.stringify({ credit_card_cycle_id: 1, currency_id: 1, balance: 20, paid: false }) },
     stores
@@ -376,7 +376,7 @@ test("credit card cycle balances by-id conflict path", async () => {
   );
 
   const response = handleCreditCardCycleBalancesByID(
-    "/api/credit-card-cycles/1/balances/2",
+    "/api/credit-card-cycle-balances/2",
     "PUT",
     { body: JSON.stringify({ credit_card_cycle_id: 1, currency_id: 1, balance: 10, paid: false }) },
     stores

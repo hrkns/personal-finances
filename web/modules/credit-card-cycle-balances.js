@@ -238,13 +238,13 @@
 
       try {
         if (id) {
-          await apiRequest(`/api/credit-card-cycles/${payload.credit_card_cycle_id}/balances/${id}`, {
+          await apiRequest(`/api/credit-card-cycle-balances/${id}`, {
             method: "PUT",
             body: JSON.stringify(payload),
           });
           setMessage("Credit card cycle balance updated", false);
         } else {
-          await apiRequest(`/api/credit-card-cycles/${payload.credit_card_cycle_id}/balances`, {
+          await apiRequest(`/api/credit-card-cycle-balances`, {
             method: "POST",
             body: JSON.stringify(payload),
           });
@@ -261,7 +261,7 @@
 
     async function deleteBalance(balance) {
       try {
-        await apiRequest(`/api/credit-card-cycles/${balance.credit_card_cycle_id}/balances/${balance.id}`, { method: "DELETE" });
+        await apiRequest(`/api/credit-card-cycle-balances/${balance.id}`, { method: "DELETE" });
         setMessage("Credit card cycle balance deleted", false);
         resetForm();
         await load();

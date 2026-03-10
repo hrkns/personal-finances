@@ -1,19 +1,17 @@
 package backend
 
 import (
-	"database/sql"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 	"regexp"
-	"strconv"
 )
 
 var (
-	creditCardCycleBalancesPath                  = "/api/credit-card-cycle-balances"
-	creditCardCycleBalancesCollectionPathPattern = regexp.MustCompile(`^/api/credit-card-cycles/(\d+)/balances$`)
-	creditCardCycleBalancesByIDPathPattern       = regexp.MustCompile(`^/api/credit-card-cycles/(\d+)/balances/(\d+)$`)
+	creditCardCycleBalancesPath                          = "/api/credit-card-cycle-balances"
+	creditCardCycleBalancesPathByID                      = "/api/credit-card-cycle-balances/"
+	legacyCreditCardCycleBalancesCollectionPathPattern   = regexp.MustCompile(`^/api/credit-card-cycles/(\d+)/balances$`)
+	legacyCreditCardCycleBalancesByIDPathPattern         = regexp.MustCompile(`^/api/credit-card-cycles/(\d+)/balances/(\d+)$`)
 )
 
 type creditCardCycleBalance struct {
@@ -33,117 +31,39 @@ type creditCardCycleBalancePayload struct {
 
 func (application app) registerCreditCardCycleBalanceRoutes(mux *http.ServeMux) {
 	mux.HandleFunc(creditCardCycleBalancesPath, application.creditCardCycleBalancesCollectionHandler)
+	mux.HandleFunc(creditCardCycleBalancesPathByID, application.creditCardCycleBalancesByIDHandler)
 }
 
 func (application app) creditCardCycleBalancesCollectionHandler(writer http.ResponseWriter, request *http.Request) {
 	switch request.Method {
 	case http.MethodGet:
 		application.listAllCreditCardCycleBalances(writer)
+	case http.MethodPost:
+		application.createCreditCardCycleBalance(writer, request)
 	default:
-		methodNotAllowed(writer, http.MethodGet)
+		methodNotAllowed(writer, http.MethodGet, http.MethodPost)
 	}
 }
 
-func (application app) creditCardCycleBalancesHandler(writer http.ResponseWriter, request *http.Request) {
-	cycleID, balanceID, isCollection, parseErr := parseCreditCardCycleBalancePath(request.URL.Path)
-	if parseErr != nil {
-		writeError(writer, http.StatusBadRequest, "invalid_id", "credit card cycle id and balance id must be positive integers")
-		return
-	}
-
-	if isCollection {
-		switch request.Method {
-		case http.MethodGet:
-			application.listCreditCardCycleBalances(writer, cycleID)
-		case http.MethodPost:
-			application.createCreditCardCycleBalance(writer, request, cycleID)
-		default:
-			methodNotAllowed(writer, http.MethodGet, http.MethodPost)
-		}
+func (application app) creditCardCycleBalancesByIDHandler(writer http.ResponseWriter, request *http.Request) {
+	balanceID, err := parseIDFromPath(request.URL.Path, creditCardCycleBalancesPathByID)
+	if err != nil {
+		writeError(writer, http.StatusBadRequest, "invalid_id", "credit card cycle balance id must be a positive integer")
 		return
 	}
 
 	switch request.Method {
-	case http.MethodGet:
-		application.getCreditCardCycleBalance(writer, cycleID, balanceID)
 	case http.MethodPut:
-		application.updateCreditCardCycleBalance(writer, request, cycleID, balanceID)
+		application.updateCreditCardCycleBalance(writer, request, balanceID)
 	case http.MethodDelete:
-		application.deleteCreditCardCycleBalance(writer, cycleID, balanceID)
+		application.deleteCreditCardCycleBalance(writer, balanceID)
 	default:
-		methodNotAllowed(writer, http.MethodGet, http.MethodPut, http.MethodDelete)
+		methodNotAllowed(writer, http.MethodPut, http.MethodDelete)
 	}
 }
 
-func parseCreditCardCycleBalancePath(path string) (int64, int64, bool, error) {
-	if matches := creditCardCycleBalancesCollectionPathPattern.FindStringSubmatch(path); matches != nil {
-		cycleID, err := parseID(matches[1])
-		if err != nil {
-			return 0, 0, false, err
-		}
-		return cycleID, 0, true, nil
-	}
-
-	if matches := creditCardCycleBalancesByIDPathPattern.FindStringSubmatch(path); matches != nil {
-		cycleID, err := parseID(matches[1])
-		if err != nil {
-			return 0, 0, false, err
-		}
-		balanceID, err := parseID(matches[2])
-		if err != nil {
-			return 0, 0, false, err
-		}
-		return cycleID, balanceID, false, nil
-	}
-
-	return 0, 0, false, fmt.Errorf("invalid path")
-}
-
-func parseID(raw string) (int64, error) {
-	id, err := strconv.ParseInt(raw, 10, 64)
-	if err != nil || id <= 0 {
-		return 0, fmt.Errorf("invalid id")
-	}
-	return id, nil
-}
-
-func (application app) listCreditCardCycleBalances(writer http.ResponseWriter, cycleID int64) {
-	exists, err := application.creditCardCycleExists(cycleID)
-	if err != nil {
-		writeError(writer, http.StatusInternalServerError, "internal_error", "failed to validate credit card cycle")
-		return
-	}
-	if !exists {
-		writeError(writer, http.StatusNotFound, "not_found", "credit card cycle not found")
-		return
-	}
-
-	rows, err := application.db.Query(
-		`SELECT id, credit_card_cycle_id, currency_id, balance, paid FROM credit_card_cycle_balances WHERE credit_card_cycle_id = ? ORDER BY id`,
-		cycleID,
-	)
-	if err != nil {
-		writeError(writer, http.StatusInternalServerError, "internal_error", "failed to load credit card cycle balances")
-		return
-	}
-	defer rows.Close()
-
-	items := make([]creditCardCycleBalance, 0)
-	for rows.Next() {
-		item, scanErr := scanCreditCardCycleBalance(rows)
-		if scanErr != nil {
-			writeError(writer, http.StatusInternalServerError, "internal_error", "failed to read credit card cycle balances")
-			return
-		}
-		items = append(items, item)
-	}
-
-	if err = rows.Err(); err != nil {
-		writeError(writer, http.StatusInternalServerError, "internal_error", "failed to read credit card cycle balances")
-		return
-	}
-
-	writeJSON(writer, http.StatusOK, items)
+func (application app) creditCardCycleBalancesLegacyHandler(writer http.ResponseWriter, _ *http.Request) {
+	methodNotAllowed(writer)
 }
 
 func (application app) listAllCreditCardCycleBalances(writer http.ResponseWriter) {
@@ -174,28 +94,10 @@ func (application app) listAllCreditCardCycleBalances(writer http.ResponseWriter
 	writeJSON(writer, http.StatusOK, items)
 }
 
-func (application app) getCreditCardCycleBalance(writer http.ResponseWriter, cycleID int64, balanceID int64) {
-	item, err := application.fetchCreditCardCycleBalance(cycleID, balanceID)
-	if errors.Is(err, sql.ErrNoRows) {
-		writeError(writer, http.StatusNotFound, "not_found", "credit card cycle balance not found")
-		return
-	}
-	if err != nil {
-		writeError(writer, http.StatusInternalServerError, "internal_error", "failed to load credit card cycle balance")
-		return
-	}
-
-	writeJSON(writer, http.StatusOK, item)
-}
-
-func (application app) createCreditCardCycleBalance(writer http.ResponseWriter, request *http.Request, cycleID int64) {
+func (application app) createCreditCardCycleBalance(writer http.ResponseWriter, request *http.Request) {
 	payload, validationErr := decodeCreditCardCycleBalancePayload(request)
 	if validationErr != nil {
 		writeError(writer, http.StatusBadRequest, "invalid_payload", validationErr.Error())
-		return
-	}
-	if payload.CreditCardCycleID != cycleID {
-		writeError(writer, http.StatusBadRequest, "invalid_payload", "credit_card_cycle_id must match route id")
 		return
 	}
 
@@ -225,35 +127,30 @@ func (application app) createCreditCardCycleBalance(writer http.ResponseWriter, 
 		return
 	}
 
-	created, err := application.fetchCreditCardCycleBalance(cycleID, id)
+	created, err := application.fetchCreditCardCycleBalance(id)
 	if err != nil {
 		writeError(writer, http.StatusInternalServerError, "internal_error", "failed to load created credit card cycle balance")
 		return
 	}
 
-	writer.Header().Set("Location", fmt.Sprintf("/api/credit-card-cycles/%d/balances/%d", cycleID, id))
+	writer.Header().Set("Location", fmt.Sprintf("/api/credit-card-cycle-balances/%d", id))
 	writeJSON(writer, http.StatusCreated, created)
 }
 
-func (application app) updateCreditCardCycleBalance(writer http.ResponseWriter, request *http.Request, cycleID int64, balanceID int64) {
+func (application app) updateCreditCardCycleBalance(writer http.ResponseWriter, request *http.Request, balanceID int64) {
 	payload, validationErr := decodeCreditCardCycleBalancePayload(request)
 	if validationErr != nil {
 		writeError(writer, http.StatusBadRequest, "invalid_payload", validationErr.Error())
 		return
 	}
-	if payload.CreditCardCycleID != cycleID {
-		writeError(writer, http.StatusBadRequest, "invalid_payload", "credit_card_cycle_id must match route id")
-		return
-	}
 
 	result, err := application.db.Exec(
-		`UPDATE credit_card_cycle_balances SET credit_card_cycle_id = ?, currency_id = ?, balance = ?, paid = ? WHERE id = ? AND credit_card_cycle_id = ?`,
+		`UPDATE credit_card_cycle_balances SET credit_card_cycle_id = ?, currency_id = ?, balance = ?, paid = ? WHERE id = ?`,
 		payload.CreditCardCycleID,
 		payload.CurrencyID,
 		payload.Balance,
 		payload.Paid,
 		balanceID,
-		cycleID,
 	)
 	if err != nil {
 		if isUniqueConstraintError(err) {
@@ -278,7 +175,7 @@ func (application app) updateCreditCardCycleBalance(writer http.ResponseWriter, 
 		return
 	}
 
-	updated, err := application.fetchCreditCardCycleBalance(cycleID, balanceID)
+	updated, err := application.fetchCreditCardCycleBalance(balanceID)
 	if err != nil {
 		writeError(writer, http.StatusInternalServerError, "internal_error", "failed to load updated credit card cycle balance")
 		return
@@ -287,8 +184,8 @@ func (application app) updateCreditCardCycleBalance(writer http.ResponseWriter, 
 	writeJSON(writer, http.StatusOK, updated)
 }
 
-func (application app) deleteCreditCardCycleBalance(writer http.ResponseWriter, cycleID int64, balanceID int64) {
-	result, err := application.db.Exec(`DELETE FROM credit_card_cycle_balances WHERE id = ? AND credit_card_cycle_id = ?`, balanceID, cycleID)
+func (application app) deleteCreditCardCycleBalance(writer http.ResponseWriter, balanceID int64) {
+	result, err := application.db.Exec(`DELETE FROM credit_card_cycle_balances WHERE id = ?`, balanceID)
 	if err != nil {
 		writeError(writer, http.StatusInternalServerError, "internal_error", "failed to delete credit card cycle balance")
 		return
@@ -325,11 +222,10 @@ func decodeCreditCardCycleBalancePayload(request *http.Request) (creditCardCycle
 	return payload, nil
 }
 
-func (application app) fetchCreditCardCycleBalance(cycleID int64, balanceID int64) (creditCardCycleBalance, error) {
+func (application app) fetchCreditCardCycleBalance(balanceID int64) (creditCardCycleBalance, error) {
 	row := application.db.QueryRow(
-		`SELECT id, credit_card_cycle_id, currency_id, balance, paid FROM credit_card_cycle_balances WHERE id = ? AND credit_card_cycle_id = ?`,
+		`SELECT id, credit_card_cycle_id, currency_id, balance, paid FROM credit_card_cycle_balances WHERE id = ?`,
 		balanceID,
-		cycleID,
 	)
 
 	item, err := scanCreditCardCycleBalance(row)
@@ -359,15 +255,3 @@ func scanCreditCardCycleBalance(source scanner) (creditCardCycleBalance, error) 
 	return item, nil
 }
 
-func (application app) creditCardCycleExists(id int64) (bool, error) {
-	var storedID int64
-	err := application.db.QueryRow(`SELECT id FROM credit_card_cycles WHERE id = ?`, id).Scan(&storedID)
-	if errors.Is(err, sql.ErrNoRows) {
-		return false, nil
-	}
-	if err != nil {
-		return false, err
-	}
-
-	return true, nil
-}

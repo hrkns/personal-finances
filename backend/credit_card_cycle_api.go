@@ -46,9 +46,9 @@ func (application app) creditCardCyclesHandler(writer http.ResponseWriter, reque
 }
 
 func (application app) creditCardCycleByIDHandler(writer http.ResponseWriter, request *http.Request) {
-	if creditCardCycleBalancesCollectionPathPattern.MatchString(request.URL.Path) ||
-		creditCardCycleBalancesByIDPathPattern.MatchString(request.URL.Path) {
-		application.creditCardCycleBalancesHandler(writer, request)
+	if legacyCreditCardCycleBalancesCollectionPathPattern.MatchString(request.URL.Path) ||
+		legacyCreditCardCycleBalancesByIDPathPattern.MatchString(request.URL.Path) {
+		application.creditCardCycleBalancesLegacyHandler(writer, request)
 		return
 	}
 

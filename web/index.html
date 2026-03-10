@@ -194,59 +194,6 @@
         </div>
       </section>
 
-      <section id="view-credit-card-installments" class="credit-cards-view" hidden>
-        <h2>Installments</h2>
-        <form id="credit-card-installment-form">
-          <input type="hidden" id="credit-card-installment-id" />
-
-          <label for="credit-card-installment-credit-card-id">Credit Card</label>
-          <select class="form-select" id="credit-card-installment-credit-card-id" name="credit_card_id" required>
-            <option value="">Select credit card</option>
-          </select>
-
-          <label for="credit-card-installment-currency-id">Currency</label>
-          <select class="form-select" id="credit-card-installment-currency-id" name="currency_id" required>
-            <option value="">Select currency</option>
-          </select>
-
-          <label for="credit-card-installment-concept">Concept</label>
-          <input class="form-control" id="credit-card-installment-concept" name="concept" type="text" required />
-
-          <label for="credit-card-installment-amount">Amount</label>
-          <input class="form-control" id="credit-card-installment-amount" name="amount" type="number" step="0.01" min="0.01" required />
-
-          <label for="credit-card-installment-start-date">Start Date</label>
-          <input class="form-control" id="credit-card-installment-start-date" name="start_date" type="date" required />
-
-          <label for="credit-card-installment-count">Count</label>
-          <input class="form-control" id="credit-card-installment-count" name="count" type="number" min="1" step="1" required />
-
-          <div class="actions">
-            <button class="btn btn-success" id="credit-card-installment-submit-button" type="submit">Create</button>
-            <button class="btn btn-secondary" id="credit-card-installment-cancel-button" type="button" hidden>Cancel edit</button>
-          </div>
-        </form>
-
-        <p id="credit-card-installment-form-message" role="status"></p>
-
-        <h2>Credit Card Installments</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Credit Card</th>
-              <th>Currency</th>
-              <th>Concept</th>
-              <th>Amount</th>
-              <th>Start Date</th>
-              <th>Count</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="credit-card-installments-body"></tbody>
-        </table>
-      </section>
-
       <section id="view-credit-card-cycles" class="credit-cards-view" hidden>
         <h2>Cycles</h2>
         <form id="credit-card-cycle-form">
@@ -327,6 +274,59 @@
             <tbody id="credit-card-cycle-balances-body"></tbody>
           </table>
         </section>
+      </section>
+
+      <section id="view-credit-card-installments" class="credit-cards-view" hidden>
+        <h2>Installments</h2>
+        <form id="credit-card-installment-form">
+          <input type="hidden" id="credit-card-installment-id" />
+
+          <label for="credit-card-installment-credit-card-id">Credit Card</label>
+          <select class="form-select" id="credit-card-installment-credit-card-id" name="credit_card_id" required>
+            <option value="">Select credit card</option>
+          </select>
+
+          <label for="credit-card-installment-currency-id">Currency</label>
+          <select class="form-select" id="credit-card-installment-currency-id" name="currency_id" required>
+            <option value="">Select currency</option>
+          </select>
+
+          <label for="credit-card-installment-concept">Concept</label>
+          <input class="form-control" id="credit-card-installment-concept" name="concept" type="text" required />
+
+          <label for="credit-card-installment-amount">Amount</label>
+          <input class="form-control" id="credit-card-installment-amount" name="amount" type="number" step="0.01" min="0.01" required />
+
+          <label for="credit-card-installment-start-date">Start Date</label>
+          <input class="form-control" id="credit-card-installment-start-date" name="start_date" type="date" required />
+
+          <label for="credit-card-installment-count">Count</label>
+          <input class="form-control" id="credit-card-installment-count" name="count" type="number" min="1" step="1" required />
+
+          <div class="actions">
+            <button class="btn btn-success" id="credit-card-installment-submit-button" type="submit">Create</button>
+            <button class="btn btn-secondary" id="credit-card-installment-cancel-button" type="button" hidden>Cancel edit</button>
+          </div>
+        </form>
+
+        <p id="credit-card-installment-form-message" role="status"></p>
+
+        <h2>Credit Card Installments</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Credit Card</th>
+              <th>Currency</th>
+              <th>Concept</th>
+              <th>Amount</th>
+              <th>Start Date</th>
+              <th>Count</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="credit-card-installments-body"></tbody>
+        </table>
       </section>
 
       <section id="view-credit-card-subscriptions" class="credit-cards-view" hidden>
@@ -490,12 +490,92 @@
       <p id="settings-selection-message">Select a settings section to continue.</p>
 
       <nav class="nav nav-pills gap-2 mt-3" aria-label="Settings Views">
-        <button type="button" class="nav-link" data-settings-tab="transaction-categories">Transaction Categories</button>
-        <button type="button" class="nav-link" data-settings-tab="people">People</button>
-        <button type="button" class="nav-link" data-settings-tab="bank-accounts">Bank Accounts</button>
-        <button type="button" class="nav-link" data-settings-tab="banks">Banks</button>
         <button type="button" class="nav-link" data-settings-tab="currency">Currency</button>
+        <button type="button" class="nav-link" data-settings-tab="people">People</button>
+        <button type="button" class="nav-link" data-settings-tab="transaction-categories">Transaction Categories</button>
+        <button type="button" class="nav-link" data-settings-tab="banks">Banks</button>
+        <button type="button" class="nav-link" data-settings-tab="bank-accounts">Bank Accounts</button>
       </nav>
+
+      <section id="view-currency" class="settings-view" hidden>
+        <h2>Currency</h2>
+        <button class="btn btn-success" id="currency-open-modal-button" type="button">Create currency</button>
+        <p id="currency-form-message" role="status"></p>
+        <h2>Currencies</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Code</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="currencies-body"></tbody>
+        </table>
+        <div class="modal fade" id="currency-modal" tabindex="-1" aria-labelledby="currency-modal-title" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="currency-modal-title">Create currency</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <form id="currency-form">
+                <input type="hidden" id="currency-id" />
+                <div class="modal-body">
+                  <label for="currency-name">Name</label>
+                  <input class="form-control" id="currency-name" name="name" type="text" required />
+
+                  <label for="currency-code">Code</label>
+                  <input class="form-control" id="currency-code" name="code" type="text" required maxlength="10" />
+                </div>
+                <div class="modal-footer">
+                  <button class="btn btn-success" id="currency-submit-button" type="submit">Create</button>
+                  <button class="btn btn-secondary" id="currency-cancel-button" type="button" hidden>Cancel edit</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-people" class="settings-view" hidden>
+        <h2>People</h2>
+        <button class="btn btn-success" id="person-open-modal-button" type="button">Create person</button>
+        <p id="person-form-message" role="status"></p>
+        <h2>People</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="people-body"></tbody>
+        </table>
+        <div class="modal fade" id="person-modal" tabindex="-1" aria-labelledby="person-modal-title" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="person-modal-title">Create person</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <form id="person-form">
+                <input type="hidden" id="person-id" />
+                <div class="modal-body">
+                  <label for="person-name">Name</label>
+                  <input class="form-control" id="person-name" name="name" type="text" required />
+                </div>
+                <div class="modal-footer">
+                  <button class="btn btn-secondary" id="person-cancel-button" type="button" data-bs-dismiss="modal">Cancel</button>
+                  <button class="btn btn-success" id="person-submit-button" type="submit">Create</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <section id="view-transaction-categories" class="settings-view" hidden>
         <h2>Transaction Categories</h2>
@@ -541,37 +621,43 @@
         </div>
       </section>
 
-      <section id="view-people" class="settings-view" hidden>
-        <h2>People</h2>
-        <button class="btn btn-success" id="person-open-modal-button" type="button">Create person</button>
-        <p id="person-form-message" role="status"></p>
-        <h2>People</h2>
+      <section id="view-banks" class="settings-view" hidden>
+        <h2>Bank</h2>
+        <button class="btn btn-success" id="bank-open-modal-button" type="button">Create bank</button>
+        <p id="bank-form-message" role="status"></p>
+        <h2>Banks</h2>
         <table>
           <thead>
             <tr>
               <th>ID</th>
               <th>Name</th>
+              <th>Country</th>
               <th>Actions</th>
             </tr>
           </thead>
-          <tbody id="people-body"></tbody>
+          <tbody id="banks-body"></tbody>
         </table>
-        <div class="modal fade" id="person-modal" tabindex="-1" aria-labelledby="person-modal-title" aria-hidden="true">
+        <div class="modal fade" id="bank-modal" tabindex="-1" aria-labelledby="bank-modal-title" aria-hidden="true">
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
-                <h5 class="modal-title" id="person-modal-title">Create person</h5>
+                <h5 class="modal-title" id="bank-modal-title">Create bank</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
-              <form id="person-form">
-                <input type="hidden" id="person-id" />
+              <form id="bank-form">
+                <input type="hidden" id="bank-id" />
                 <div class="modal-body">
-                  <label for="person-name">Name</label>
-                  <input class="form-control" id="person-name" name="name" type="text" required />
+                  <label for="bank-name">Name</label>
+                  <input class="form-control" id="bank-name" name="name" type="text" required />
+
+                  <label for="bank-country">Country</label>
+                  <select class="form-select" id="bank-country" name="country" required>
+                    <option value="">Select country</option>
+                  </select>
                 </div>
                 <div class="modal-footer">
-                  <button class="btn btn-secondary" id="person-cancel-button" type="button" data-bs-dismiss="modal">Cancel</button>
-                  <button class="btn btn-success" id="person-submit-button" type="submit">Create</button>
+                  <button class="btn btn-success" id="bank-submit-button" type="submit">Create</button>
+                  <button class="btn btn-secondary" id="bank-cancel-button" type="button" hidden>Cancel edit</button>
                 </div>
               </form>
             </div>
@@ -626,92 +712,6 @@
                 <div class="modal-footer">
                   <button class="btn btn-success" id="bank-account-submit-button" type="submit">Create</button>
                   <button class="btn btn-secondary" id="bank-account-cancel-button" type="button" hidden>Cancel edit</button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="view-currency" class="settings-view" hidden>
-        <h2>Currency</h2>
-        <button class="btn btn-success" id="currency-open-modal-button" type="button">Create currency</button>
-        <p id="currency-form-message" role="status"></p>
-        <h2>Currencies</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Code</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="currencies-body"></tbody>
-        </table>
-        <div class="modal fade" id="currency-modal" tabindex="-1" aria-labelledby="currency-modal-title" aria-hidden="true">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="currency-modal-title">Create currency</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <form id="currency-form">
-                <input type="hidden" id="currency-id" />
-                <div class="modal-body">
-                  <label for="currency-name">Name</label>
-                  <input class="form-control" id="currency-name" name="name" type="text" required />
-
-                  <label for="currency-code">Code</label>
-                  <input class="form-control" id="currency-code" name="code" type="text" required maxlength="10" />
-                </div>
-                <div class="modal-footer">
-                  <button class="btn btn-success" id="currency-submit-button" type="submit">Create</button>
-                  <button class="btn btn-secondary" id="currency-cancel-button" type="button" hidden>Cancel edit</button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="view-banks" class="settings-view" hidden>
-        <h2>Bank</h2>
-        <button class="btn btn-success" id="bank-open-modal-button" type="button">Create bank</button>
-        <p id="bank-form-message" role="status"></p>
-        <h2>Banks</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Country</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="banks-body"></tbody>
-        </table>
-        <div class="modal fade" id="bank-modal" tabindex="-1" aria-labelledby="bank-modal-title" aria-hidden="true">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="bank-modal-title">Create bank</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <form id="bank-form">
-                <input type="hidden" id="bank-id" />
-                <div class="modal-body">
-                  <label for="bank-name">Name</label>
-                  <input class="form-control" id="bank-name" name="name" type="text" required />
-
-                  <label for="bank-country">Country</label>
-                  <select class="form-select" id="bank-country" name="country" required>
-                    <option value="">Select country</option>
-                  </select>
-                </div>
-                <div class="modal-footer">
-                  <button class="btn btn-success" id="bank-submit-button" type="submit">Create</button>
-                  <button class="btn btn-secondary" id="bank-cancel-button" type="button" hidden>Cancel edit</button>
                 </div>
               </form>
             </div>

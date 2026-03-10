@@ -22,10 +22,10 @@ Within Expenses, `expenses` query parameter controls which subsection is open:
 
 Within Settings, `settings` query parameter controls which management section is open:
 
-- Transaction Categories: `/?view=settings&settings=transaction-categories`
-- People: `/?view=settings&settings=people`
-- Bank Accounts: `/?view=settings&settings=bank-accounts`
-- Banks: `/?view=settings&settings=banks`
 - Currency: `/?view=settings&settings=currency`
+- People: `/?view=settings&settings=people`
+- Transaction Categories: `/?view=settings&settings=transaction-categories`
+- Banks: `/?view=settings&settings=banks`
+- Bank Accounts: `/?view=settings&settings=bank-accounts`
 
 Invalid `view` values are normalized to Home.

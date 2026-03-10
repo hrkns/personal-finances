@@ -4,14 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"regexp"
 )
 
 var (
-	creditCardCycleBalancesPath                          = "/api/credit-card-cycle-balances"
-	creditCardCycleBalancesPathByID                      = "/api/credit-card-cycle-balances/"
-	legacyCreditCardCycleBalancesCollectionPathPattern   = regexp.MustCompile(`^/api/credit-card-cycles/(\d+)/balances$`)
-	legacyCreditCardCycleBalancesByIDPathPattern         = regexp.MustCompile(`^/api/credit-card-cycles/(\d+)/balances/(\d+)$`)
+	creditCardCycleBalancesPath     = "/api/credit-card-cycle-balances"
+	creditCardCycleBalancesPathByID = "/api/credit-card-cycle-balances/"
 )
 
 type creditCardCycleBalance struct {
@@ -60,10 +57,6 @@ func (application app) creditCardCycleBalancesByIDHandler(writer http.ResponseWr
 	default:
 		methodNotAllowed(writer, http.MethodPut, http.MethodDelete)
 	}
-}
-
-func (application app) creditCardCycleBalancesLegacyHandler(writer http.ResponseWriter, _ *http.Request) {
-	methodNotAllowed(writer)
 }
 
 func (application app) listAllCreditCardCycleBalances(writer http.ResponseWriter) {

@@ -203,23 +203,6 @@ func TestCreditCardCycleBalanceListAll(t *testing.T) {
 	}
 }
 
-func TestCreditCardCycleBalanceLegacyCycleScopedGETRoutesReturnMethodNotAllowed(t *testing.T) {
-	application := newTestApplication(t)
-	router := application.routes()
-
-	seedCreditCardCycleBalanceDependencies(t, router)
-
-	legacyCollectionGET := performRequest(router, http.MethodGet, "/api/credit-card-cycles/1/balances", nil)
-	if legacyCollectionGET.Code != http.StatusMethodNotAllowed {
-		t.Fatalf("expected legacy cycle-scoped collection GET to return 405, got %d", legacyCollectionGET.Code)
-	}
-
-	legacyByIDGET := performRequest(router, http.MethodGet, "/api/credit-card-cycles/1/balances/1", nil)
-	if legacyByIDGET.Code != http.StatusMethodNotAllowed {
-		t.Fatalf("expected legacy cycle-scoped by-id GET to return 405, got %d", legacyByIDGET.Code)
-	}
-}
-
 func seedCreditCardCycleBalanceDependencies(t *testing.T, router http.Handler) {
 	t.Helper()
 

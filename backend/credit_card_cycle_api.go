@@ -46,12 +46,6 @@ func (application app) creditCardCyclesHandler(writer http.ResponseWriter, reque
 }
 
 func (application app) creditCardCycleByIDHandler(writer http.ResponseWriter, request *http.Request) {
-	if legacyCreditCardCycleBalancesCollectionPathPattern.MatchString(request.URL.Path) ||
-		legacyCreditCardCycleBalancesByIDPathPattern.MatchString(request.URL.Path) {
-		application.creditCardCycleBalancesLegacyHandler(writer, request)
-		return
-	}
-
 	id, err := parseIDFromPath(request.URL.Path, creditCardCyclesPathByID)
 	if err != nil {
 		writeError(writer, http.StatusBadRequest, "invalid_id", "credit card cycle id must be a positive integer")

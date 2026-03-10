@@ -5,6 +5,7 @@
     "node": ">=18.18.0"
   },
   "scripts": {
+    "start": "go run .",
     "lint": "npm run lint:js && npm run lint:go",
     "lint:js": "eslint .",
     "lint:js:fix": "eslint . --fix",

@@ -63,6 +63,8 @@ test("credit card cycle CRUD flow works end-to-end", async ({ page }) => {
 
   await page.locator('[data-credit-card-tab="cycles"]').click();
 
+  await page.getByRole("button", { name: "Create credit card cycle" }).click();
+
   const cycleForm = page.locator("#credit-card-cycle-form");
   await selectOptionContaining(cycleForm.getByLabel("Credit Card"), cardNumber);
   await cycleForm.getByLabel("Closing Date").fill("2026-03-20");
@@ -160,6 +162,8 @@ test("credit card cycle validates due date is on or after closing date", async (
   await expect(page.locator("#credit-card-form-message")).toHaveText("Credit card created");
 
   await page.locator('[data-credit-card-tab="cycles"]').click();
+
+  await page.getByRole("button", { name: "Create credit card cycle" }).click();
 
   const cycleForm = page.locator("#credit-card-cycle-form");
   await selectOptionContaining(cycleForm.getByLabel("Credit Card"), cardNumber);

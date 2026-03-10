@@ -62,6 +62,8 @@ test("credit card subscription CRUD flow works end-to-end", async ({ page }) => 
 
   await page.locator('[data-credit-card-tab="subscriptions"]').click();
 
+  await page.getByRole("button", { name: "Create credit card subscription" }).click();
+
   const subscriptionForm = page.locator("#credit-card-subscription-form");
   await selectOptionContaining(subscriptionForm.getByLabel("Credit Card"), cardNumber);
   await subscriptionForm.getByLabel("Currency").selectOption({ label: `${currencyCode} (${currencyName})` });

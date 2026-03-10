@@ -89,6 +89,8 @@ test("credit card installment CRUD flow works end-to-end", async ({ page }) => {
 
   await page.locator('[data-credit-card-tab="installments"]').click();
 
+  await page.getByRole("button", { name: "Create credit card installment" }).click();
+
   const installmentForm = page.locator("#credit-card-installment-form");
   await selectOptionContaining(installmentForm.getByLabel("Credit Card"), cardNumber);
   await installmentForm.getByLabel("Currency").selectOption({ label: `${currencyCode} (${currencyName})` });
@@ -173,6 +175,8 @@ test("duplicate credit card installment concept per card is blocked", async ({ p
 
   await page.locator('[data-credit-card-tab="installments"]').click();
 
+  await page.getByRole("button", { name: "Create credit card installment" }).click();
+
   const installmentForm = page.locator("#credit-card-installment-form");
   await selectOptionContaining(installmentForm.getByLabel("Credit Card"), cardNumber);
   await installmentForm.getByLabel("Currency").selectOption({ label: `${currencyCode} (${currencyName})` });
@@ -182,6 +186,8 @@ test("duplicate credit card installment concept per card is blocked", async ({ p
   await installmentForm.getByLabel("Count").fill("5");
   await installmentForm.getByRole("button", { name: "Create" }).click();
   await expect(page.locator("#credit-card-installment-form-message")).toHaveText("Credit card installment created");
+
+  await page.getByRole("button", { name: "Create credit card installment" }).click();
 
   await selectOptionContaining(installmentForm.getByLabel("Credit Card"), cardNumber);
   await installmentForm.getByLabel("Currency").selectOption({ label: `${currencyCode} (${currencyName})` });

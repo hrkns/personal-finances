@@ -41,6 +41,9 @@
   function createAppDom(documentRef) {
     return {
       transactions: {
+        openModalButtonElement: documentRef.getElementById("transaction-open-modal-button"),
+        modalElement: documentRef.getElementById("transaction-modal"),
+        modalTitleElement: documentRef.getElementById("transaction-modal-title"),
         formElement: documentRef.getElementById("transaction-form"),
         idElement: documentRef.getElementById("transaction-id"),
         dateElement: documentRef.getElementById("transaction-date"),
@@ -71,6 +74,9 @@
         bodyElement: documentRef.getElementById("credit-cards-body"),
       },
       creditCardCycles: {
+        openModalButtonElement: documentRef.getElementById("credit-card-cycle-open-modal-button"),
+        modalElement: documentRef.getElementById("credit-card-cycle-modal"),
+        modalTitleElement: documentRef.getElementById("credit-card-cycle-modal-title"),
         formElement: documentRef.getElementById("credit-card-cycle-form"),
         idElement: documentRef.getElementById("credit-card-cycle-id"),
         creditCardIdElement: documentRef.getElementById("credit-card-cycle-credit-card-id"),
@@ -97,6 +103,9 @@
         bodyElement: documentRef.getElementById("credit-card-cycle-balances-body"),
       },
       creditCardInstallments: {
+        openModalButtonElement: documentRef.getElementById("credit-card-installment-open-modal-button"),
+        modalElement: documentRef.getElementById("credit-card-installment-modal"),
+        modalTitleElement: documentRef.getElementById("credit-card-installment-modal-title"),
         formElement: documentRef.getElementById("credit-card-installment-form"),
         idElement: documentRef.getElementById("credit-card-installment-id"),
         creditCardIdElement: documentRef.getElementById("credit-card-installment-credit-card-id"),
@@ -111,6 +120,9 @@
         bodyElement: documentRef.getElementById("credit-card-installments-body"),
       },
       creditCardSubscriptions: {
+        openModalButtonElement: documentRef.getElementById("credit-card-subscription-open-modal-button"),
+        modalElement: documentRef.getElementById("credit-card-subscription-modal"),
+        modalTitleElement: documentRef.getElementById("credit-card-subscription-modal-title"),
         formElement: documentRef.getElementById("credit-card-subscription-form"),
         idElement: documentRef.getElementById("credit-card-subscription-id"),
         creditCardIdElement: documentRef.getElementById("credit-card-subscription-credit-card-id"),

@@ -67,6 +67,9 @@ test("transaction CRUD flow works end-to-end", async ({ page }) => {
   await expect(page.locator("#bank-account-form-message")).toHaveText("Bank account created");
 
   await page.getByRole("button", { name: "Transactions" }).click();
+
+  await page.getByRole("button", { name: "Create transaction" }).click();
+
   const transactionForm = page.locator("#transaction-form");
   await transactionForm.getByLabel("Date").fill("2026-02-18");
   await transactionForm.getByLabel("Type").selectOption("income");
@@ -157,6 +160,8 @@ test("transaction list shows running balance after each transaction", async ({ p
   await page.getByRole("button", { name: "Transactions" }).click();
   await expect(page.locator("#view-transactions thead tr th").nth(6)).toHaveText("Balance");
 
+  await page.getByRole("button", { name: "Create transaction" }).click();
+
   const transactionForm = page.locator("#transaction-form");
 
   await transactionForm.getByLabel("Date").fill("2026-02-18");
@@ -167,6 +172,8 @@ test("transaction list shows running balance after each transaction", async ({ p
   await selectOptionContaining(transactionForm.getByLabel("Category"), categoryName);
   await transactionForm.getByRole("button", { name: "Create" }).click();
   await expect(page.locator("#transaction-form-message")).toHaveText("Transaction created");
+
+  await page.getByRole("button", { name: "Create transaction" }).click();
 
   await transactionForm.getByLabel("Date").fill("2026-02-19");
   await transactionForm.getByLabel("Type").selectOption("expense");

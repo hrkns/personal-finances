@@ -159,7 +159,8 @@ td {
 #credit-card-subscription-form-message,
 #credit-card-cycle-form-message,
 #credit-card-cycle-balance-form-message,
-#expense-form-message {
+#expense-form-message,
+#expense-payment-form-message {
   min-height: 20px;
 }
 

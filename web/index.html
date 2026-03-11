@@ -65,10 +65,11 @@
     </section>
 
     <section id="view-transactions" class="view" data-view="transactions" hidden>
-      <h2>Transactions</h2>
-      <button class="btn btn-success" id="transaction-open-modal-button" type="button">Create transaction</button>
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">Transactions</h2>
+        <button class="btn btn-success" id="transaction-open-modal-button" type="button">Create transaction</button>
+      </div>
       <p id="transaction-form-message" role="status"></p>
-      <h2>Transactions</h2>
       <table>
         <thead>
           <tr>
@@ -139,8 +140,6 @@
     </section>
 
     <section id="view-credit-cards" class="view" data-view="credit-cards" hidden>
-      <h2>Credit Cards</h2>
-
       <nav class="nav nav-pills gap-2 mt-3" aria-label="Credit Cards Views">
         <button type="button" class="nav-link" data-credit-card-tab="cards">Cards</button>
         <button type="button" class="nav-link" data-credit-card-tab="cycles">Cycles</button>
@@ -148,12 +147,12 @@
         <button type="button" class="nav-link" data-credit-card-tab="installments">Installments</button>
         <button type="button" class="nav-link" data-credit-card-tab="subscriptions">Subscriptions</button>
       </nav>
-
       <section id="view-credit-cards-cards" class="credit-cards-view" hidden>
-        <h2>Cards</h2>
-        <button class="btn btn-success" id="credit-card-open-modal-button" type="button">Create credit card</button>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="mb-0">Cards</h2>
+          <button class="btn btn-success" id="credit-card-open-modal-button" type="button">Create credit card</button>
+        </div>
         <p id="credit-card-form-message" role="status"></p>
-        <h2>Credit Cards</h2>
         <table>
           <thead>
             <tr>
@@ -198,15 +197,17 @@
                   <button class="btn btn-success" id="credit-card-submit-button" type="submit">Create</button>
                 </div>
               </form>
+            </div>
           </div>
         </div>
       </section>
 
       <section id="view-credit-card-cycles" class="credit-cards-view" hidden>
-        <h2>Cycles</h2>
-        <button class="btn btn-success" id="credit-card-cycle-open-modal-button" type="button">Create credit card cycle</button>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="mb-0">Cycles</h2>
+          <button class="btn btn-success" id="credit-card-cycle-open-modal-button" type="button">Create credit card cycle</button>
+        </div>
         <p id="credit-card-cycle-form-message" role="status"></p>
-        <h2>Credit Card Cycles</h2>
         <table>
           <thead>
             <tr>
@@ -251,11 +252,11 @@
       </section>
 
       <section id="view-credit-card-balances" class="credit-cards-view" hidden>
-        <h2>Balances</h2>
-        <button class="btn btn-success" id="credit-card-cycle-balance-open-modal-button" type="button">Create credit card cycle balance</button>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="mb-0">Balances</h2>
+          <button class="btn btn-success" id="credit-card-cycle-balance-open-modal-button" type="button">Create credit card cycle balance</button>
+        </div>
         <p id="credit-card-cycle-balance-form-message" role="status"></p>
-
-        <h2>Credit Card Cycle Balances</h2>
         <table>
           <thead>
             <tr>
@@ -269,7 +270,6 @@
           </thead>
           <tbody id="credit-card-cycle-balances-body"></tbody>
         </table>
-
         <div class="modal fade" id="credit-card-cycle-balance-modal" tabindex="-1" aria-labelledby="credit-card-cycle-balance-modal-title" aria-hidden="true">
           <div class="modal-dialog">
             <div class="modal-content">
@@ -309,10 +309,11 @@
       </section>
 
       <section id="view-credit-card-installments" class="credit-cards-view" hidden>
-        <h2>Installments</h2>
-        <button class="btn btn-success" id="credit-card-installment-open-modal-button" type="button">Create credit card installment</button>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="mb-0">Installments</h2>
+          <button class="btn btn-success" id="credit-card-installment-open-modal-button" type="button">Create credit card installment</button>
+        </div>
         <p id="credit-card-installment-form-message" role="status"></p>
-        <h2>Credit Card Installments</h2>
         <table>
           <thead>
             <tr>
@@ -371,10 +372,11 @@
       </section>
 
       <section id="view-credit-card-subscriptions" class="credit-cards-view" hidden>
-        <h2>Subscriptions</h2>
-        <button class="btn btn-success" id="credit-card-subscription-open-modal-button" type="button">Create credit card subscription</button>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="mb-0">Subscriptions</h2>
+          <button class="btn btn-success" id="credit-card-subscription-open-modal-button" type="button">Create credit card subscription</button>
+        </div>
         <p id="credit-card-subscription-form-message" role="status"></p>
-        <h2>Credit Card Subscriptions</h2>
         <table>
           <thead>
             <tr>
@@ -426,17 +428,17 @@
     </section>
 
     <section id="view-expenses" class="view" data-view="expenses" hidden>
-      <h2>Expenses</h2>
       <nav class="nav nav-pills gap-2 mt-3" aria-label="Expenses Views">
         <button type="button" class="nav-link" data-expense-tab="expenses">List of expenses</button>
         <button type="button" class="nav-link" data-expense-tab="payments">Payments</button>
       </nav>
 
       <section id="view-expenses-expenses" class="expenses-view" hidden>
-        <h2>Expense</h2>
-        <button class="btn btn-success" id="expense-open-modal-button" type="button">Create expense</button>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="mb-0">List of expenses</h2>
+          <button class="btn btn-success" id="expense-open-modal-button" type="button">Create expense</button>
+        </div>
         <p id="expense-form-message" role="status"></p>
-        <h2>Expenses</h2>
         <table>
           <thead>
             <tr>
@@ -481,10 +483,11 @@
       </section>
 
       <section id="view-expenses-payments" class="expenses-view" hidden>
-        <h2>Payments</h2>
-        <button class="btn btn-success" id="expense-payment-open-modal-button" type="button">Create expense payment</button>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="mb-0">Payments</h2>
+          <button class="btn btn-success" id="expense-payment-open-modal-button" type="button">Create expense payment</button>
+        </div>
         <p id="expense-payment-form-message" role="status"></p>
-        <h2>Expense Payments</h2>
         <table>
           <thead>
             <tr>
@@ -548,10 +551,11 @@
       </nav>
 
       <section id="view-currency" class="settings-view" hidden>
-        <h2>Currency</h2>
-        <button class="btn btn-success" id="currency-open-modal-button" type="button">Create currency</button>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="mb-0">Currencies</h2>
+          <button class="btn btn-success" id="currency-open-modal-button" type="button">Create currency</button>
+        </div>
         <p id="currency-form-message" role="status"></p>
-        <h2>Currencies</h2>
         <table>
           <thead>
             <tr>
@@ -590,10 +594,11 @@
       </section>
 
       <section id="view-people" class="settings-view" hidden>
-        <h2>People</h2>
-        <button class="btn btn-success" id="person-open-modal-button" type="button">Create person</button>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="mb-0">People</h2>
+          <button class="btn btn-success" id="person-open-modal-button" type="button">Create person</button>
+        </div>
         <p id="person-form-message" role="status"></p>
-        <h2>People</h2>
         <table>
           <thead>
             <tr>
@@ -628,10 +633,11 @@
       </section>
 
       <section id="view-transaction-categories" class="settings-view" hidden>
-        <h2>Transaction Categories</h2>
-        <button class="btn btn-success" id="transaction-category-open-modal-button" type="button">Create transaction category</button>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="mb-0">Transaction Categories</h2>
+          <button class="btn btn-success" id="transaction-category-open-modal-button" type="button">Create transaction category</button>
+        </div>
         <p id="transaction-category-form-message" role="status"></p>
-        <h2>Transaction Categories</h2>
         <table>
           <thead>
             <tr>
@@ -672,10 +678,11 @@
       </section>
 
       <section id="view-banks" class="settings-view" hidden>
-        <h2>Bank</h2>
-        <button class="btn btn-success" id="bank-open-modal-button" type="button">Create bank</button>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="mb-0">Banks</h2>
+          <button class="btn btn-success" id="bank-open-modal-button" type="button">Create bank</button>
+        </div>
         <p id="bank-form-message" role="status"></p>
-        <h2>Banks</h2>
         <table>
           <thead>
             <tr>
@@ -716,10 +723,11 @@
       </section>
 
       <section id="view-bank-accounts" class="settings-view" hidden>
-        <h2>Bank Accounts</h2>
-        <button class="btn btn-success" id="bank-account-open-modal-button" type="button">Create bank account</button>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="mb-0">Bank Accounts</h2>
+          <button class="btn btn-success" id="bank-account-open-modal-button" type="button">Create bank account</button>
+        </div>
         <p id="bank-account-form-message" role="status"></p>
-        <h2>Bank Accounts</h2>
         <table>
           <thead>
             <tr>

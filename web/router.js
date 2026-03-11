@@ -1,8 +1,8 @@
 (function initFrontendRouter(globalScope) {
   const validRoutes = new Set(["home", "transactions", "credit-cards", "expenses", "settings"]);
-  const validSettingsSections = new Set(["transaction-categories", "people", "bank-accounts", "banks", "currency"]);
   const validCreditCardSections = new Set(["cards", "cycles", "balances", "installments", "subscriptions"]);
   const validExpenseSections = new Set(["expenses", "payments"]);
+  const validSettingsSections = new Set(["currencies", "people", "transaction-categories", "banks", "bank-accounts"]);
 
   function normalizeRoute(route) {
     return String(route ?? "").trim().toLowerCase();
@@ -107,11 +107,6 @@
   function navigate(route, options = {}) {
     const normalized = normalizeRoute(route);
     const targetRoute = validRoutes.has(normalized) ? normalized : "home";
-    const targetSettingsSection = targetRoute === "settings"
-      ? (validSettingsSections.has(normalizeRoute(options.settingsSection))
-        ? normalizeRoute(options.settingsSection)
-        : null)
-      : null;
     const targetCreditCardSection = targetRoute === "credit-cards"
       ? (validCreditCardSections.has(normalizeRoute(options.creditCardSection))
         ? normalizeRoute(options.creditCardSection)
@@ -121,6 +116,11 @@
       ? (validExpenseSections.has(normalizeRoute(options.expenseSection))
         ? normalizeRoute(options.expenseSection)
         : "expenses")
+      : null;
+    const targetSettingsSection = targetRoute === "settings"
+      ? (validSettingsSections.has(normalizeRoute(options.settingsSection))
+        ? normalizeRoute(options.settingsSection)
+        : "currencies")
       : null;
     const targetURL = buildURLForRoute(targetRoute, {
       settingsSection: targetSettingsSection,
@@ -173,21 +173,21 @@
         return navigate("expenses", { replace: true, expenseSection: "expenses" });
       }
 
-      if (route !== "settings") {
-        return { route, settingsSection: null, creditCardSection: null, expenseSection: null };
+      if (route === "settings") {
+        const params = new URLSearchParams(window.location.search);
+        if (!params.has("settings")) {
+          return navigate("settings", { replace: true, settingsSection: "currencies" });
+        }
+
+        const settingsSection = readSettingsSectionFromURL();
+        if (settingsSection) {
+          return { route, settingsSection, creditCardSection: null, expenseSection: null };
+        }
+
+        return navigate("settings", { replace: true, settingsSection: "currencies" });
       }
 
-      const params = new URLSearchParams(window.location.search);
-      if (!params.has("settings")) {
-        return { route, settingsSection: null, creditCardSection: null, expenseSection: null };
-      }
-
-      const settingsSection = readSettingsSectionFromURL();
-      if (settingsSection) {
-        return { route, settingsSection, creditCardSection: null, expenseSection: null };
-      }
-
-      return navigate("settings", { replace: true });
+      return { route, settingsSection: null, creditCardSection: null, expenseSection: null };
     }
 
     const rawRoute = readRawRouteFromURL();

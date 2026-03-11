@@ -176,7 +176,7 @@ test("frontend can manage cycle balances from balances tab", async () => {
   const { dom, window, document } = await setupFrontendApp();
 
   document.querySelector('[data-route-tab="settings"]').click();
-  document.querySelector('[data-settings-tab="currency"]').click();
+  document.querySelector('[data-settings-tab="currencies"]').click();
   document.getElementById("currency-name").value = "US Dollar";
   document.getElementById("currency-code").value = "USD";
   document
@@ -255,7 +255,7 @@ test("frontend validates unique currency per cycle balance", async () => {
   const { dom, window, document } = await setupFrontendApp();
 
   document.querySelector('[data-route-tab="settings"]').click();
-  document.querySelector('[data-settings-tab="currency"]').click();
+  document.querySelector('[data-settings-tab="currencies"]').click();
   document.getElementById("currency-name").value = "US Dollar";
   document.getElementById("currency-code").value = "USD";
   document

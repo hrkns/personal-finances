@@ -14,7 +14,6 @@
    *   settingsTabButtonElements: NodeListOf<Element>,
    *   creditCardTabButtonElements: NodeListOf<Element>,
    *   expenseTabButtonElements: NodeListOf<Element>,
-   *   settingsSelectionMessageElement: HTMLElement,
    *   views: object,
    *   settingsViews: object,
    *   creditCardViews: object,
@@ -29,7 +28,6 @@
       settingsTabButtonElements,
       creditCardTabButtonElements,
       expenseTabButtonElements,
-      settingsSelectionMessageElement,
       views,
       settingsViews,
       creditCardViews,
@@ -73,7 +71,7 @@
       settingsViews.people.hidden = activeRoute !== "settings" || activeSettingsSection !== "people";
       settingsViews.bankAccounts.hidden = activeRoute !== "settings" || activeSettingsSection !== "bank-accounts";
       settingsViews.banks.hidden = activeRoute !== "settings" || activeSettingsSection !== "banks";
-      settingsViews.currency.hidden = activeRoute !== "settings" || activeSettingsSection !== "currency";
+      settingsViews.currency.hidden = activeRoute !== "settings" || activeSettingsSection !== "currencies";
 
       creditCardViews.cards.hidden = activeRoute !== "credit-cards" || activeCreditCardSection !== "cards";
       creditCardViews.balances.hidden = activeRoute !== "credit-cards" || activeCreditCardSection !== "balances";
@@ -83,9 +81,6 @@
 
       expenseViews.expenses.hidden = activeRoute !== "expenses" || activeExpenseSection !== "expenses";
       expenseViews.payments.hidden = activeRoute !== "expenses" || activeExpenseSection !== "payments";
-
-      settingsSelectionMessageElement.hidden =
-        activeRoute !== "settings" || Boolean(activeSettingsSection);
 
       tabButtonElements.forEach((button) => {
         const tabRoute = button.getAttribute("data-route-tab");

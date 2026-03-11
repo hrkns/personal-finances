@@ -247,4 +247,3 @@ func scanCreditCardCycleBalance(source scanner) (creditCardCycleBalance, error) 
 
 	return item, nil
 }
-

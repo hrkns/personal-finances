@@ -66,7 +66,7 @@ test("credit card installment CRUD flow works end-to-end", async ({ page }) => {
   await peopleForm.getByRole("button", { name: "Create" }).click();
   await expect(page.locator("#person-form-message")).toHaveText("Person created");
 
-  await openSettingsSection(page, "Currency");
+  await openSettingsSection(page, "Currencies");
   await page.getByRole("button", { name: "Create currency" }).click();
   const currencyForm = page.locator("#currency-form");
   await currencyForm.getByLabel("Name").fill(currencyName);
@@ -153,7 +153,7 @@ test("duplicate credit card installment concept per card is blocked", async ({ p
   await peopleForm.getByRole("button", { name: "Create" }).click();
   await expect(page.locator("#person-form-message")).toHaveText("Person created");
 
-  await openSettingsSection(page, "Currency");
+  await openSettingsSection(page, "Currencies");
   await page.getByRole("button", { name: "Create currency" }).click();
   const currencyForm = page.locator("#currency-form");
   await currencyForm.getByLabel("Name").fill(currencyName);

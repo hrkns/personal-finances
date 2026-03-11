@@ -22,7 +22,7 @@ async function createExpense(document, window, name, frequency) {
 
 async function createCurrency(document, window, name, code) {
   document.querySelector('[data-route-tab="settings"]').click();
-  document.querySelector('[data-settings-tab="currency"]').click();
+  document.querySelector('[data-settings-tab="currencies"]').click();
 
   document.getElementById("currency-name").value = name;
   document.getElementById("currency-code").value = code;

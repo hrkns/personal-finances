@@ -21,7 +21,7 @@ async function createExpense(page, name, frequency) {
 
 async function createCurrency(page, name, code) {
   await page.getByRole("button", { name: "Settings" }).click();
-  await page.getByRole("button", { name: "Currency" }).click();
+  await page.getByRole("button", { name: "Currencies" }).click();
 
   await page.getByRole("button", { name: "Create currency" }).click();
   const currencyForm = page.locator("#currency-form");

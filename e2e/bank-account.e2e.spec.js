@@ -15,7 +15,7 @@ test("bank account CRUD flow works end-to-end", async ({ page }) => {
 
   await openApp(page);
 
-  await openSettingsSection(page, "Currency");
+  await openSettingsSection(page, "Currencies");
   await page.getByRole("button", { name: "Create currency" }).click();
   const currencyForm = page.locator("#currency-form");
   await currencyForm.getByLabel("Name").fill(currencyName);
@@ -70,7 +70,7 @@ test("duplicate bank account shows backend conflict message", async ({ page }) =
 
   await openApp(page);
 
-  await openSettingsSection(page, "Currency");
+  await openSettingsSection(page, "Currencies");
   await page.getByRole("button", { name: "Create currency" }).click();
   const currencyForm = page.locator("#currency-form");
   await currencyForm.getByLabel("Name").fill(currencyName);

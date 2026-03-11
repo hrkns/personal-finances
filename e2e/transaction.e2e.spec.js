@@ -40,7 +40,7 @@ test("transaction CRUD flow works end-to-end", async ({ page }) => {
   await categoryForm.getByRole("button", { name: "Create" }).click();
   await expect(page.locator("#transaction-category-form-message")).toHaveText("Transaction category created");
 
-  await openSettingsSection(page, "Currency");
+  await openSettingsSection(page, "Currencies");
   await page.getByRole("button", { name: "Create currency" }).click();
   const currencyForm = page.locator("#currency-form");
   await currencyForm.getByLabel("Name").fill(currencyName);
@@ -131,7 +131,7 @@ test("transaction list shows running balance after each transaction", async ({ p
   await categoryForm.getByRole("button", { name: "Create" }).click();
   await expect(page.locator("#transaction-category-form-message")).toHaveText("Transaction category created");
 
-  await openSettingsSection(page, "Currency");
+  await openSettingsSection(page, "Currencies");
   await page.getByRole("button", { name: "Create currency" }).click();
   const currencyForm = page.locator("#currency-form");
   await currencyForm.getByLabel("Name").fill(currencyName);

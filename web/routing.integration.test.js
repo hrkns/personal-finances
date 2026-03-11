@@ -16,7 +16,6 @@ test("frontend initializes at Home route and can route to transactions and setti
   const bankAccountsHiddenBefore = document.getElementById("view-bank-accounts").hidden;
   const banksHiddenBefore = document.getElementById("view-banks").hidden;
   const currencyHiddenBefore = document.getElementById("view-currency").hidden;
-  const settingsMessageHiddenBefore = document.getElementById("settings-selection-message").hidden;
 
   document.querySelector('[data-route-tab="settings"]').click();
   document.querySelector('[data-settings-tab="transaction-categories"]').click();
@@ -29,12 +28,11 @@ test("frontend initializes at Home route and can route to transactions and setti
 
   document.querySelector('[data-route-tab="settings"]').click();
   const settingsHiddenAfter = document.getElementById("view-settings").hidden;
-  const settingsMessageHiddenAfterSettingsOpen = document.getElementById("settings-selection-message").hidden;
+  const currencyHiddenAfterSettingsOpen = document.getElementById("view-currency").hidden;
 
   document.querySelector('[data-settings-tab="people"]').click();
   const peopleHiddenAfter = document.getElementById("view-people").hidden;
   const emptyPeopleState = document.getElementById("people-body").textContent;
-  const settingsMessageHiddenAfterPeopleSelect = document.getElementById("settings-selection-message").hidden;
 
   document.querySelector('[data-route-tab="credit-cards"]').click();
   const creditCardsHiddenAfter = document.getElementById("view-credit-cards").hidden;
@@ -89,8 +87,6 @@ test("frontend initializes at Home route and can route to transactions and setti
   const emptyExpensePaymentsState = document.getElementById("expense-payments-body").textContent;
 
   document.querySelector('[data-route-tab="settings"]').click();
-  document.querySelector('[data-settings-tab="currency"]').click();
-
   const banksHiddenAfter = document.getElementById("view-banks").hidden;
   const currencyHiddenAfter = document.getElementById("view-currency").hidden;
   const emptyState = document.getElementById("currencies-body").textContent;
@@ -109,13 +105,11 @@ test("frontend initializes at Home route and can route to transactions and setti
   assert.equal(expensesHiddenBefore, true);
   assert.equal(banksHiddenBefore, true);
   assert.equal(currencyHiddenBefore, true);
-  assert.equal(settingsMessageHiddenBefore, true);
   assert.equal(transactionCategoriesHiddenAfter, false);
   assert.equal(transactionsHiddenAfter, false);
   assert.equal(settingsHiddenAfter, false);
-  assert.equal(settingsMessageHiddenAfterSettingsOpen, false);
+  assert.equal(currencyHiddenAfterSettingsOpen, false);
   assert.equal(peopleHiddenAfter, false);
-  assert.equal(settingsMessageHiddenAfterPeopleSelect, true);
   assert.equal(banksHiddenAfter, true);
   assert.equal(currencyHiddenAfter, false);
   assert.match(emptyTransactionCategoriesState, /No transaction categories yet/);

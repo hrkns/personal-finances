@@ -14,7 +14,7 @@ test("currency CRUD flow works end-to-end", async ({ page }) => {
 
   await openApp(page);
 
-  await openSettingsSection(page, "Currency");
+  await openSettingsSection(page, "Currencies");
   await page.getByRole("button", { name: "Create currency" }).click();
 
   const currencyForm = page.locator("#currency-form");
@@ -52,7 +52,7 @@ test("duplicate currency shows backend conflict message", async ({ page }) => {
 
   await openApp(page);
 
-  await openSettingsSection(page, "Currency");
+  await openSettingsSection(page, "Currencies");
   await page.getByRole("button", { name: "Create currency" }).click();
 
   const currencyForm = page.locator("#currency-form");

@@ -39,7 +39,6 @@ const appRouting = createAppRouting({
   settingsTabButtonElements: appDom.settingsTabButtonElements,
   creditCardTabButtonElements: appDom.creditCardTabButtonElements,
   expenseTabButtonElements: appDom.expenseTabButtonElements,
-  settingsSelectionMessageElement: appDom.settingsSelectionMessageElement,
   views: appDom.views,
   settingsViews: appDom.settingsViews,
   creditCardViews: appDom.creditCardViews,

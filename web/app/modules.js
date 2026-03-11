@@ -25,8 +25,8 @@
    *   bankAccountsModule: object,
    *   expensesModule: object,
    *   expensePaymentsModule: object,
-  *   creditCardsModule: object,
-  *   creditCardCycleBalancesModule: object,
+   *   creditCardsModule: object,
+   *   creditCardCycleBalancesModule: object,
    *   creditCardInstallmentsModule: object,
    *   creditCardSubscriptionsModule: object,
    *   creditCardCyclesModule: object

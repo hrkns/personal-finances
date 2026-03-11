@@ -175,7 +175,13 @@ test("frontend shows validation error for invalid transaction payload", async ()
 
   const message = document.getElementById("transaction-form-message");
   assert.equal(message.textContent, "transaction_date must be a valid date in YYYY-MM-DD format");
-  assert.equal(message.className, "error");
+
+  const toastElement = document.getElementById("transaction-form-toast");
+  if (window.bootstrap?.Toast) {
+    assert.match(toastElement.className, /text-bg-danger/);
+  } else {
+    assert.equal(message.className, "error");
+  }
 
   dom.window.close();
 });

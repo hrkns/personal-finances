@@ -34,12 +34,23 @@
     } = config;
 
     const bootstrapModal = globalScope.bootstrap?.Modal;
+    const bootstrapToast = globalScope.bootstrap?.Toast;
     const hasModalSupport = Boolean(bootstrapModal && elements.modalElement);
+    const hasToastSupport = Boolean(bootstrapToast && elements.toastElement);
     const modalInstance = hasModalSupport ? bootstrapModal.getOrCreateInstance(elements.modalElement) : null;
+    const toastInstance = hasToastSupport ? bootstrapToast.getOrCreateInstance(elements.toastElement) : null;
     let modalBindingsInitialized = false;
 
     function setMessage(message, isError) {
       elements.messageElement.textContent = message;
+
+      if (hasToastSupport) {
+        elements.toastElement.classList.remove("text-bg-success", "text-bg-danger");
+        elements.toastElement.classList.add(isError ? "text-bg-danger" : "text-bg-success");
+        toastInstance.show();
+        return;
+      }
+
       elements.messageElement.className = isError ? "error" : "success";
     }
 
@@ -197,7 +208,6 @@
           elements.modalTitleElement.textContent = "Edit person";
         }
         showModal();
-        setMessage(`Editing person #${person.id}`, false);
         return;
       }
 

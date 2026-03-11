@@ -62,5 +62,5 @@ test("duplicate bank per country shows backend conflict message", async ({ page 
   await bankForm.getByRole("button", { name: "Create" }).click();
 
   await expect(page.locator("#bank-form-message")).toHaveText("name and country combination must be unique");
-  await expect(page.locator("#bank-form-message")).toHaveClass(/error/);
+  await expect(page.locator("#bank-form-toast")).toHaveClass(/danger/);
 });

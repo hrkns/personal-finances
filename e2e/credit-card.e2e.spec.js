@@ -165,5 +165,5 @@ test("duplicate credit card number shows backend conflict message", async ({ pag
   await creditCardForm.getByRole("button", { name: "Create" }).click();
 
   await expect(page.locator("#credit-card-form-message")).toHaveText("credit card number must be unique");
-  await expect(page.locator("#credit-card-form-message")).toHaveClass(/error/);
+  await expect(page.locator("#credit-card-form-toast")).toHaveClass(/danger/);
 });

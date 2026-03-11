@@ -69,5 +69,5 @@ test("duplicate currency shows backend conflict message", async ({ page }) => {
   await currencyForm.getByRole("button", { name: "Create" }).click();
 
   await expect(page.locator("#currency-form-message")).toHaveText("name and code must be unique");
-  await expect(page.locator("#currency-form-message")).toHaveClass(/error/);
+  await expect(page.locator("#currency-form-toast")).toHaveClass(/danger/);
 });

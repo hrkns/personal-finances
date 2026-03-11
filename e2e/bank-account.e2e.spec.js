@@ -108,5 +108,5 @@ test("duplicate bank account shows backend conflict message", async ({ page }) =
   await expect(page.locator("#bank-account-form-message")).toHaveText(
     "bank, currency and account number combination must be unique"
   );
-  await expect(page.locator("#bank-account-form-message")).toHaveClass(/error/);
+  await expect(page.locator("#bank-account-form-toast")).toHaveClass(/danger/);
 });

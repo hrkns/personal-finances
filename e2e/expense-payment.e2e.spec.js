@@ -110,5 +110,5 @@ test("expense payment duplicate period is blocked", async ({ page }) => {
   await form.getByRole("button", { name: "Create" }).click();
 
   await expect(page.locator("#expense-payment-form-message")).toHaveText("an expense payment already exists in the same monthly period");
-  await expect(page.locator("#expense-payment-form-message")).toHaveClass(/error/);
+  await expect(page.locator("#expense-payment-form-toast")).toHaveClass(/danger/);
 });

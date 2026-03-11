@@ -67,5 +67,5 @@ test("duplicate expense name shows backend conflict message", async ({ page }) =
   await expenseForm.getByRole("button", { name: "Create" }).click();
 
   await expect(page.locator("#expense-form-message")).toHaveText("expense name must be unique");
-  await expect(page.locator("#expense-form-message")).toHaveClass(/error/);
+  await expect(page.locator("#expense-form-toast")).toHaveClass(/danger/);
 });

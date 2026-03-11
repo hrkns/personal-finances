@@ -93,5 +93,5 @@ test("transaction category with child cannot be deleted", async ({ page }) => {
   await rootDeleteButton.click();
 
   await expect(page.locator("#transaction-category-form-message")).toHaveText("transaction category is in use");
-  await expect(page.locator("#transaction-category-form-message")).toHaveClass(/error/);
+  await expect(page.locator("#transaction-category-form-toast")).toHaveClass(/danger/);
 });

@@ -172,6 +172,6 @@ test("credit card cycle validates due date is on or after closing date", async (
   await cycleForm.getByRole("button", { name: "Create" }).click();
 
   await expect(page.locator("#credit-card-cycle-form-message")).toHaveText("due_date must be on or after closing_date");
-  await expect(page.locator("#credit-card-cycle-form-message")).toHaveClass(/error/);
+  await expect(page.locator("#credit-card-cycle-form-toast")).toHaveClass(/danger/);
   await expect(page.locator("#credit-card-cycles-body")).toContainText("No credit card cycles yet");
 });

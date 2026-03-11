@@ -48,5 +48,5 @@ test("blank person name shows validation message", async ({ page }) => {
   await peopleForm.getByRole("button", { name: "Create" }).click();
 
   await expect(page.locator("#person-form-message")).toHaveText("name is required");
-  await expect(page.locator("#person-form-message")).toHaveClass(/error/);
+  await expect(page.locator("#person-form-toast")).toHaveClass(/danger/);
 });

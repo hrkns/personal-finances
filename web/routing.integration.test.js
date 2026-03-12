@@ -7,7 +7,8 @@ test("frontend initializes at Home route and can route to transactions and setti
   const { dom, document } = await setupFrontendApp();
 
   const homeHidden = document.getElementById("view-home").hidden;
-  const transactionCategoriesHiddenBefore = document.getElementById("view-transaction-categories").hidden;
+  const transactionCategoriesHiddenBefore = document.getElementById("view-transactions-transaction-categories").hidden;
+  const transactionsListHiddenBefore = document.getElementById("view-transactions-list").hidden;
   const transactionsHiddenBefore = document.getElementById("view-transactions").hidden;
   const creditCardsHiddenBefore = document.getElementById("view-credit-cards").hidden;
   const expensesHiddenBefore = document.getElementById("view-expenses").hidden;
@@ -17,13 +18,15 @@ test("frontend initializes at Home route and can route to transactions and setti
   const banksHiddenBefore = document.getElementById("view-banks").hidden;
   const currencyHiddenBefore = document.getElementById("view-currency").hidden;
 
-  document.querySelector('[data-route-tab="settings"]').click();
-  document.querySelector('[data-settings-tab="transaction-categories"]').click();
-  const transactionCategoriesHiddenAfter = document.getElementById("view-transaction-categories").hidden;
+  document.querySelector('[data-route-tab="transactions"]').click();
+  document.querySelector('[data-transactions-tab="transaction-categories"]').click();
+  const transactionCategoriesHiddenAfter = document.getElementById("view-transactions-transaction-categories").hidden;
+  const transactionsListHiddenAfterTransactionCategoriesOpen = document.getElementById("view-transactions-list").hidden;
   const emptyTransactionCategoriesState = document.getElementById("transaction-categories-body").textContent;
 
   document.querySelector('[data-route-tab="transactions"]').click();
   const transactionsHiddenAfter = document.getElementById("view-transactions").hidden;
+  const transactionsListHiddenAfter = document.getElementById("view-transactions-list").hidden;
   const emptyTransactionsState = document.getElementById("transactions-body").textContent;
 
   document.querySelector('[data-route-tab="settings"]').click();
@@ -97,6 +100,7 @@ test("frontend initializes at Home route and can route to transactions and setti
 
   assert.equal(homeHidden, false);
   assert.equal(transactionCategoriesHiddenBefore, true);
+  assert.equal(transactionsListHiddenBefore, true);
   assert.equal(transactionsHiddenBefore, true);
   assert.equal(settingsHiddenBefore, true);
   assert.equal(peopleHiddenBefore, true);
@@ -106,7 +110,9 @@ test("frontend initializes at Home route and can route to transactions and setti
   assert.equal(banksHiddenBefore, true);
   assert.equal(currencyHiddenBefore, true);
   assert.equal(transactionCategoriesHiddenAfter, false);
+  assert.equal(transactionsListHiddenAfterTransactionCategoriesOpen, true);
   assert.equal(transactionsHiddenAfter, false);
+  assert.equal(transactionsListHiddenAfter, false);
   assert.equal(settingsHiddenAfter, false);
   assert.equal(currencyHiddenAfterSettingsOpen, false);
   assert.equal(peopleHiddenAfter, false);

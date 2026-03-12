@@ -8,6 +8,11 @@ Frontend views are tab-based and route through the `view` query parameter:
 - Expenses: `/?view=expenses`
 - Settings: `/?view=settings`
 
+Within Transactions, `transactions` query parameter controls which subsection is open:
+
+- List of transactions: `/?view=transactions&transactions=list`
+- Transaction Categories: `/?view=transactions&transactions=transaction-categories`
+
 Within Credit Cards, `creditCards` query parameter controls which subsection is open:
 
 - Cards: `/?view=credit-cards&creditCards=cards`
@@ -23,9 +28,8 @@ Within Expenses, `expenses` query parameter controls which subsection is open:
 
 Within Settings, `settings` query parameter controls which management section is open:
 
-- Currency: `/?view=settings&settings=currency`
+- Currencies: `/?view=settings&settings=currencies`
 - People: `/?view=settings&settings=people`
-- Transaction Categories: `/?view=settings&settings=transaction-categories`
 - Banks: `/?view=settings&settings=banks`
 - Bank Accounts: `/?view=settings&settings=bank-accounts`
 

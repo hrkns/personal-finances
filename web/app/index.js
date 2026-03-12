@@ -37,10 +37,12 @@ const appModules = createAppModules({
 const appRouting = createAppRouting({
   tabButtonElements: appDom.tabButtonElements,
   settingsTabButtonElements: appDom.settingsTabButtonElements,
+  transactionTabButtonElements: appDom.transactionTabButtonElements,
   creditCardTabButtonElements: appDom.creditCardTabButtonElements,
   expenseTabButtonElements: appDom.expenseTabButtonElements,
   views: appDom.views,
   settingsViews: appDom.settingsViews,
+  transactionViews: appDom.transactionViews,
   creditCardViews: appDom.creditCardViews,
   expenseViews: appDom.expenseViews,
   frontendRouter,

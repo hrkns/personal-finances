@@ -33,7 +33,8 @@ test("transaction CRUD flow works end-to-end", async ({ page }) => {
   await peopleForm.getByRole("button", { name: "Create" }).click();
   await expect(page.locator("#person-form-message")).toHaveText("Person created");
 
-  await openSettingsSection(page, "Transaction Categories");
+  await page.getByRole("button", { name: "Transactions" }).click();
+  await page.getByRole("button", { name: "Transaction Categories" }).click();
   await page.getByRole("button", { name: "Create transaction category" }).click();
   const categoryForm = page.locator("#transaction-category-form");
   await categoryForm.getByLabel("Name").fill(categoryName);
@@ -124,7 +125,8 @@ test("transaction list shows running balance after each transaction", async ({ p
   await peopleForm.getByRole("button", { name: "Create" }).click();
   await expect(page.locator("#person-form-message")).toHaveText("Person created");
 
-  await openSettingsSection(page, "Transaction Categories");
+  await page.getByRole("button", { name: "Transactions" }).click();
+  await page.getByRole("button", { name: "Transaction Categories" }).click();
   await page.getByRole("button", { name: "Create transaction category" }).click();
   const categoryForm = page.locator("#transaction-category-form");
   await categoryForm.getByLabel("Name").fill(categoryName);

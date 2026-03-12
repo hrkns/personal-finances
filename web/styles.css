@@ -1,6 +1,7 @@
 :root {
   --app-color-primary: #0d9488;
   --app-color-primary-rgb: 13, 148, 136;
+  --app-color-transactions-primary: #b45309;
   --app-color-credit-cards-primary: #b45309;
   --app-color-expenses-primary: #b45309;
   --app-color-settings-primary: #b45309;
@@ -49,6 +50,10 @@ nav[aria-label="Views"] {
   --bs-nav-pills-link-active-bg: var(--app-color-primary);
 }
 
+nav[aria-label="Transactions Views"] {
+  --bs-nav-pills-link-active-bg: var(--app-color-transactions-primary);
+}
+
 nav[aria-label="Credit Cards Views"] {
   --bs-nav-pills-link-active-bg: var(--app-color-credit-cards-primary);
 }
@@ -74,12 +79,15 @@ nav[aria-label="Views"] .nav-link.active {
   color: #ffffff;
 }
 
+nav[aria-label="Transactions Views"] .nav-link,
 nav[aria-label="Credit Cards Views"] .nav-link,
 nav[aria-label="Expenses Views"] .nav-link,
 nav[aria-label="Settings Views"] .nav-link {
   color: var(--app-color-text);
 }
 
+nav[aria-label="Transactions Views"] .nav-link:not(.active):hover,
+nav[aria-label="Transactions Views"] .nav-link:not(.active):focus,
 nav[aria-label="Credit Cards Views"] .nav-link:not(.active):hover,
 nav[aria-label="Credit Cards Views"] .nav-link:not(.active):focus,
 nav[aria-label="Expenses Views"] .nav-link:not(.active):hover,
@@ -89,6 +97,7 @@ nav[aria-label="Settings Views"] .nav-link:not(.active):focus {
   color: var(--app-color-text);
 }
 
+nav[aria-label="Transactions Views"] .nav-link.active,
 nav[aria-label="Credit Cards Views"] .nav-link.active,
 nav[aria-label="Expenses Views"] .nav-link.active,
 nav[aria-label="Settings Views"] .nav-link.active {

@@ -15,8 +15,8 @@ async function seedTransactionDependencies(window, document) {
   document.getElementById("person-form").dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
   await flush();
 
-  document.querySelector('[data-route-tab="settings"]').click();
-  document.querySelector('[data-settings-tab="transaction-categories"]').click();
+  document.querySelector('[data-route-tab="transactions"]').click();
+  document.querySelector('[data-transactions-tab="transaction-categories"]').click();
   document.getElementById("transaction-category-name").value = "Salary";
   document
     .getElementById("transaction-category-form")

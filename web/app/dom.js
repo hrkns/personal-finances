@@ -29,10 +29,12 @@
    *  bank: object,
    *  bankAccounts: object,
    *  tabButtonElements: NodeListOf<HTMLElement>,
-   *  settingsTabButtonElements: NodeListOf<HTMLElement>,
+  *  settingsTabButtonElements: NodeListOf<HTMLElement>,
+  *  transactionTabButtonElements: NodeListOf<HTMLElement>,
    *  creditCardTabButtonElements: NodeListOf<HTMLElement>,
    *  expenseTabButtonElements: NodeListOf<HTMLElement>,
    *  views: object,
+  *  transactionViews: object,
    *  creditCardViews: object,
    *  expenseViews: object,
    *  settingsViews: object
@@ -243,6 +245,7 @@
       },
       tabButtonElements: documentRef.querySelectorAll("[data-route-tab]"),
       settingsTabButtonElements: documentRef.querySelectorAll("[data-settings-tab]"),
+      transactionTabButtonElements: documentRef.querySelectorAll("[data-transactions-tab]"),
       creditCardTabButtonElements: documentRef.querySelectorAll("[data-credit-card-tab]"),
       expenseTabButtonElements: documentRef.querySelectorAll("[data-expense-tab]"),
       views: {
@@ -251,6 +254,10 @@
         creditCards: documentRef.getElementById("view-credit-cards"),
         expenses: documentRef.getElementById("view-expenses"),
         settings: documentRef.getElementById("view-settings"),
+      },
+      transactionViews: {
+        list: documentRef.getElementById("view-transactions-list"),
+        transactionCategories: documentRef.getElementById("view-transactions-transaction-categories"),
       },
       creditCardViews: {
         cards: documentRef.getElementById("view-credit-cards-cards"),
@@ -266,7 +273,6 @@
       settingsViews: {
         currency: documentRef.getElementById("view-currency"),
         people: documentRef.getElementById("view-people"),
-        transactionCategories: documentRef.getElementById("view-transaction-categories"),
         banks: documentRef.getElementById("view-banks"),
         bankAccounts: documentRef.getElementById("view-bank-accounts"),
       },

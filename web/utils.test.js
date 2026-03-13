@@ -243,3 +243,20 @@ test("generateActionsCell includes accessible labels for icon-only buttons", () 
   assert.match(html, /aria-label="Delete"/);
   assert.match(html, /title="Delete"/);
 });
+
+test("generateActionsCell normalizes numeric-string id", () => {
+  const html = generateActionsCell({ id: "42" });
+
+  assert.match(html, /data-id="42"/);
+});
+
+test("generateActionsCell rejects non-positive or non-integer ids", () => {
+  const invalidIDs = ["", 0, -1, 1.5, "Infinity", Infinity, "abc", null, undefined];
+
+  for (const id of invalidIDs) {
+    assert.throws(
+      () => generateActionsCell({ id }),
+      /Invalid item id for actions cell/
+    );
+  }
+});

@@ -156,14 +156,15 @@
   }
 
   function generateActionsCell(item) {
-    if (isNaN(Number(item?.id))) {
+    const normalizedID = Number(item?.id);
+    if (!Number.isInteger(normalizedID) || normalizedID <= 0) {
       throw new Error("Invalid item id for actions cell");
     }
 
     return `
       <td>
-        <button class="btn btn-primary bi bi-pencil" type="button" data-action="edit" data-id="${item.id}" aria-label="Edit" title="Edit"></button>
-        <button class="btn btn-danger bi bi-trash" type="button" data-action="delete" data-id="${item.id}" aria-label="Delete" title="Delete"></button>
+        <button class="btn btn-primary bi bi-pencil" type="button" data-action="edit" data-id="${normalizedID}" aria-label="Edit" title="Edit"></button>
+        <button class="btn btn-danger bi bi-trash" type="button" data-action="delete" data-id="${normalizedID}" aria-label="Delete" title="Delete"></button>
       </td>
     `;
   }

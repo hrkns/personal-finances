@@ -164,7 +164,6 @@
       elements.formElement.reset();
       elements.idElement.value = "";
       elements.submitButtonElement.textContent = "Create";
-      elements.cancelButtonElement.hidden = true;
       if (elements.modalTitleElement) {
         elements.modalTitleElement.textContent = "Create credit card cycle balance";
       }
@@ -300,7 +299,6 @@
         elements.balanceElement.value = String(balance.balance);
         elements.paidElement.checked = Boolean(balance.paid);
         elements.submitButtonElement.textContent = "Update";
-        elements.cancelButtonElement.hidden = false;
         if (elements.modalTitleElement) {
           elements.modalTitleElement.textContent = `Edit credit card cycle balance #${balance.id}`;
         }

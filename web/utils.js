@@ -156,10 +156,14 @@
   }
 
   function generateActionsCell(item) {
+    if (isNaN(Number(item?.id))) {
+      throw new Error("Invalid item id for actions cell");
+    }
+
     return `
       <td>
-        <button class="btn btn-primary bi bi-pencil" type="button" data-action="edit" data-id="${item.id}"></button>
-        <button class="btn btn-danger bi bi-trash" type="button" data-action="delete" data-id="${item.id}"></button>
+        <button class="btn btn-primary bi bi-pencil" type="button" data-action="edit" data-id="${item.id}" aria-label="Edit" title="Edit"></button>
+        <button class="btn btn-danger bi bi-trash" type="button" data-action="delete" data-id="${item.id}" aria-label="Delete" title="Delete"></button>
       </td>
     `;
   }

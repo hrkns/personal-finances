@@ -22,7 +22,8 @@
    *   getBankAccounts: () => any[],
    *   getTransactionCategories: () => any[],
    *   getTransactions: () => any[],
-   *   setTransactions: (items: any[]) => void
+   *   setTransactions: (items: any[]) => void,
+   *   generateActionsCell: (item: any) => string
    * }} config
    * @returns {{load: Function, render: Function, onSubmit: Function, onRowAction: Function, resetForm: Function, setMessage: Function, populatePersonOptions: Function, populateBankAccountOptions: Function, populateCategoryOptions: Function}}
    */
@@ -39,6 +40,7 @@
       getTransactionCategories,
       getTransactions,
       setTransactions,
+      generateActionsCell,
     } = config;
 
     const bootstrapModal = globalScope.bootstrap?.Modal;
@@ -203,10 +205,7 @@
           <td>${escapeHtml(nextBalance.toFixed(2))}</td>
           <td>${escapeHtml(formatCategoryLabel(transaction.category_id))}</td>
           <td>${escapeHtml(transaction.notes || "—")}</td>
-          <td>
-            <button class="btn btn-primary bi bi-pencil" type="button" data-action="edit" data-id="${transaction.id}"></button>
-            <button class="btn btn-danger bi bi-trash" type="button" data-action="delete" data-id="${transaction.id}"></button>
-          </td>
+          ${generateActionsCell(transaction)}
         `;
         elements.bodyElement.appendChild(row);
       }

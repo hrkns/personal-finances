@@ -103,7 +103,6 @@
       elements.formElement.reset();
       elements.idElement.value = "";
       elements.submitButtonElement.textContent = "Create";
-      elements.cancelButtonElement.hidden = true;
       if (elements.modalTitleElement) {
         elements.modalTitleElement.textContent = "Create credit card";
       }

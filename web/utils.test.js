@@ -18,6 +18,7 @@ const {
   isValidISODate,
   escapeHtml,
   parseApiResponse,
+  generateActionsCell,
 } = require("./utils.js");
 
 test("normalizeCurrencyInput trims and uppercases code", () => {
@@ -230,4 +231,15 @@ test("parseApiResponse throws formatted API error", async () => {
     () => parseApiResponse(response),
     /name and code must be unique/
   );
+});
+
+test("generateActionsCell includes accessible labels for icon-only buttons", () => {
+  const html = generateActionsCell({ id: 123 });
+
+  assert.match(html, /data-action="edit"/);
+  assert.match(html, /aria-label="Edit"/);
+  assert.match(html, /title="Edit"/);
+  assert.match(html, /data-action="delete"/);
+  assert.match(html, /aria-label="Delete"/);
+  assert.match(html, /title="Delete"/);
 });

@@ -315,6 +315,7 @@
       getTransactionCategories: state.getTransactionCategories,
       getTransactions: state.getTransactions,
       setTransactions: state.setTransactions,
+      generateActionsCell,
     });
 
     return {

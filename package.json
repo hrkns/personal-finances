@@ -15,8 +15,8 @@
     "test:frontend": "node scripts/run-node-tests.js web all",
     "test:frontend:unit": "node scripts/run-node-tests.js web unit",
     "test:frontend:integration": "node scripts/run-node-tests.js web integration",
-    "test:frontend:e2e": "playwright test",
-    "test:frontend:e2e:headed": "playwright test --headed",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
     "test:backend": "go test -v ./backend/..."
   },
   "devDependencies": {

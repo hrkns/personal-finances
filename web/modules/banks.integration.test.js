@@ -44,6 +44,7 @@ test("frontend supports bank edit and delete actions", async () => {
   editButton.dispatchEvent(new window.Event("click", { bubbles: true }));
 
   assert.equal(document.getElementById("bank-submit-button").textContent, "Update");
+  assert.equal(document.getElementById("bank-cancel-button").hidden, false);
   assert.equal(document.getElementById("bank-name").value, "Edit Bank");
 
   document.getElementById("bank-name").value = "Edit Bank Updated";

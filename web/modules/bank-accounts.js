@@ -237,6 +237,7 @@
         elements.accountNumberElement.value = bankAccount.account_number;
         elements.balanceElement.value = String(bankAccount.balance);
         elements.submitButtonElement.textContent = "Update";
+        elements.cancelButtonElement.hidden = false;
         if (elements.modalTitleElement) {
           elements.modalTitleElement.textContent = "Edit bank account";
         }

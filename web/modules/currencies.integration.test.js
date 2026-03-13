@@ -44,6 +44,7 @@ test("frontend supports edit and delete actions", async () => {
   editButton.dispatchEvent(new window.Event("click", { bubbles: true }));
 
   assert.equal(document.getElementById("currency-submit-button").textContent, "Update");
+  assert.equal(document.getElementById("currency-cancel-button").hidden, false);
   assert.equal(document.getElementById("currency-name").value, "Euro");
 
   document.getElementById("currency-name").value = "Euro Updated";

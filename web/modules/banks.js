@@ -227,6 +227,7 @@
         elements.nameElement.value = bank.name;
         elements.countryElement.value = bank.country;
         elements.submitButtonElement.textContent = "Update";
+        elements.cancelButtonElement.hidden = false;
         if (elements.modalTitleElement) {
           elements.modalTitleElement.textContent = "Edit bank";
         }

@@ -207,6 +207,7 @@
         elements.nameElement.value = currency.name;
         elements.codeElement.value = currency.code;
         elements.submitButtonElement.textContent = "Update";
+        elements.cancelButtonElement.hidden = false;
         if (elements.modalTitleElement) {
           elements.modalTitleElement.textContent = "Edit currency";
         }

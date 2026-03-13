@@ -6,18 +6,18 @@
   },
   "scripts": {
     "start": "go run .",
-    "lint": "npm run lint:js && npm run lint:go",
-    "lint:js": "eslint .",
-    "lint:js:fix": "eslint . --fix",
-    "lint:go": "node scripts/lint-go.js",
-    "lint:go:fmtcheck": "node scripts/lint-go.js --fmtcheck",
-    "lint:go:fix": "gofmt -s -w ./main.go ./backend",
-    "test:backend": "go test -v ./backend/...",
+    "lint": "npm run lint:frontend && npm run lint:backend",
+    "lint:frontend": "eslint .",
+    "lint:frontend:fix": "eslint . --fix",
+    "lint:backend": "node scripts/lint-go.js",
+    "lint:backend:fmtcheck": "node scripts/lint-go.js --fmtcheck",
+    "lint:backend:fix": "gofmt -s -w ./main.go ./backend",
     "test:frontend": "node scripts/run-node-tests.js web all",
     "test:frontend:unit": "node scripts/run-node-tests.js web unit",
     "test:frontend:integration": "node scripts/run-node-tests.js web integration",
     "test:frontend:e2e": "playwright test",
-    "test:frontend:e2e:headed": "playwright test --headed"
+    "test:frontend:e2e:headed": "playwright test --headed",
+    "test:backend": "go test -v ./backend/..."
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",

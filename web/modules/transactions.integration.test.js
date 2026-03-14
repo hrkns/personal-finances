@@ -398,6 +398,42 @@ test("frontend applies valid date-range filter from URL params", async () => {
   dom.window.close();
 });
 
+test("frontend applies open-ended date-range filter from URL params", async () => {
+  const dates = getCurrentMonthDateFixtures();
+  const { dom, window, document } = await setupFrontendApp({
+    initialUrl: `http://localhost:8080/?view=transactions&transactions=list&transactionsStartDate=${dates.secondInMonth}`,
+  });
+
+  await seedTransactionDependencies(window, document);
+
+  document.querySelector('[data-route-tab="transactions"]').click();
+
+  await submitTransaction(window, document, {
+    date: dates.firstInMonth,
+    type: "income",
+    amount: 90,
+  });
+
+  await submitTransaction(window, document, {
+    date: dates.secondInMonth,
+    type: "income",
+    amount: 110,
+  });
+
+  const rows = document.querySelectorAll("#transactions-body tr");
+  assert.equal(rows.length, 1);
+
+  const rowsText = document.getElementById("transactions-body").textContent;
+  assert.match(rowsText, new RegExp(dates.secondInMonth));
+  assert.doesNotMatch(rowsText, new RegExp(dates.firstInMonth));
+
+  const searchParams = new window.URLSearchParams(window.location.search);
+  assert.equal(searchParams.get("transactionsStartDate"), dates.secondInMonth);
+  assert.equal(searchParams.get("transactionsEndDate"), null);
+
+  dom.window.close();
+});
+
 test("frontend falls back to default date range when URL filter params are invalid", async () => {
   const dates = getCurrentMonthDateFixtures();
   const { dom, window, document } = await setupFrontendApp({
@@ -468,6 +504,50 @@ test("frontend clear date-range control removes filter and shows all transaction
   const rowsText = document.getElementById("transactions-body").textContent;
   assert.match(rowsText, new RegExp(dates.firstInMonth));
   assert.match(rowsText, new RegExp(dates.previousMonthLast));
+
+  dom.window.close();
+});
+
+test("frontend keeps invalid date-range input, shows error and does not update URL", async () => {
+  const dates = getCurrentMonthDateFixtures();
+  const { dom, window, document } = await setupFrontendApp();
+
+  await seedTransactionDependencies(window, document);
+  document.querySelector('[data-route-tab="transactions"]').click();
+
+  await submitTransaction(window, document, {
+    date: dates.firstInMonth,
+    type: "income",
+    amount: 100,
+  });
+
+  await submitTransaction(window, document, {
+    date: dates.secondInMonth,
+    type: "income",
+    amount: 150,
+  });
+
+  const filterStart = document.getElementById("transactions-filter-start-date");
+  const filterEnd = document.getElementById("transactions-filter-end-date");
+
+  filterStart.value = dates.secondInMonth;
+  filterStart.dispatchEvent(new window.Event("change", { bubbles: true }));
+  await flush();
+
+  const previousSearch = window.location.search;
+
+  filterEnd.value = dates.firstInMonth;
+  filterEnd.dispatchEvent(new window.Event("change", { bubbles: true }));
+  await flush();
+
+  assert.equal(filterStart.value, dates.secondInMonth);
+  assert.equal(filterEnd.value, dates.firstInMonth);
+  assert.match(document.getElementById("transactions-filter-message").textContent, /Start date must be on or before end date\./);
+  assert.equal(window.location.search, previousSearch);
+
+  const rows = document.querySelectorAll("#transactions-body tr");
+  assert.equal(rows.length, 1);
+  assert.match(document.getElementById("transactions-body").textContent, /No transactions yet/);
 
   dom.window.close();
 });
@@ -617,6 +697,95 @@ test("frontend bank account multi-select filter updates URL and supports all-acc
 
   await setBankAccountFilterSelection(window, document, []);
   assert.equal(window.location.search.includes("transactionsBankAccounts="), false);
+  assert.equal(document.querySelectorAll("#transactions-body tr").length, 2);
+
+  dom.window.close();
+});
+
+test("frontend clear bank-account filter control unselects all and removes URL param", async () => {
+  const dates = getCurrentMonthDateFixtures();
+  const { dom, window, document } = await setupFrontendApp();
+
+  await seedTransactionDependencies(window, document);
+  await createAdditionalBankAccount(window, document);
+  document.querySelector('[data-route-tab="transactions"]').click();
+
+  await submitTransaction(window, document, {
+    date: dates.firstInMonth,
+    type: "income",
+    amount: 40,
+    bankAccountID: "1",
+  });
+
+  await submitTransaction(window, document, {
+    date: dates.secondInMonth,
+    type: "income",
+    amount: 60,
+    bankAccountID: "2",
+  });
+
+  await setBankAccountFilterSelection(window, document, ["1"]);
+  assert.equal(new window.URLSearchParams(window.location.search).get("transactionsBankAccounts"), "1");
+  assert.equal(document.querySelectorAll("#transactions-body tr").length, 1);
+
+  document.getElementById("transactions-filter-clear-bank-accounts-button").click();
+  await flush();
+
+  assert.equal(new window.URLSearchParams(window.location.search).get("transactionsBankAccounts"), null);
+  assert.equal(document.getElementById("transactions-filter-bank-accounts").selectedOptions.length, 0);
+  assert.equal(document.querySelectorAll("#transactions-body tr").length, 2);
+
+  dom.window.close();
+});
+
+test("frontend clear filters control resets date and bank-account filters to defaults", async () => {
+  const dates = getCurrentMonthDateFixtures();
+  const { dom, window, document } = await setupFrontendApp();
+
+  await seedTransactionDependencies(window, document);
+  await createAdditionalBankAccount(window, document);
+  document.querySelector('[data-route-tab="transactions"]').click();
+
+  await submitTransaction(window, document, {
+    date: dates.firstInMonth,
+    type: "income",
+    amount: 100,
+    bankAccountID: "1",
+  });
+
+  await submitTransaction(window, document, {
+    date: dates.secondInMonth,
+    type: "income",
+    amount: 120,
+    bankAccountID: "2",
+  });
+
+  const filterStart = document.getElementById("transactions-filter-start-date");
+  const filterEnd = document.getElementById("transactions-filter-end-date");
+
+  filterStart.value = dates.secondInMonth;
+  filterStart.dispatchEvent(new window.Event("change", { bubbles: true }));
+  await flush();
+
+  await setBankAccountFilterSelection(window, document, ["2"]);
+  assert.equal(document.querySelectorAll("#transactions-body tr").length, 1);
+
+  filterEnd.value = dates.firstInMonth;
+  filterEnd.dispatchEvent(new window.Event("change", { bubbles: true }));
+  await flush();
+  assert.match(document.getElementById("transactions-filter-message").textContent, /Start date must be on or before end date\./);
+
+  document.getElementById("transactions-filter-clear-all-button").click();
+  await flush();
+
+  const searchParams = new window.URLSearchParams(window.location.search);
+  assert.equal(searchParams.get("transactionsStartDate"), dates.start);
+  assert.equal(searchParams.get("transactionsEndDate"), dates.end);
+  assert.equal(searchParams.get("transactionsBankAccounts"), null);
+  assert.equal(document.getElementById("transactions-filter-start-date").value, dates.start);
+  assert.equal(document.getElementById("transactions-filter-end-date").value, dates.end);
+  assert.equal(document.getElementById("transactions-filter-bank-accounts").selectedOptions.length, 0);
+  assert.equal(document.getElementById("transactions-filter-message").textContent, "");
   assert.equal(document.querySelectorAll("#transactions-body tr").length, 2);
 
   dom.window.close();

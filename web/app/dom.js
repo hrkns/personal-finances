@@ -64,6 +64,9 @@
         filterEndDateElement: documentRef.getElementById("transactions-filter-end-date"),
         filterClearButtonElement: documentRef.getElementById("transactions-filter-clear-button"),
         filterBankAccountsElement: documentRef.getElementById("transactions-filter-bank-accounts"),
+        filterClearBankAccountsButton: documentRef.getElementById("transactions-filter-clear-bank-accounts-button"),
+        filterClearAllButton: documentRef.getElementById("transactions-filter-clear-all-button"),
+        filterMessage: documentRef.getElementById("transactions-filter-message"),
         bodyElement: documentRef.getElementById("transactions-body"),
       },
       creditCards: {

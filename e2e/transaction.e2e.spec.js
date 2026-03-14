@@ -149,6 +149,13 @@ async function readQueryParam(page, key) {
   return new URL(page.url()).searchParams.get(key);
 }
 
+async function setDateFilterInput(page, selector, value) {
+  await page.locator(selector).evaluate((element, nextValue) => {
+    element.value = nextValue;
+    element.dispatchEvent(new Event("change", { bubbles: true }));
+  }, value);
+}
+
 test("transaction CRUD flow works end-to-end", async ({ page }) => {
   const dates = getDateFixtures();
   const suffix = uniqueSuffix();
@@ -445,6 +452,95 @@ test("transactions date range filter updates URL and clear button restores all r
   await expect(page.locator("#transactions-body")).toContainText("Previous month row");
 });
 
+test("transactions open-ended date filter updates URL and filters with one bound", async ({ page }) => {
+  const suffix = uniqueSuffix();
+  const dates = getDateFixtures();
+
+  await openApp(page);
+  const setup = await createTransactionDependencies(page, suffix);
+
+  await page.getByRole("button", { name: "Transactions" }).click();
+
+  await createTransaction(page, {
+    date: dates.secondInMonth,
+    type: "income",
+    amount: "80",
+    notes: "Second day row",
+    personName: setup.personName,
+    accountNumber: setup.accountNumber,
+    categoryName: setup.categoryName,
+  });
+
+  await createTransaction(page, {
+    date: dates.thirdInMonth,
+    type: "income",
+    amount: "100",
+    notes: "Third day row",
+    personName: setup.personName,
+    accountNumber: setup.accountNumber,
+    categoryName: setup.categoryName,
+  });
+
+  await page.locator("#transactions-filter-end-date").fill("");
+  await page.locator("#transactions-filter-end-date").dispatchEvent("change");
+  await expect.poll(() => readQueryParam(page, "transactionsEndDate")).toBeNull();
+
+  await page.locator("#transactions-filter-start-date").fill(dates.thirdInMonth);
+  await page.locator("#transactions-filter-start-date").dispatchEvent("change");
+
+  await expect.poll(() => readQueryParam(page, "transactionsStartDate")).toBe(dates.thirdInMonth);
+  await expect.poll(() => readQueryParam(page, "transactionsEndDate")).toBeNull();
+  await expect(page.locator("#transactions-body")).toContainText("Third day row");
+  await expect(page.locator("#transactions-body")).not.toContainText("Second day row");
+});
+
+test("transactions invalid date range preserves inputs, shows error, and keeps URL params", async ({ page }) => {
+  const suffix = uniqueSuffix();
+  const dates = getDateFixtures();
+
+  await openApp(page);
+  const setup = await createTransactionDependencies(page, suffix);
+
+  await page.getByRole("button", { name: "Transactions" }).click();
+
+  await createTransaction(page, {
+    date: dates.secondInMonth,
+    type: "income",
+    amount: "80",
+    notes: "Second day row",
+    personName: setup.personName,
+    accountNumber: setup.accountNumber,
+    categoryName: setup.categoryName,
+  });
+
+  await createTransaction(page, {
+    date: dates.thirdInMonth,
+    type: "income",
+    amount: "100",
+    notes: "Third day row",
+    personName: setup.personName,
+    accountNumber: setup.accountNumber,
+    categoryName: setup.categoryName,
+  });
+
+  await setDateFilterInput(page, "#transactions-filter-end-date", "");
+  await setDateFilterInput(page, "#transactions-filter-start-date", dates.thirdInMonth);
+
+  await expect.poll(() => readQueryParam(page, "transactionsStartDate")).toBe(dates.thirdInMonth);
+  await expect.poll(() => readQueryParam(page, "transactionsEndDate")).toBeNull();
+
+  await setDateFilterInput(page, "#transactions-filter-end-date", dates.secondInMonth);
+
+  await expect(page.locator("#transactions-filter-start-date")).toHaveValue(dates.thirdInMonth);
+  await expect(page.locator("#transactions-filter-end-date")).toHaveValue(dates.secondInMonth);
+  await expect(page.locator("#transactions-filter-message")).toHaveText("Start date must be on or before end date.");
+  await expect.poll(() => readQueryParam(page, "transactionsStartDate")).toBe(dates.thirdInMonth);
+  await expect.poll(() => readQueryParam(page, "transactionsEndDate")).toBeNull();
+  await expect(page.locator("#transactions-body")).toContainText("No transactions yet");
+  await expect(page.locator("#transactions-body")).not.toContainText("Third day row");
+  await expect(page.locator("#transactions-body")).not.toContainText("Second day row");
+});
+
 test("transactions bank account multi-select filter updates URL and supports all-accounts fallback", async ({ page }) => {
   const suffix = uniqueSuffix();
   const dates = getDateFixtures();
@@ -498,6 +594,106 @@ test("transactions bank account multi-select filter updates URL and supports all
   await expect(page.locator("#transactions-body")).toContainText("Second account row");
 
   await bankFilter.selectOption([]);
+  await expect.poll(() => readQueryParam(page, "transactionsBankAccounts")).toBeNull();
+  await expect(page.locator("#transactions-body")).toContainText("First account row");
+  await expect(page.locator("#transactions-body")).toContainText("Second account row");
+});
+
+test("transactions clear bank-account button removes account filter", async ({ page }) => {
+  const suffix = uniqueSuffix();
+  const dates = getDateFixtures();
+
+  await openApp(page);
+  const setup = await createTransactionDependencies(page, suffix, { createSecondBankAccount: true });
+
+  await page.getByRole("button", { name: "Transactions" }).click();
+
+  await createTransaction(page, {
+    date: dates.secondInMonth,
+    type: "income",
+    amount: "70",
+    notes: "First account row",
+    personName: setup.personName,
+    accountNumber: setup.accountNumber,
+    categoryName: setup.categoryName,
+  });
+
+  await createTransaction(page, {
+    date: dates.thirdInMonth,
+    type: "income",
+    amount: "90",
+    notes: "Second account row",
+    personName: setup.personName,
+    accountNumber: setup.secondAccountNumber,
+    categoryName: setup.categoryName,
+  });
+
+  const bankFilter = page.locator("#transactions-filter-bank-accounts");
+  const firstAccountID = await getOptionValueContaining(bankFilter, setup.accountNumber);
+  await bankFilter.selectOption([firstAccountID]);
+  await expect.poll(() => readQueryParam(page, "transactionsBankAccounts")).toBe(firstAccountID);
+  await expect(page.locator("#transactions-body")).toContainText("First account row");
+  await expect(page.locator("#transactions-body")).not.toContainText("Second account row");
+
+  await page.locator("#transactions-filter-clear-bank-accounts-button").click();
+
+  await expect.poll(() => readQueryParam(page, "transactionsBankAccounts")).toBeNull();
+  await expect(page.locator("#transactions-body")).toContainText("First account row");
+  await expect(page.locator("#transactions-body")).toContainText("Second account row");
+});
+
+test("transactions clear filters button resets date and bank filters to defaults", async ({ page }) => {
+  const suffix = uniqueSuffix();
+  const dates = getDateFixtures();
+
+  await openApp(page);
+  const setup = await createTransactionDependencies(page, suffix, { createSecondBankAccount: true });
+
+  await page.getByRole("button", { name: "Transactions" }).click();
+
+  await createTransaction(page, {
+    date: dates.secondInMonth,
+    type: "income",
+    amount: "70",
+    notes: "First account row",
+    personName: setup.personName,
+    accountNumber: setup.accountNumber,
+    categoryName: setup.categoryName,
+  });
+
+  await createTransaction(page, {
+    date: dates.thirdInMonth,
+    type: "income",
+    amount: "90",
+    notes: "Second account row",
+    personName: setup.personName,
+    accountNumber: setup.secondAccountNumber,
+    categoryName: setup.categoryName,
+  });
+
+  const bankFilter = page.locator("#transactions-filter-bank-accounts");
+  const secondAccountID = await getOptionValueContaining(bankFilter, setup.secondAccountNumber);
+  await bankFilter.selectOption([secondAccountID]);
+  await expect.poll(() => readQueryParam(page, "transactionsBankAccounts")).toBe(secondAccountID);
+
+  await page.locator("#transactions-filter-end-date").fill("");
+  await page.locator("#transactions-filter-end-date").dispatchEvent("change");
+  await page.locator("#transactions-filter-start-date").fill(dates.thirdInMonth);
+  await page.locator("#transactions-filter-start-date").dispatchEvent("change");
+  await expect.poll(() => readQueryParam(page, "transactionsStartDate")).toBe(dates.thirdInMonth);
+  await expect.poll(() => readQueryParam(page, "transactionsEndDate")).toBeNull();
+
+  await page.locator("#transactions-filter-end-date").fill(dates.secondInMonth);
+  await page.locator("#transactions-filter-end-date").dispatchEvent("change");
+  await expect(page.locator("#transactions-filter-message")).toHaveText("Start date must be on or before end date.");
+
+  await page.locator("#transactions-filter-clear-all-button").click();
+
+  await expect(page.locator("#transactions-filter-start-date")).toHaveValue(dates.start);
+  await expect(page.locator("#transactions-filter-end-date")).toHaveValue(dates.end);
+  await expect(page.locator("#transactions-filter-message")).toHaveText("");
+  await expect.poll(() => readQueryParam(page, "transactionsStartDate")).toBe(dates.start);
+  await expect.poll(() => readQueryParam(page, "transactionsEndDate")).toBe(dates.end);
   await expect.poll(() => readQueryParam(page, "transactionsBankAccounts")).toBeNull();
   await expect(page.locator("#transactions-body")).toContainText("First account row");
   await expect(page.locator("#transactions-body")).toContainText("Second account row");

@@ -18,6 +18,7 @@
     let isDateFilterBound = false;
     let isBankAccountFilterBound = false;
     let currentDateRange = getDefaultDateRange();
+    let currentDateRangeInput = { ...currentDateRange };
     let currentBankAccountFilterIDs = new Set();
 
     function formatDateAsISO(date) {
@@ -68,8 +69,8 @@
       return String(value).trim();
     }
 
-    function isDateRangeValid(startDate, endDate) {
-      return Boolean(startDate && endDate && startDate <= endDate);
+    function isDateRangeInvalid(startDate, endDate) {
+      return Boolean(startDate && endDate && startDate > endDate);
     }
 
     function normalizePositiveIntegerString(value) {
@@ -109,8 +110,17 @@
 
     function setDateRangeParamsInURL(startDate, endDate) {
       replaceURLSearchParams((searchParams) => {
-        searchParams.set(transactionsStartDateParamName, startDate);
-        searchParams.set(transactionsEndDateParamName, endDate);
+        if (startDate) {
+          searchParams.set(transactionsStartDateParamName, startDate);
+        } else {
+          searchParams.delete(transactionsStartDateParamName);
+        }
+
+        if (endDate) {
+          searchParams.set(transactionsEndDateParamName, endDate);
+        } else {
+          searchParams.delete(transactionsEndDateParamName);
+        }
       });
     }
 
@@ -174,20 +184,39 @@
 
     function syncDateRangeControls() {
       if (elements.filterStartDateElement) {
-        elements.filterStartDateElement.value = currentDateRange.start || "";
+        elements.filterStartDateElement.value = currentDateRangeInput.start || "";
       }
 
       if (elements.filterEndDateElement) {
-        elements.filterEndDateElement.value = currentDateRange.end || "";
+        elements.filterEndDateElement.value = currentDateRangeInput.end || "";
       }
 
       if (elements.filterClearButtonElement) {
-        elements.filterClearButtonElement.disabled = !currentDateRange.start && !currentDateRange.end;
+        elements.filterClearButtonElement.disabled = !currentDateRangeInput.start && !currentDateRangeInput.end;
+      }
+    }
+
+    function syncClearFilterControls() {
+      if (elements.filterClearBankAccountsButton) {
+        elements.filterClearBankAccountsButton.disabled = currentBankAccountFilterIDs.size === 0;
+      }
+    }
+
+    function clearFilterMessage() {
+      if (elements.filterMessage) {
+        elements.filterMessage.textContent = "";
+      }
+    }
+
+    function setFilterMessage(message) {
+      if (elements.filterMessage) {
+        elements.filterMessage.textContent = message;
       }
     }
 
     function syncBankAccountFilterControl() {
       if (!elements.filterBankAccountsElement) {
+        syncClearFilterControls();
         return;
       }
 
@@ -195,6 +224,8 @@
       for (const option of elements.filterBankAccountsElement.options) {
         option.selected = selectedValues.has(option.value);
       }
+
+      syncClearFilterControls();
     }
 
     function syncDateRangeFromURL() {
@@ -205,21 +236,29 @@
 
       if (!startDateParam && !endDateParam) {
         currentDateRange = defaultDateRange;
+        currentDateRangeInput = { ...defaultDateRange };
         setDateRangeParamsInURL(defaultDateRange.start, defaultDateRange.end);
+        clearFilterMessage();
         syncDateRangeControls();
         return;
       }
 
       const startDate = normalizeDateValue(startDateParam);
       const endDate = normalizeDateValue(endDateParam);
-      if (isDateRangeValid(startDate, endDate)) {
+      const hasInvalidDateToken = Boolean(startDateParam && !startDate) || Boolean(endDateParam && !endDate);
+      if (!hasInvalidDateToken && !isDateRangeInvalid(startDate, endDate)) {
         currentDateRange = { start: startDate, end: endDate };
+        currentDateRangeInput = { ...currentDateRange };
+        setDateRangeParamsInURL(startDate, endDate);
+        clearFilterMessage();
         syncDateRangeControls();
         return;
       }
 
       currentDateRange = defaultDateRange;
+      currentDateRangeInput = { ...defaultDateRange };
       setDateRangeParamsInURL(defaultDateRange.start, defaultDateRange.end);
+      clearFilterMessage();
       syncDateRangeControls();
     }
 
@@ -271,28 +310,61 @@
         start: "",
         end: "",
       };
+      currentDateRangeInput = { ...currentDateRange };
       removeDateRangeParamsFromURL();
+      clearFilterMessage();
       syncDateRangeControls();
+      onFiltersChanged();
+    }
+
+    function applyDefaultDateRange() {
+      const defaultDateRange = getDefaultDateRange();
+      currentDateRange = defaultDateRange;
+      currentDateRangeInput = { ...defaultDateRange };
+      setDateRangeParamsInURL(defaultDateRange.start, defaultDateRange.end);
+      clearFilterMessage();
+      syncDateRangeControls();
+    }
+
+    function clearBankAccountFilter() {
+      currentBankAccountFilterIDs = new Set();
+      removeBankAccountFilterParamFromURL();
+      syncBankAccountFilterControl();
+      onFiltersChanged();
+    }
+
+    function clearAllFilters() {
+      applyDefaultDateRange();
+      currentBankAccountFilterIDs = new Set();
+      removeBankAccountFilterParamFromURL();
+      syncBankAccountFilterControl();
       onFiltersChanged();
     }
 
     function onDateRangeInputChange() {
       const startDate = normalizeDateValue(elements.filterStartDateElement?.value);
       const endDate = normalizeDateValue(elements.filterEndDateElement?.value);
+      currentDateRangeInput = {
+        start: startDate || "",
+        end: endDate || "",
+      };
+
+      if (isDateRangeInvalid(startDate, endDate)) {
+        setFilterMessage("Start date must be on or before end date.");
+        syncDateRangeControls();
+        onFiltersChanged();
+        return;
+      }
+
+      clearFilterMessage();
 
       if (!startDate && !endDate) {
         clearDateRangeFilter();
         return;
       }
 
-      if (isDateRangeValid(startDate, endDate)) {
-        currentDateRange = { start: startDate, end: endDate };
-        setDateRangeParamsInURL(startDate, endDate);
-      } else {
-        const defaultDateRange = getDefaultDateRange();
-        currentDateRange = defaultDateRange;
-        setDateRangeParamsInURL(defaultDateRange.start, defaultDateRange.end);
-      }
+      currentDateRange = { start: startDate || "", end: endDate || "" };
+      setDateRangeParamsInURL(currentDateRange.start, currentDateRange.end);
 
       syncDateRangeControls();
       onFiltersChanged();
@@ -323,11 +395,17 @@
         elements.filterStartDateElement.addEventListener("change", onDateRangeInputChange);
         elements.filterEndDateElement.addEventListener("change", onDateRangeInputChange);
         elements.filterClearButtonElement.addEventListener("click", clearDateRangeFilter);
+        if (elements.filterClearAllButton) {
+          elements.filterClearAllButton.addEventListener("click", clearAllFilters);
+        }
         isDateFilterBound = true;
       }
 
       if (!isBankAccountFilterBound && elements.filterBankAccountsElement) {
         elements.filterBankAccountsElement.addEventListener("change", onBankAccountFilterChange);
+        if (elements.filterClearBankAccountsButton) {
+          elements.filterClearBankAccountsButton.addEventListener("click", clearBankAccountFilter);
+        }
         isBankAccountFilterBound = true;
       }
     }
@@ -357,12 +435,24 @@
     }
 
     function filterTransactionsByDateRange(transactions) {
-      if (!currentDateRange.start || !currentDateRange.end) {
+      if (isDateRangeInvalid(currentDateRangeInput.start, currentDateRangeInput.end)) {
+        return [];
+      }
+
+      if (!currentDateRange.start && !currentDateRange.end) {
         return transactions;
       }
 
       return transactions.filter((transaction) => {
-        return transaction.transaction_date >= currentDateRange.start && transaction.transaction_date <= currentDateRange.end;
+        if (currentDateRange.start && transaction.transaction_date < currentDateRange.start) {
+          return false;
+        }
+
+        if (currentDateRange.end && transaction.transaction_date > currentDateRange.end) {
+          return false;
+        }
+
+        return true;
       });
     }
 

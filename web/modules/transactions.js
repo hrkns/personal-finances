@@ -307,6 +307,7 @@
         elements.bankAccountIdElement.value = String(transaction.bank_account_id);
         elements.categoryIdElement.value = String(transaction.category_id);
         elements.submitButtonElement.textContent = "Update";
+        elements.cancelButtonElement.hidden = false;
         if (elements.modalTitleElement) {
           elements.modalTitleElement.textContent = "Edit transaction";
         }

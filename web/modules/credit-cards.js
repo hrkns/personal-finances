@@ -225,6 +225,7 @@
         elements.numberElement.value = creditCard.number;
         elements.nameElement.value = creditCard.name || "";
         elements.submitButtonElement.textContent = "Update";
+        elements.cancelButtonElement.hidden = false;
         if (elements.modalTitleElement) {
           elements.modalTitleElement.textContent = "Edit credit card";
         }

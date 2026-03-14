@@ -243,6 +243,7 @@
         elements.conceptElement.value = subscription.concept;
         elements.amountElement.value = String(subscription.amount);
         elements.submitButtonElement.textContent = "Update";
+        elements.cancelButtonElement.hidden = false;
         if (elements.modalTitleElement) {
           elements.modalTitleElement.textContent = "Edit credit card subscription";
         }

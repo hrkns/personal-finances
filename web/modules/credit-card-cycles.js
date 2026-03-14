@@ -184,6 +184,7 @@
         elements.closingDateElement.value = cycle.closing_date;
         elements.dueDateElement.value = cycle.due_date;
         elements.submitButtonElement.textContent = "Update";
+        elements.cancelButtonElement.hidden = false;
         if (elements.modalTitleElement) {
           elements.modalTitleElement.textContent = "Edit credit card cycle";
         }

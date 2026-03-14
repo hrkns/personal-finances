@@ -243,6 +243,7 @@
         elements.startDateElement.value = installment.start_date;
         elements.countElement.value = String(installment.count);
         elements.submitButtonElement.textContent = "Update";
+        elements.cancelButtonElement.hidden = false;
         if (elements.modalTitleElement) {
           elements.modalTitleElement.textContent = "Edit credit card installment";
         }

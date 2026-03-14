@@ -150,6 +150,7 @@
         elements.nameElement.value = expense.name;
         elements.frequencyElement.value = expense.frequency;
         elements.submitButtonElement.textContent = "Update";
+        elements.cancelButtonElement.hidden = false;
         if (elements.modalTitleElement) {
           elements.modalTitleElement.textContent = "Edit expense";
         }

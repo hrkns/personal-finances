@@ -304,6 +304,7 @@
         elements.currencyIdElement.value = String(payment.currency_id);
         elements.dateElement.value = payment.date;
         elements.submitButtonElement.textContent = "Update";
+        elements.cancelButtonElement.hidden = false;
         if (elements.modalTitleElement) {
           elements.modalTitleElement.textContent = "Edit expense payment";
         }

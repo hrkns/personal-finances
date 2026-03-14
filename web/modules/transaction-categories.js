@@ -182,6 +182,7 @@
         populateParentOptions(category.id);
         elements.parentIdElement.value = category.parent_id ? String(category.parent_id) : "";
         elements.submitButtonElement.textContent = "Update";
+        elements.cancelButtonElement.hidden = false;
         if (elements.modalTitleElement) {
           elements.modalTitleElement.textContent = "Edit transaction category";
         }

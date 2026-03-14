@@ -149,6 +149,7 @@
         elements.idElement.value = String(person.id);
         elements.nameElement.value = person.name;
         elements.submitButtonElement.textContent = "Update";
+        elements.cancelButtonElement.hidden = false;
         if (elements.modalTitleElement) {
           elements.modalTitleElement.textContent = "Edit person";
         }

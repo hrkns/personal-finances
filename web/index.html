@@ -79,6 +79,25 @@
           <h2 class="mb-0">List of transactions</h2>
           <button class="btn btn-success" id="transaction-open-modal-button" type="button">Create transaction</button>
         </div>
+        <div class="d-flex flex-wrap align-items-end gap-2 mb-3" aria-label="Transaction date filter">
+          <div>
+            <label class="form-label mb-1" for="transactions-filter-start-date">Start date</label>
+            <input class="form-control" id="transactions-filter-start-date" type="date" />
+          </div>
+          <div>
+            <label class="form-label mb-1" for="transactions-filter-end-date">End date</label>
+            <input class="form-control" id="transactions-filter-end-date" type="date" />
+          </div>
+          <button
+            class="btn btn-outline-secondary"
+            id="transactions-filter-clear-button"
+            type="button"
+            aria-label="Clear date filter"
+            title="Clear date filter"
+          >
+            X
+          </button>
+        </div>
         <table id="transactions-table">
           <thead>
             <tr>

@@ -60,6 +60,9 @@
         toastElement: documentRef.getElementById("transaction-form-toast"),
         messageElement: documentRef.getElementById("transaction-form-message"),
         tableElement: documentRef.getElementById("transactions-table"),
+        filterStartDateElement: documentRef.getElementById("transactions-filter-start-date"),
+        filterEndDateElement: documentRef.getElementById("transactions-filter-end-date"),
+        filterClearButtonElement: documentRef.getElementById("transactions-filter-clear-button"),
         bodyElement: documentRef.getElementById("transactions-body"),
       },
       creditCards: {

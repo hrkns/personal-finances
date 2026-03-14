@@ -52,6 +52,8 @@
 
     const transactionsSortParamName = "transactionsSort";
     const transactionsOrderParamName = "transactionsOrder";
+    const transactionsStartDateParamName = "transactionsStartDate";
+    const transactionsEndDateParamName = "transactionsEndDate";
     const sortKeyByField = {
       transactionDate: "date",
       amount: "amount",
@@ -67,7 +69,9 @@
 
     let isRowActionBound = false;
     let isSortChangeBound = false;
+    let isDateFilterBound = false;
     let currentSort = { ...defaultSort };
+    let currentDateRange = getDefaultDateRange();
 
     function initializeModalBindings() {
       initModalBindings(resetForm);
@@ -96,6 +100,72 @@
       return actionsCellHtml
         .replace(/^\s*<td>/i, "")
         .replace(/<\/td>\s*$/i, "");
+    }
+
+    function formatDateAsISO(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+
+    function getDefaultDateRange() {
+      const now = new Date();
+      const startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+      const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      return {
+        start: formatDateAsISO(startDate),
+        end: formatDateAsISO(endDate),
+      };
+    }
+
+    function isValidISODate(value) {
+      if (typeof value !== "string") {
+        return false;
+      }
+
+      const trimmedValue = value.trim();
+      const matchedDate = /^(\d{4})-(\d{2})-(\d{2})$/.exec(trimmedValue);
+      if (!matchedDate) {
+        return false;
+      }
+
+      const year = Number(matchedDate[1]);
+      const month = Number(matchedDate[2]);
+      const day = Number(matchedDate[3]);
+
+      const parsedDate = new Date(Date.UTC(year, month - 1, day));
+      return (
+        parsedDate.getUTCFullYear() === year
+        && parsedDate.getUTCMonth() + 1 === month
+        && parsedDate.getUTCDate() === day
+      );
+    }
+
+    function normalizeDateValue(value) {
+      if (!isValidISODate(value)) {
+        return null;
+      }
+
+      return String(value).trim();
+    }
+
+    function isDateRangeValid(startDate, endDate) {
+      return Boolean(startDate && endDate && startDate <= endDate);
+    }
+
+    function syncDateRangeControls() {
+      if (elements.filterStartDateElement) {
+        elements.filterStartDateElement.value = currentDateRange.start || "";
+      }
+
+      if (elements.filterEndDateElement) {
+        elements.filterEndDateElement.value = currentDateRange.end || "";
+      }
+
+      if (elements.filterClearButtonElement) {
+        elements.filterClearButtonElement.disabled = !currentDateRange.start && !currentDateRange.end;
+      }
     }
 
     function normalizeSortKey(value) {
@@ -138,6 +208,94 @@
         searchParams.set(transactionsSortParamName, sortKey);
         searchParams.set(transactionsOrderParamName, sortOrder);
       });
+    }
+
+    function removeDateRangeParamsFromURL() {
+      replaceURLSearchParams((searchParams) => {
+        searchParams.delete(transactionsStartDateParamName);
+        searchParams.delete(transactionsEndDateParamName);
+      });
+    }
+
+    function setDateRangeParamsInURL(startDate, endDate) {
+      replaceURLSearchParams((searchParams) => {
+        searchParams.set(transactionsStartDateParamName, startDate);
+        searchParams.set(transactionsEndDateParamName, endDate);
+      });
+    }
+
+    function syncDateRangeFromURL() {
+      const defaultDateRange = getDefaultDateRange();
+      const params = new URLSearchParams(globalScope.location.search);
+      const startDateParam = params.get(transactionsStartDateParamName);
+      const endDateParam = params.get(transactionsEndDateParamName);
+
+      if (!startDateParam && !endDateParam) {
+        currentDateRange = defaultDateRange;
+        setDateRangeParamsInURL(defaultDateRange.start, defaultDateRange.end);
+        syncDateRangeControls();
+        return;
+      }
+
+      const startDate = normalizeDateValue(startDateParam);
+      const endDate = normalizeDateValue(endDateParam);
+      if (isDateRangeValid(startDate, endDate)) {
+        currentDateRange = { start: startDate, end: endDate };
+        syncDateRangeControls();
+        return;
+      }
+
+      currentDateRange = defaultDateRange;
+      setDateRangeParamsInURL(defaultDateRange.start, defaultDateRange.end);
+      syncDateRangeControls();
+    }
+
+    function clearDateRangeFilter() {
+      currentDateRange = {
+        start: "",
+        end: "",
+      };
+      removeDateRangeParamsFromURL();
+      syncDateRangeControls();
+      render();
+    }
+
+    function onDateRangeInputChange() {
+      const startDate = normalizeDateValue(elements.filterStartDateElement?.value);
+      const endDate = normalizeDateValue(elements.filterEndDateElement?.value);
+
+      if (!startDate && !endDate) {
+        clearDateRangeFilter();
+        return;
+      }
+
+      if (isDateRangeValid(startDate, endDate)) {
+        currentDateRange = { start: startDate, end: endDate };
+        setDateRangeParamsInURL(startDate, endDate);
+      } else {
+        const defaultDateRange = getDefaultDateRange();
+        currentDateRange = defaultDateRange;
+        setDateRangeParamsInURL(defaultDateRange.start, defaultDateRange.end);
+      }
+
+      syncDateRangeControls();
+      render();
+    }
+
+    function initializeDateFilterBindings() {
+      if (
+        isDateFilterBound
+        || !elements.filterStartDateElement
+        || !elements.filterEndDateElement
+        || !elements.filterClearButtonElement
+      ) {
+        return;
+      }
+
+      elements.filterStartDateElement.addEventListener("change", onDateRangeInputChange);
+      elements.filterEndDateElement.addEventListener("change", onDateRangeInputChange);
+      elements.filterClearButtonElement.addEventListener("click", clearDateRangeFilter);
+      isDateFilterBound = true;
     }
 
     function syncSortFromURL() {
@@ -192,6 +350,16 @@
       return sortOrder === "desc" ? sorted.reverse() : sorted;
     }
 
+    function filterTransactionsByDateRange(transactions) {
+      if (!currentDateRange.start || !currentDateRange.end) {
+        return transactions;
+      }
+
+      return transactions.filter((transaction) => {
+        return transaction.transaction_date >= currentDateRange.start && transaction.transaction_date <= currentDateRange.end;
+      });
+    }
+
     function computeRunningBalanceByTransactionID(transactions) {
       const runningBalanceByBankAccountID = new Map(
         getBankAccounts().map((bankAccount) => [bankAccount.id, Number(bankAccount.balance)])
@@ -212,8 +380,9 @@
     }
 
     function buildRenderRows(transactions) {
-      const runningBalanceByTransactionID = computeRunningBalanceByTransactionID(transactions);
-      const orderedTransactions = sortTransactions(transactions, currentSort.key, currentSort.order);
+      const filteredTransactions = filterTransactionsByDateRange(transactions);
+      const runningBalanceByTransactionID = computeRunningBalanceByTransactionID(filteredTransactions);
+      const orderedTransactions = sortTransactions(filteredTransactions, currentSort.key, currentSort.order);
 
       return orderedTransactions.map((transaction) => {
         const amount = Number(transaction.amount);
@@ -477,7 +646,9 @@
       initializeModalBindings();
       initializeRowActionBindings();
       syncSortFromURL();
+      syncDateRangeFromURL();
       initializeSortChangeBindings();
+      initializeDateFilterBindings();
 
       try {
         const transactions = await apiRequest("/api/transactions", { method: "GET" });

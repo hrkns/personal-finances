@@ -15,7 +15,7 @@ async function createBankPersonAndCreditCard(window, document) {
 
   document.getElementById("person-name").value = "Installment Person";
   document
-    .getElementById("people-form")
+    .getElementById("person-form")
     .dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
 
   await new Promise((resolve) => setTimeout(resolve, 0));
@@ -33,7 +33,7 @@ async function createBankPersonAndCreditCard(window, document) {
   await new Promise((resolve) => setTimeout(resolve, 0));
 
   document.querySelector('[data-route-tab="settings"]').click();
-  document.querySelector('[data-settings-tab="currency"]').click();
+  document.querySelector('[data-settings-tab="currencies"]').click();
   document.getElementById("currency-name").value = "US Dollar";
   document.getElementById("currency-code").value = "USD";
   document

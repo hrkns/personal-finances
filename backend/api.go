@@ -46,6 +46,7 @@ func (application app) registerAPIRoutes(mux *http.ServeMux) {
 	application.registerBankRoutes(mux)
 	application.registerBankAccountRoutes(mux)
 	application.registerCreditCardRoutes(mux)
+	application.registerCreditCardCycleBalanceRoutes(mux)
 	application.registerCreditCardCycleRoutes(mux)
 	application.registerCreditCardInstallmentRoutes(mux)
 	application.registerCreditCardSubscriptionRoutes(mux)

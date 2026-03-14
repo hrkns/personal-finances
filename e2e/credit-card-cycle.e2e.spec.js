@@ -24,6 +24,7 @@ test("credit card cycle CRUD flow works end-to-end", async ({ page }) => {
   await openApp(page);
 
   await openSettingsSection(page, "Banks");
+  await page.getByRole("button", { name: "Create bank" }).click();
   const bankForm = page.locator("#bank-form");
   await bankForm.getByLabel("Name").fill(bankName);
   await bankForm.getByLabel("Country").selectOption("US");
@@ -31,20 +32,24 @@ test("credit card cycle CRUD flow works end-to-end", async ({ page }) => {
   await expect(page.locator("#bank-form-message")).toHaveText("Bank created");
 
   await openSettingsSection(page, "People");
-  const peopleForm = page.locator("#people-form");
+  await page.getByRole("button", { name: "Create person" }).click();
+  const peopleForm = page.locator("#person-form");
   await peopleForm.getByLabel("Name").fill(personName);
   await peopleForm.getByRole("button", { name: "Create" }).click();
   await expect(page.locator("#person-form-message")).toHaveText("Person created");
 
-  await openSettingsSection(page, "Currency");
+  await openSettingsSection(page, "Currencies");
+  await page.getByRole("button", { name: "Create currency" }).click();
   const currencyForm = page.locator("#currency-form");
   await currencyForm.getByLabel("Name").fill("US Dollar");
   await currencyForm.getByLabel("Code").fill("USD");
   await currencyForm.getByRole("button", { name: "Create" }).click();
-  await expect(page.locator("#form-message")).toHaveText("Currency created");
+  await expect(page.locator("#currency-form-message")).toHaveText("Currency created");
 
   await page.getByRole("button", { name: "Credit Cards" }).click();
   await page.locator('[data-credit-card-tab="cards"]').click();
+
+  await page.getByRole("button", { name: "Create credit card" }).click();
 
   const creditCardForm = page.locator("#credit-card-form");
   await creditCardForm.getByLabel("Bank").selectOption({ label: `${bankName} (US)` });
@@ -58,6 +63,8 @@ test("credit card cycle CRUD flow works end-to-end", async ({ page }) => {
 
   await page.locator('[data-credit-card-tab="cycles"]').click();
 
+  await page.getByRole("button", { name: "Create credit card cycle" }).click();
+
   const cycleForm = page.locator("#credit-card-cycle-form");
   await selectOptionContaining(cycleForm.getByLabel("Credit Card"), cardNumber);
   await cycleForm.getByLabel("Closing Date").fill("2026-03-20");
@@ -68,10 +75,11 @@ test("credit card cycle CRUD flow works end-to-end", async ({ page }) => {
   await expect(page.locator("#credit-card-cycles-body")).toContainText("2026-03-20");
   await expect(page.locator("#credit-card-cycles-body")).toContainText("2026-03-30");
 
-  const cycleRow = page.locator("#credit-card-cycles-body tr", { hasText: "2026-03-20" });
-  await cycleRow.locator('button[data-action="balances"]').click();
+  await page.locator('[data-credit-card-tab="balances"]').click();
+  await page.getByRole("button", { name: "Create credit card cycle balance" }).click();
 
   const balanceForm = page.locator("#credit-card-cycle-balance-form");
+  await selectOptionContaining(balanceForm.getByLabel("Cycle"), "2026-03-20");
   await balanceForm.getByLabel("Currency").selectOption({ label: "USD (US Dollar)" });
   await balanceForm.getByLabel("Balance").fill("450.75");
   await balanceForm.getByLabel("Paid").setChecked(false);
@@ -82,7 +90,7 @@ test("credit card cycle CRUD flow works end-to-end", async ({ page }) => {
   await expect(page.locator("#credit-card-cycle-balances-body")).toContainText("450.75");
 
   const balanceRow = page.locator("#credit-card-cycle-balances-body tr", { hasText: "450.75" });
-  await balanceRow.locator('button[data-balance-action="edit"]').click();
+  await balanceRow.locator('button[data-action="edit"]').click();
   await expect(page.locator("#credit-card-cycle-balance-submit-button")).toHaveText("Update");
 
   await balanceForm.getByLabel("Balance").fill("210.5");
@@ -94,10 +102,11 @@ test("credit card cycle CRUD flow works end-to-end", async ({ page }) => {
   await expect(page.locator("#credit-card-cycle-balances-body")).toContainText("Yes");
 
   const updatedBalanceRow = page.locator("#credit-card-cycle-balances-body tr", { hasText: "210.5" });
-  await updatedBalanceRow.locator('button[data-balance-action="delete"]').click();
+  await updatedBalanceRow.locator('button[data-action="delete"]').click();
   await expect(page.locator("#credit-card-cycle-balance-form-message")).toHaveText("Credit card cycle balance deleted");
-  await expect(page.locator("#credit-card-cycle-balances-body")).toContainText("No cycle balances yet");
+  await expect(page.locator("#credit-card-cycle-balances-body")).toContainText("No credit card cycle balances yet");
 
+  await page.locator('[data-credit-card-tab="cycles"]').click();
   const initialRow = page.locator("#credit-card-cycles-body tr", { hasText: "2026-03-20" });
   await initialRow.locator('button[data-action="edit"]').click();
   await expect(page.locator("#credit-card-cycle-submit-button")).toHaveText("Update");
@@ -125,6 +134,7 @@ test("credit card cycle validates due date is on or after closing date", async (
   await openApp(page);
 
   await openSettingsSection(page, "Banks");
+  await page.getByRole("button", { name: "Create bank" }).click();
   const bankForm = page.locator("#bank-form");
   await bankForm.getByLabel("Name").fill(bankName);
   await bankForm.getByLabel("Country").selectOption("US");
@@ -132,13 +142,16 @@ test("credit card cycle validates due date is on or after closing date", async (
   await expect(page.locator("#bank-form-message")).toHaveText("Bank created");
 
   await openSettingsSection(page, "People");
-  const peopleForm = page.locator("#people-form");
+  await page.getByRole("button", { name: "Create person" }).click();
+  const peopleForm = page.locator("#person-form");
   await peopleForm.getByLabel("Name").fill(personName);
   await peopleForm.getByRole("button", { name: "Create" }).click();
   await expect(page.locator("#person-form-message")).toHaveText("Person created");
 
   await page.getByRole("button", { name: "Credit Cards" }).click();
   await page.locator('[data-credit-card-tab="cards"]').click();
+
+  await page.getByRole("button", { name: "Create credit card" }).click();
 
   const creditCardForm = page.locator("#credit-card-form");
   await creditCardForm.getByLabel("Bank").selectOption({ label: `${bankName} (US)` });
@@ -150,6 +163,8 @@ test("credit card cycle validates due date is on or after closing date", async (
 
   await page.locator('[data-credit-card-tab="cycles"]').click();
 
+  await page.getByRole("button", { name: "Create credit card cycle" }).click();
+
   const cycleForm = page.locator("#credit-card-cycle-form");
   await selectOptionContaining(cycleForm.getByLabel("Credit Card"), cardNumber);
   await cycleForm.getByLabel("Closing Date").fill("2026-08-20");
@@ -157,6 +172,6 @@ test("credit card cycle validates due date is on or after closing date", async (
   await cycleForm.getByRole("button", { name: "Create" }).click();
 
   await expect(page.locator("#credit-card-cycle-form-message")).toHaveText("due_date must be on or after closing_date");
-  await expect(page.locator("#credit-card-cycle-form-message")).toHaveClass(/error/);
+  await expect(page.locator("#credit-card-cycle-form-toast")).toHaveClass(/danger/);
   await expect(page.locator("#credit-card-cycles-body")).toContainText("No credit card cycles yet");
 });

@@ -1,8 +1,28 @@
+:root {
+  --app-color-primary: #0d9488;
+  --app-color-primary-rgb: 13, 148, 136;
+  --app-color-transactions-primary: #b45309;
+  --app-color-credit-cards-primary: #b45309;
+  --app-color-expenses-primary: #b45309;
+  --app-color-settings-primary: #b45309;
+  --app-color-background: #f5f5f5;
+  --app-color-surface: #ffffff;
+  --app-color-text: #222222;
+  --app-color-border: #dddddd;
+  --app-color-border-strong: #cccccc;
+  --app-color-muted-surface: #eeeeee;
+  --app-color-error: #b00020;
+  --app-color-success: #0a7a2d;
+
+  --bs-primary: var(--app-color-primary);
+  --bs-primary-rgb: var(--app-color-primary-rgb);
+}
+
 body {
   margin: 0;
   font-family: Arial, Helvetica, sans-serif;
-  background: #f5f5f5;
-  color: #222;
+  background: var(--app-color-background);
+  color: var(--app-color-text);
   padding-bottom: 96px;
 }
 
@@ -10,8 +30,8 @@ main {
   max-width: 1080px;
   margin: 64px auto;
   padding: 24px;
-  background: #fff;
-  border: 1px solid #ddd;
+  background: var(--app-color-surface);
+  border: 1px solid var(--app-color-border);
   border-radius: 8px;
 }
 
@@ -19,19 +39,69 @@ section {
   margin-top: 24px;
 }
 
-.tabs {
-  margin-top: 16px;
-  display: flex;
-  gap: 8px;
+nav[aria-label="Views"],
+nav[aria-label="Credit Cards Views"],
+nav[aria-label="Expenses Views"],
+nav[aria-label="Settings Views"] {
+  --bs-nav-pills-link-active-color: #ffffff;
 }
 
-.tab-button {
-  border: 1px solid #ccc;
-  background: #fff;
+nav[aria-label="Views"] {
+  --bs-nav-pills-link-active-bg: var(--app-color-primary);
 }
 
-.tab-button.active {
-  background: #eee;
+nav[aria-label="Transactions Views"] {
+  --bs-nav-pills-link-active-bg: var(--app-color-transactions-primary);
+}
+
+nav[aria-label="Credit Cards Views"] {
+  --bs-nav-pills-link-active-bg: var(--app-color-credit-cards-primary);
+}
+
+nav[aria-label="Expenses Views"] {
+  --bs-nav-pills-link-active-bg: var(--app-color-expenses-primary);
+}
+
+nav[aria-label="Settings Views"] {
+  --bs-nav-pills-link-active-bg: var(--app-color-settings-primary);
+}
+
+nav[aria-label="Views"] .nav-link {
+  color: var(--app-color-text);
+}
+
+nav[aria-label="Views"] .nav-link:not(.active):hover,
+nav[aria-label="Views"] .nav-link:not(.active):focus {
+  color: var(--app-color-text);
+}
+
+nav[aria-label="Views"] .nav-link.active {
+  color: #ffffff;
+}
+
+nav[aria-label="Transactions Views"] .nav-link,
+nav[aria-label="Credit Cards Views"] .nav-link,
+nav[aria-label="Expenses Views"] .nav-link,
+nav[aria-label="Settings Views"] .nav-link {
+  color: var(--app-color-text);
+}
+
+nav[aria-label="Transactions Views"] .nav-link:not(.active):hover,
+nav[aria-label="Transactions Views"] .nav-link:not(.active):focus,
+nav[aria-label="Credit Cards Views"] .nav-link:not(.active):hover,
+nav[aria-label="Credit Cards Views"] .nav-link:not(.active):focus,
+nav[aria-label="Expenses Views"] .nav-link:not(.active):hover,
+nav[aria-label="Expenses Views"] .nav-link:not(.active):focus,
+nav[aria-label="Settings Views"] .nav-link:not(.active):hover,
+nav[aria-label="Settings Views"] .nav-link:not(.active):focus {
+  color: var(--app-color-text);
+}
+
+nav[aria-label="Transactions Views"] .nav-link.active,
+nav[aria-label="Credit Cards Views"] .nav-link.active,
+nav[aria-label="Expenses Views"] .nav-link.active,
+nav[aria-label="Settings Views"] .nav-link.active {
+  color: #ffffff;
 }
 
 .view[hidden],
@@ -82,12 +152,12 @@ table {
 
 th,
 td {
-  border: 1px solid #ddd;
+  border: 1px solid var(--app-color-border);
   padding: 8px;
   text-align: left;
 }
 
-#form-message,
+#currency-form-message,
 #bank-form-message,
 #bank-account-form-message,
 #transaction-category-form-message,
@@ -98,16 +168,17 @@ td {
 #credit-card-subscription-form-message,
 #credit-card-cycle-form-message,
 #credit-card-cycle-balance-form-message,
-#expense-form-message {
+#expense-form-message,
+#expense-payment-form-message {
   min-height: 20px;
 }
 
 .error {
-  color: #b00020;
+  color: var(--app-color-error);
 }
 
 .success {
-  color: #0a7a2d;
+  color: var(--app-color-success);
 }
 
 .creator-credit {
@@ -118,8 +189,8 @@ td {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  background: #fff;
-  border: 1px solid #ddd;
+  background: var(--app-color-surface);
+  border: 1px solid var(--app-color-border);
   border-radius: 999px;
   padding: 8px 14px;
   font-size: 14px;

@@ -19,7 +19,8 @@
    *   getPeople: () => any[],
    *   getCreditCards: () => any[],
    *   setCreditCards: (items: any[]) => void,
-   *   onCreditCardsChanged?: () => Promise<void>
+   *   onCreditCardsChanged?: () => Promise<void>,
+   *   generateActionsCell: (item: any) => string
    * }} config
    * @returns {{load: Function, render: Function, onSubmit: Function, onRowAction: Function, resetForm: Function, setMessage: Function, populateBankOptions: Function, populatePersonOptions: Function}}
    */
@@ -34,18 +35,23 @@
       getCreditCards,
       setCreditCards,
       onCreditCardsChanged,
+      generateActionsCell,
     } = config;
 
-    function setMessage(message, isError) {
-      elements.messageElement.textContent = message;
-      elements.messageElement.className = isError ? "error" : "success";
-    }
+    const {
+      setMessage,
+      showModal,
+      hideModal,
+      initModalBindings,
+    } = globalScope.createUIFeedback({ elements, globalScope });
 
     function resetForm() {
       elements.formElement.reset();
       elements.idElement.value = "";
       elements.submitButtonElement.textContent = "Create";
-      elements.cancelButtonElement.hidden = true;
+      if (elements.modalTitleElement) {
+        elements.modalTitleElement.textContent = "Create credit card";
+      }
       populateBankOptions();
       populatePersonOptions();
     }
@@ -90,10 +96,7 @@
           <td>${escapeHtml(formatPersonLabel(creditCard.person_id))}</td>
           <td>${escapeHtml(creditCard.number)}</td>
           <td>${escapeHtml(creditCard.name || "—")}</td>
-          <td>
-            <button type="button" data-action="edit" data-id="${creditCard.id}">Edit</button>
-            <button type="button" data-action="delete" data-id="${creditCard.id}">Delete</button>
-          </td>
+          ${generateActionsCell(creditCard)}
         `;
         elements.bodyElement.appendChild(row);
       }
@@ -142,6 +145,8 @@
     }
 
     async function load() {
+      initModalBindings(resetForm);
+
       try {
         const creditCards = await apiRequest("/api/credit-cards", { method: "GET" });
         setCreditCards(creditCards);
@@ -182,6 +187,7 @@
           setMessage("Credit card created", false);
         }
 
+        hideModal();
         resetForm();
         await load();
       } catch (error) {
@@ -220,7 +226,10 @@
         elements.nameElement.value = creditCard.name || "";
         elements.submitButtonElement.textContent = "Update";
         elements.cancelButtonElement.hidden = false;
-        setMessage(`Editing credit card #${creditCard.id}`, false);
+        if (elements.modalTitleElement) {
+          elements.modalTitleElement.textContent = "Edit credit card";
+        }
+        showModal();
         return;
       }
 

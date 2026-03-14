@@ -7,25 +7,14 @@ const {
 } = require("../helpers.js");
 
 function handleCreditCardCycleBalancesByID(pathname, method, options, stores) {
-  const byIDMatch = pathname.match(/^\/api\/credit-card-cycles\/(\d+)\/balances\/(\d+)$/);
+  const byIDMatch = pathname.match(/^\/api\/credit-card-cycle-balances\/(\d+)$/);
   if (!byIDMatch) {
     return null;
   }
 
-  const cycleID = Number(byIDMatch[1]);
-  const balanceID = Number(byIDMatch[2]);
+  const balanceID = Number(byIDMatch[1]);
 
-  const index = stores.creditCardCycleBalancesStore.findIndex(
-    (item) => item.id === balanceID && item.credit_card_cycle_id === cycleID
-  );
-
-  if (method === "GET") {
-    if (index === -1) {
-      return notFound("credit card cycle balance not found");
-    }
-
-    return createResponse(200, { ...stores.creditCardCycleBalancesStore[index] });
-  }
+  const index = stores.creditCardCycleBalancesStore.findIndex((item) => item.id === balanceID);
 
   if (method === "PUT") {
     if (index === -1) {
@@ -50,9 +39,6 @@ function handleCreditCardCycleBalancesByID(pathname, method, options, stores) {
 
     if (!Number.isInteger(creditCardCycleID) || creditCardCycleID <= 0) {
       return invalidPayload("credit_card_cycle_id must be a positive integer");
-    }
-    if (creditCardCycleID !== cycleID) {
-      return invalidPayload("credit_card_cycle_id must match route id");
     }
     if (!Number.isInteger(currencyID) || currencyID <= 0) {
       return invalidPayload("currency_id must be a positive integer");

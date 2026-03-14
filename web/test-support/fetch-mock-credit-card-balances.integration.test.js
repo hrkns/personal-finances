@@ -51,7 +51,7 @@ test("fetch mock defaults omitted balance and paid on cycle balance create", asy
   const fetchMock = createFetchMock();
   await seedCreditCardCycleDependencies(fetchMock);
 
-  const createResponse = await postJson(fetchMock, "/api/credit-card-cycles/1/balances", {
+  const createResponse = await postJson(fetchMock, "/api/credit-card-cycle-balances", {
     credit_card_cycle_id: 1,
     currency_id: 1,
   });
@@ -66,7 +66,7 @@ test("fetch mock defaults omitted balance and paid on cycle balance update", asy
   const fetchMock = createFetchMock();
   await seedCreditCardCycleDependencies(fetchMock);
 
-  const createResponse = await postJson(fetchMock, "/api/credit-card-cycles/1/balances", {
+  const createResponse = await postJson(fetchMock, "/api/credit-card-cycle-balances", {
     credit_card_cycle_id: 1,
     currency_id: 1,
     balance: 123.45,
@@ -74,7 +74,7 @@ test("fetch mock defaults omitted balance and paid on cycle balance update", asy
   });
   assert.equal(createResponse.status, 201);
 
-  const updateResponse = await putJson(fetchMock, "/api/credit-card-cycles/1/balances/1", {
+  const updateResponse = await putJson(fetchMock, "/api/credit-card-cycle-balances/1", {
     credit_card_cycle_id: 1,
     currency_id: 1,
   });
@@ -83,4 +83,25 @@ test("fetch mock defaults omitted balance and paid on cycle balance update", asy
   const updated = await parseJson(updateResponse);
   assert.equal(updated.balance, 0);
   assert.equal(updated.paid, false);
+});
+
+test("fetch mock can list all cycle balances through global endpoint", async () => {
+  const fetchMock = createFetchMock();
+  await seedCreditCardCycleDependencies(fetchMock);
+
+  const createResponse = await postJson(fetchMock, "/api/credit-card-cycle-balances", {
+    credit_card_cycle_id: 1,
+    currency_id: 1,
+    balance: 12.34,
+    paid: false,
+  });
+  assert.equal(createResponse.status, 201);
+
+  const globalListResponse = await fetchMock("/api/credit-card-cycle-balances", { method: "GET" });
+  assert.equal(globalListResponse.status, 200);
+
+  const items = await parseJson(globalListResponse);
+  assert.equal(items.length, 1);
+  assert.equal(items[0].credit_card_cycle_id, 1);
+  assert.equal(items[0].currency_id, 1);
 });

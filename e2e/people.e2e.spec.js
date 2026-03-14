@@ -9,13 +9,14 @@ test("people CRUD flow works end-to-end", async ({ page }) => {
   const suffix = uniqueSuffix();
   const initialName = `Person ${suffix}`;
   const updatedName = `Person Updated ${suffix}`;
-  const personForm = page.locator("#people-form");
+  const peopleForm = page.locator("#person-form");
 
   await openApp(page);
   await openSettingsSection(page, "People");
+  await page.getByRole("button", { name: "Create person" }).click();
 
-  await personForm.getByLabel("Name").fill(initialName);
-  await personForm.getByRole("button", { name: "Create" }).click();
+  await peopleForm.getByLabel("Name").fill(initialName);
+  await peopleForm.getByRole("button", { name: "Create" }).click();
 
   await expect(page.locator("#person-form-message")).toHaveText("Person created");
   await expect(page.locator("#people-body")).toContainText(initialName);
@@ -24,8 +25,8 @@ test("people CRUD flow works end-to-end", async ({ page }) => {
   await initialRow.locator('button[data-action="edit"]').click();
   await expect(page.locator("#person-submit-button")).toHaveText("Update");
 
-  await personForm.getByLabel("Name").fill(updatedName);
-  await personForm.getByRole("button", { name: "Update" }).click();
+  await peopleForm.getByLabel("Name").fill(updatedName);
+  await peopleForm.getByRole("button", { name: "Update" }).click();
 
   await expect(page.locator("#person-form-message")).toHaveText("Person updated");
   await expect(page.locator("#people-body")).toContainText(updatedName);
@@ -37,14 +38,15 @@ test("people CRUD flow works end-to-end", async ({ page }) => {
 });
 
 test("blank person name shows validation message", async ({ page }) => {
-  const personForm = page.locator("#people-form");
+  const peopleForm = page.locator("#person-form");
 
   await openApp(page);
   await openSettingsSection(page, "People");
+  await page.getByRole("button", { name: "Create person" }).click();
 
-  await personForm.getByLabel("Name").fill("    ");
-  await personForm.getByRole("button", { name: "Create" }).click();
+  await peopleForm.getByLabel("Name").fill("    ");
+  await peopleForm.getByRole("button", { name: "Create" }).click();
 
   await expect(page.locator("#person-form-message")).toHaveText("name is required");
-  await expect(page.locator("#person-form-message")).toHaveClass(/error/);
+  await expect(page.locator("#person-form-toast")).toHaveClass(/danger/);
 });

@@ -99,7 +99,7 @@ Run both frontend unit and integration tests:
 npm run test:frontend
 ```
 
-## Frontend E2E (Playwright)
+## E2E (Playwright)
 
 Install browser binaries once:
 
@@ -110,31 +110,27 @@ npx playwright install chromium
 Run E2E tests:
 
 ```bash
-npm run test:frontend:e2e
+npm run test:e2e
 ```
 
 If needed, override the E2E server port (default: `19777`):
 
 ```bash
-PLAYWRIGHT_E2E_PORT=19888 npm run test:frontend:e2e
+PLAYWRIGHT_E2E_PORT=19888 npm run test:e2e
 ```
 
 E2E details:
 
 - Spins up app with `go run .`
 - Uses isolated sqlite database via `DATABASE_PATH`
-- Covers browser-level Transactions, Transaction Categories, People, Currency, Banks, Bank Accounts, and Credit Cards flows
-- Covers browser-level Expenses CRUD flow
-- Covers browser-level Expense Payments CRUD and period-conflict flow
-- Covers browser-level Credit Card Subscriptions CRUD flow
-- Covers browser-level management of currencies assigned to each credit card inside Credit Cards view
+- Covers browser-level Transactions, Transaction Categories, Currency, People, Banks, Bank Account, Expenses and Credit Cards flows
 - Verifies conflict scenarios and UI messages
 
 ## Typical Local Validation Order
 
 1. `npm run lint`
-2. `go test ./...`
+2. `npm run test:backend`
 3. `npm run test:frontend`
-4. `npm run test:frontend:e2e`
+4. `npm run test:e2e`
 
 This order gives quick backend/frontend feedback before browser-level E2E.

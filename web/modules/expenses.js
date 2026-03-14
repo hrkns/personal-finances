@@ -16,7 +16,9 @@
    *   normalizeExpenseInput: (name: string, frequency: string) => object,
    *   escapeHtml: (value: any) => string,
    *   getExpenses: () => any[],
-   *   setExpenses: (items: any[]) => void
+   *   setExpenses: (items: any[]) => void,
+   *   onExpensesChanged?: () => Promise<void>,
+   *   generateActionsCell: (item: any) => string
    * }} config
    * @returns {{load: Function, render: Function, onSubmit: Function, onRowAction: Function, resetForm: Function, setMessage: Function}}
    */
@@ -29,18 +31,23 @@
       getExpenses,
       setExpenses,
       onExpensesChanged = () => {},
+      generateActionsCell,
     } = config;
 
-    function setMessage(message, isError) {
-      elements.messageElement.textContent = message;
-      elements.messageElement.className = isError ? "error" : "success";
-    }
+    const {
+      setMessage,
+      showModal,
+      hideModal,
+      initModalBindings,
+    } = globalScope.createUIFeedback({ elements, globalScope });
 
     function resetForm() {
       elements.formElement.reset();
       elements.idElement.value = "";
       elements.submitButtonElement.textContent = "Create";
-      elements.cancelButtonElement.hidden = true;
+      if (elements.modalTitleElement) {
+        elements.modalTitleElement.textContent = "Create expense";
+      }
     }
 
     function render() {
@@ -63,10 +70,7 @@
           <td>${expense.id}</td>
           <td>${escapeHtml(expense.name)}</td>
           <td>${escapeHtml(expense.frequency)}</td>
-          <td>
-            <button type="button" data-action="edit" data-id="${expense.id}">Edit</button>
-            <button type="button" data-action="delete" data-id="${expense.id}">Delete</button>
-          </td>
+          ${generateActionsCell(expense)}
         `;
         elements.bodyElement.appendChild(row);
       }
@@ -77,6 +81,8 @@
     }
 
     async function load() {
+      initModalBindings(resetForm);
+
       try {
         const expenses = await apiRequest("/api/expenses", { method: "GET" });
         setExpenses(expenses);
@@ -108,6 +114,7 @@
           setMessage("Expense created", false);
         }
 
+        hideModal();
         resetForm();
         await load();
       } catch (error) {
@@ -144,7 +151,10 @@
         elements.frequencyElement.value = expense.frequency;
         elements.submitButtonElement.textContent = "Update";
         elements.cancelButtonElement.hidden = false;
-        setMessage(`Editing expense #${expense.id}`, false);
+        if (elements.modalTitleElement) {
+          elements.modalTitleElement.textContent = "Edit expense";
+        }
+        showModal();
         return;
       }
 

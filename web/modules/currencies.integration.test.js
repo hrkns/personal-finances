@@ -18,7 +18,7 @@ test("frontend can create and list a currency", async () => {
   await new Promise((resolve) => setTimeout(resolve, 0));
   await new Promise((resolve) => setTimeout(resolve, 0));
 
-  const message = document.getElementById("form-message").textContent;
+  const message = document.getElementById("currency-form-message").textContent;
   const rowsText = document.getElementById("currencies-body").textContent;
 
   assert.equal(message, "Currency created");
@@ -43,7 +43,8 @@ test("frontend supports edit and delete actions", async () => {
   const editButton = document.querySelector('button[data-action="edit"]');
   editButton.dispatchEvent(new window.Event("click", { bubbles: true }));
 
-  assert.equal(document.getElementById("submit-button").textContent, "Update");
+  assert.equal(document.getElementById("currency-submit-button").textContent, "Update");
+  assert.equal(document.getElementById("currency-cancel-button").hidden, false);
   assert.equal(document.getElementById("currency-name").value, "Euro");
 
   document.getElementById("currency-name").value = "Euro Updated";
@@ -89,7 +90,7 @@ test("frontend shows error message on duplicate currency conflict", async () => 
   await new Promise((resolve) => setTimeout(resolve, 0));
   await new Promise((resolve) => setTimeout(resolve, 0));
 
-  const message = document.getElementById("form-message");
+  const message = document.getElementById("currency-form-message");
   assert.equal(message.textContent, "name and code must be unique");
   assert.equal(message.className, "error");
 

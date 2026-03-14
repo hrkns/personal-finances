@@ -1,8 +1,9 @@
 (function initFrontendRouter(globalScope) {
   const validRoutes = new Set(["home", "transactions", "credit-cards", "expenses", "settings"]);
-  const validSettingsSections = new Set(["transaction-categories", "people", "bank-accounts", "banks", "currency"]);
-  const validCreditCardSections = new Set(["cards", "cycles", "installments", "subscriptions"]);
+  const validTransactionSections = new Set(["list", "transaction-categories"]);
+  const validCreditCardSections = new Set(["cards", "cycles", "balances", "installments", "subscriptions"]);
   const validExpenseSections = new Set(["expenses", "payments"]);
+  const validSettingsSections = new Set(["currencies", "people", "banks", "bank-accounts"]);
 
   function normalizeRoute(route) {
     return String(route ?? "").trim().toLowerCase();
@@ -28,6 +29,17 @@
 
     const section = normalizeRoute(sectionParam);
     return validSettingsSections.has(section) ? section : null;
+  }
+
+  function readTransactionSectionFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    const sectionParam = params.get("transactions");
+    if (!sectionParam) {
+      return null;
+    }
+
+    const section = normalizeRoute(sectionParam);
+    return validTransactionSections.has(section) ? section : null;
   }
 
   function readCreditCardSectionFromURL() {
@@ -71,6 +83,17 @@
       url.searchParams.delete("settings");
     }
 
+    if (route === "transactions") {
+      const requestedSection = normalizeRoute(options.transactionSection);
+      if (validTransactionSections.has(requestedSection)) {
+        url.searchParams.set("transactions", requestedSection);
+      } else {
+        url.searchParams.delete("transactions");
+      }
+    } else {
+      url.searchParams.delete("transactions");
+    }
+
     if (route === "credit-cards") {
       const requestedSection = normalizeRoute(options.creditCardSection);
       if (validCreditCardSections.has(requestedSection)) {
@@ -96,10 +119,10 @@
     return `${url.pathname}${url.search}${url.hash}`;
   }
 
-  function dispatchRouteChange(route, settingsSection, creditCardSection, expenseSection) {
+  function dispatchRouteChange(route, settingsSection, transactionSection, creditCardSection, expenseSection) {
     window.dispatchEvent(
       new CustomEvent("app:route-changed", {
-        detail: { route, settingsSection, creditCardSection, expenseSection },
+        detail: { route, settingsSection, transactionSection, creditCardSection, expenseSection },
       })
     );
   }
@@ -107,10 +130,10 @@
   function navigate(route, options = {}) {
     const normalized = normalizeRoute(route);
     const targetRoute = validRoutes.has(normalized) ? normalized : "home";
-    const targetSettingsSection = targetRoute === "settings"
-      ? (validSettingsSections.has(normalizeRoute(options.settingsSection))
-        ? normalizeRoute(options.settingsSection)
-        : null)
+    const targetTransactionSection = targetRoute === "transactions"
+      ? (validTransactionSections.has(normalizeRoute(options.transactionSection))
+        ? normalizeRoute(options.transactionSection)
+        : "list")
       : null;
     const targetCreditCardSection = targetRoute === "credit-cards"
       ? (validCreditCardSections.has(normalizeRoute(options.creditCardSection))
@@ -122,8 +145,14 @@
         ? normalizeRoute(options.expenseSection)
         : "expenses")
       : null;
+    const targetSettingsSection = targetRoute === "settings"
+      ? (validSettingsSections.has(normalizeRoute(options.settingsSection))
+        ? normalizeRoute(options.settingsSection)
+        : "currencies")
+      : null;
     const targetURL = buildURLForRoute(targetRoute, {
       settingsSection: targetSettingsSection,
+      transactionSection: targetTransactionSection,
       creditCardSection: targetCreditCardSection,
       expenseSection: targetExpenseSection,
     });
@@ -133,10 +162,11 @@
       window.history[method]({}, "", targetURL);
     }
 
-    dispatchRouteChange(targetRoute, targetSettingsSection, targetCreditCardSection, targetExpenseSection);
+    dispatchRouteChange(targetRoute, targetSettingsSection, targetTransactionSection, targetCreditCardSection, targetExpenseSection);
     return {
       route: targetRoute,
       settingsSection: targetSettingsSection,
+      transactionSection: targetTransactionSection,
       creditCardSection: targetCreditCardSection,
       expenseSection: targetExpenseSection,
     };
@@ -145,6 +175,26 @@
   function ensureValidRoute() {
     const route = readRouteFromURL();
     if (route) {
+      if (route === "transactions") {
+        const params = new URLSearchParams(window.location.search);
+        if (!params.has("transactions")) {
+          return navigate("transactions", { replace: true, transactionSection: "list" });
+        }
+
+        const transactionSection = readTransactionSectionFromURL();
+        if (transactionSection) {
+          return {
+            route,
+            settingsSection: null,
+            transactionSection,
+            creditCardSection: null,
+            expenseSection: null,
+          };
+        }
+
+        return navigate("transactions", { replace: true, transactionSection: "list" });
+      }
+
       if (route === "credit-cards") {
         const params = new URLSearchParams(window.location.search);
         if (!params.has("creditCards")) {
@@ -153,7 +203,7 @@
 
         const creditCardSection = readCreditCardSectionFromURL();
         if (creditCardSection) {
-          return { route, settingsSection: null, creditCardSection, expenseSection: null };
+          return { route, settingsSection: null, transactionSection: null, creditCardSection, expenseSection: null };
         }
 
         return navigate("credit-cards", { replace: true, creditCardSection: "cards" });
@@ -167,33 +217,37 @@
 
         const expenseSection = readExpenseSectionFromURL();
         if (expenseSection) {
-          return { route, settingsSection: null, creditCardSection: null, expenseSection };
+          return { route, settingsSection: null, transactionSection: null, creditCardSection: null, expenseSection };
         }
 
         return navigate("expenses", { replace: true, expenseSection: "expenses" });
       }
 
-      if (route !== "settings") {
-        return { route, settingsSection: null, creditCardSection: null, expenseSection: null };
+      if (route === "settings") {
+        const params = new URLSearchParams(window.location.search);
+        if (!params.has("settings")) {
+          return navigate("settings", { replace: true, settingsSection: "currencies" });
+        }
+
+        const settingsSection = readSettingsSectionFromURL();
+        if (settingsSection) {
+          return { route, settingsSection, transactionSection: null, creditCardSection: null, expenseSection: null };
+        }
+
+        return navigate("settings", { replace: true, settingsSection: "currencies" });
       }
 
-      const params = new URLSearchParams(window.location.search);
-      if (!params.has("settings")) {
-        return { route, settingsSection: null, creditCardSection: null, expenseSection: null };
-      }
-
-      const settingsSection = readSettingsSectionFromURL();
-      if (settingsSection) {
-        return { route, settingsSection, creditCardSection: null, expenseSection: null };
-      }
-
-      return navigate("settings", { replace: true });
+      return { route, settingsSection: null, transactionSection: null, creditCardSection: null, expenseSection: null };
     }
 
     const rawRoute = readRawRouteFromURL();
 
     if (validSettingsSections.has(rawRoute)) {
       return navigate("settings", { replace: true, settingsSection: rawRoute });
+    }
+
+    if (rawRoute === "transaction-categories") {
+      return navigate("transactions", { replace: true, transactionSection: rawRoute });
     }
 
     return navigate("home", { replace: true });
@@ -208,6 +262,7 @@
       callback({
         route: event.detail.route,
         settingsSection: event.detail.settingsSection || null,
+        transactionSection: event.detail.transactionSection || null,
         creditCardSection: event.detail.creditCardSection || null,
         expenseSection: event.detail.expenseSection || null,
       });
@@ -225,6 +280,7 @@
   const exported = {
     validRoutes: [...validRoutes],
     validSettingsSections: [...validSettingsSections],
+    validTransactionSections: [...validTransactionSections],
     validCreditCardSections: [...validCreditCardSections],
     validExpenseSections: [...validExpenseSections],
     navigate,

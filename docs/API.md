@@ -1,22 +1,74 @@
 # REST API Documentation
 
-This API documentation is split by topic for easier navigation and maintenance.
+## API Overview
+
+### Base URL
+
+For local development:
+
+- `http://localhost:8080`
+
+All API endpoints are under:
+
+- `/api/*`
+
+### Content Type
+
+- Requests with body: `Content-Type: application/json`
+- Responses: `application/json` (except `204 No Content`)
+
+### Error Response Format
+
+All validation and business errors use this shape:
+
+```json
+{
+  "error": {
+    "code": "string_code",
+    "message": "human readable message"
+  }
+}
+```
+
+Common HTTP status usage:
+
+- `200 OK`: successful read/update
+- `201 Created`: successful creation
+- `204 No Content`: successful delete
+- `400 Bad Request`: invalid payload/path id/invalid country
+- `404 Not Found`: resource not found
+- `405 Method Not Allowed`: wrong HTTP method
+- `409 Conflict`: unique constraint violation
+- `500 Internal Server Error`: unexpected internal failure
+
+## Health API
+
+### `GET /api/health`
+
+Checks backend availability.
+
+#### Success (`200 OK`)
+
+```json
+{
+  "status": "ok",
+  "message": "backend is up"
+}
+```
 
 ## Index
 
-- [Overview](api/00-overview.md)
-- [Health](api/01-health.md)
-- [Countries](api/02-countries.md)
-- [People](api/03-people.md)
-- [Currencies](api/04-currencies.md)
-- [Banks](api/05-banks.md)
-- [Bank Accounts](api/06-bank-accounts.md)
-- [Transaction Categories](api/07-transaction-categories.md)
-- [Transactions](api/08-transactions.md)
-- [Credit Cards](api/09-credit-cards.md)
-- [Credit Card Cycles](api/10-credit-card-cycles.md)
-- [Credit Card Cycle Balances](api/11-credit-card-cycle-balances.md)
-- [Credit Card Installments](api/12-credit-card-installments.md)
-- [Credit Card Subscriptions](api/13-credit-card-subscriptions.md)
-- [Expenses](api/14-expenses.md)
-- [Expense Payments](api/15-expense-payments.md)
+- [Countries](api/countries.md)
+- [Currencies](api/currencies.md)
+- [People](api/people.md)
+- [Banks](api/banks.md)
+- [Bank Accounts](api/bank-accounts.md)
+- [Transaction Categories](api/transaction-categories.md)
+- [Transactions](api/transactions.md)
+- [Credit Cards](api/credit-cards.md)
+- [Credit Card Cycles](api/credit-card-cycles.md)
+- [Credit Card Cycle Balances](api/credit-card-cycle-balances.md)
+- [Credit Card Installments](api/credit-card-installments.md)
+- [Credit Card Subscriptions](api/credit-card-subscriptions.md)
+- [Expenses](api/expenses.md)
+- [Expense Payments](api/expense-payments.md)

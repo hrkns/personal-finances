@@ -12,11 +12,12 @@
    * @param {{
    *   tabButtonElements: NodeListOf<Element>,
    *   settingsTabButtonElements: NodeListOf<Element>,
+  *   transactionTabButtonElements: NodeListOf<Element>,
    *   creditCardTabButtonElements: NodeListOf<Element>,
    *   expenseTabButtonElements: NodeListOf<Element>,
-   *   settingsSelectionMessageElement: HTMLElement,
    *   views: object,
    *   settingsViews: object,
+  *   transactionViews: object,
    *   creditCardViews: object,
    *   expenseViews: object,
    *   frontendRouter: object
@@ -27,11 +28,12 @@
     const {
       tabButtonElements,
       settingsTabButtonElements,
+      transactionTabButtonElements,
       creditCardTabButtonElements,
       expenseTabButtonElements,
-      settingsSelectionMessageElement,
       views,
       settingsViews,
+      transactionViews,
       creditCardViews,
       expenseViews,
       frontendRouter,
@@ -42,6 +44,7 @@
         return {
           route: routeState,
           settingsSection: null,
+          transactionSection: null,
           creditCardSection: null,
           expenseSection: null,
         };
@@ -50,6 +53,7 @@
       return {
         route: routeState?.route || "home",
         settingsSection: routeState?.settingsSection || null,
+        transactionSection: routeState?.transactionSection || null,
         creditCardSection: routeState?.creditCardSection || null,
         expenseSection: routeState?.expenseSection || null,
       };
@@ -59,6 +63,7 @@
       const state = normalizeRouteState(routeState);
       const activeRoute = state.route;
       const activeSettingsSection = state.settingsSection;
+      const activeTransactionSection = state.transactionSection;
       const activeCreditCardSection = state.creditCardSection;
       const activeExpenseSection = state.expenseSection;
 
@@ -68,23 +73,23 @@
       views.expenses.hidden = activeRoute !== "expenses";
       views.settings.hidden = activeRoute !== "settings";
 
-      settingsViews.transactionCategories.hidden =
-        activeRoute !== "settings" || activeSettingsSection !== "transaction-categories";
       settingsViews.people.hidden = activeRoute !== "settings" || activeSettingsSection !== "people";
       settingsViews.bankAccounts.hidden = activeRoute !== "settings" || activeSettingsSection !== "bank-accounts";
       settingsViews.banks.hidden = activeRoute !== "settings" || activeSettingsSection !== "banks";
-      settingsViews.currency.hidden = activeRoute !== "settings" || activeSettingsSection !== "currency";
+      settingsViews.currency.hidden = activeRoute !== "settings" || activeSettingsSection !== "currencies";
+
+      transactionViews.list.hidden = activeRoute !== "transactions" || activeTransactionSection !== "list";
+      transactionViews.transactionCategories.hidden =
+        activeRoute !== "transactions" || activeTransactionSection !== "transaction-categories";
 
       creditCardViews.cards.hidden = activeRoute !== "credit-cards" || activeCreditCardSection !== "cards";
+      creditCardViews.balances.hidden = activeRoute !== "credit-cards" || activeCreditCardSection !== "balances";
       creditCardViews.installments.hidden = activeRoute !== "credit-cards" || activeCreditCardSection !== "installments";
       creditCardViews.cycles.hidden = activeRoute !== "credit-cards" || activeCreditCardSection !== "cycles";
       creditCardViews.subscriptions.hidden = activeRoute !== "credit-cards" || activeCreditCardSection !== "subscriptions";
 
       expenseViews.expenses.hidden = activeRoute !== "expenses" || activeExpenseSection !== "expenses";
       expenseViews.payments.hidden = activeRoute !== "expenses" || activeExpenseSection !== "payments";
-
-      settingsSelectionMessageElement.hidden =
-        activeRoute !== "settings" || Boolean(activeSettingsSection);
 
       tabButtonElements.forEach((button) => {
         const tabRoute = button.getAttribute("data-route-tab");
@@ -94,6 +99,11 @@
       settingsTabButtonElements.forEach((button) => {
         const section = button.getAttribute("data-settings-tab");
         button.classList.toggle("active", activeRoute === "settings" && section === activeSettingsSection);
+      });
+
+      transactionTabButtonElements.forEach((button) => {
+        const section = button.getAttribute("data-transactions-tab");
+        button.classList.toggle("active", activeRoute === "transactions" && section === activeTransactionSection);
       });
 
       creditCardTabButtonElements.forEach((button) => {
@@ -119,6 +129,13 @@
         button.addEventListener("click", () => {
           const settingsSection = button.getAttribute("data-settings-tab");
           frontendRouter.navigate("settings", { settingsSection });
+        });
+      });
+
+      transactionTabButtonElements.forEach((button) => {
+        button.addEventListener("click", () => {
+          const transactionSection = button.getAttribute("data-transactions-tab");
+          frontendRouter.navigate("transactions", { transactionSection });
         });
       });
 

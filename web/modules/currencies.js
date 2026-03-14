@@ -17,7 +17,8 @@
    *   escapeHtml: (value: any) => string,
    *   getCurrencies: () => any[],
    *   setCurrencies: (items: any[]) => void,
-   *   onCurrenciesChanged?: () => void
+   *   onCurrenciesChanged?: () => void,
+   *   generateActionsCell: (item: any) => string
    * }} config
    * @returns {{load: Function, render: Function, onSubmit: Function, onRowAction: Function, resetForm: Function, setMessage: Function}}
    */
@@ -30,18 +31,24 @@
       getCurrencies,
       setCurrencies,
       onCurrenciesChanged,
+      generateActionsCell,
     } = config;
 
-    function setMessage(message, isError) {
-      elements.messageElement.textContent = message;
-      elements.messageElement.className = isError ? "error" : "success";
-    }
+    const {
+      setMessage,
+      showModal,
+      hideModal,
+      initModalBindings,
+    } = globalScope.createUIFeedback({ elements, globalScope });
 
     function resetForm() {
       elements.formElement.reset();
       elements.idElement.value = "";
       elements.submitButtonElement.textContent = "Create";
       elements.cancelButtonElement.hidden = true;
+      if (elements.modalTitleElement) {
+        elements.modalTitleElement.textContent = "Create currency";
+      }
     }
 
     function render() {
@@ -64,10 +71,7 @@
           <td>${currency.id}</td>
           <td>${escapeHtml(currency.name)}</td>
           <td>${escapeHtml(currency.code)}</td>
-          <td>
-            <button type="button" data-action="edit" data-id="${currency.id}">Edit</button>
-            <button type="button" data-action="delete" data-id="${currency.id}">Delete</button>
-          </td>
+          ${generateActionsCell(currency)}
         `;
         elements.bodyElement.appendChild(row);
       }
@@ -78,6 +82,8 @@
     }
 
     async function load() {
+      initModalBindings(resetForm);
+
       try {
         const currencies = await apiRequest("/api/currencies", { method: "GET" });
         setCurrencies(currencies);
@@ -111,6 +117,7 @@
           setMessage("Currency created", false);
         }
 
+        hideModal();
         resetForm();
         await load();
       } catch (error) {
@@ -147,7 +154,10 @@
         elements.codeElement.value = currency.code;
         elements.submitButtonElement.textContent = "Update";
         elements.cancelButtonElement.hidden = false;
-        setMessage(`Editing currency #${currency.id}`, false);
+        if (elements.modalTitleElement) {
+          elements.modalTitleElement.textContent = "Edit currency";
+        }
+        showModal();
         return;
       }
 

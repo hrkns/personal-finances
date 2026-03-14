@@ -37,11 +37,12 @@ const appModules = createAppModules({
 const appRouting = createAppRouting({
   tabButtonElements: appDom.tabButtonElements,
   settingsTabButtonElements: appDom.settingsTabButtonElements,
+  transactionTabButtonElements: appDom.transactionTabButtonElements,
   creditCardTabButtonElements: appDom.creditCardTabButtonElements,
   expenseTabButtonElements: appDom.expenseTabButtonElements,
-  settingsSelectionMessageElement: appDom.settingsSelectionMessageElement,
   views: appDom.views,
   settingsViews: appDom.settingsViews,
+  transactionViews: appDom.transactionViews,
   creditCardViews: appDom.creditCardViews,
   expenseViews: appDom.expenseViews,
   frontendRouter,
@@ -120,12 +121,12 @@ async function init() {
   appDom.creditCardCycles.formElement.addEventListener("submit", appModules.creditCardCyclesModule.onSubmit);
   appDom.creditCardCycles.cancelButtonElement.addEventListener("click", appModules.creditCardCyclesModule.resetForm);
 
+  appDom.creditCardCycleBalances.formElement.addEventListener("submit", appModules.creditCardCycleBalancesModule.onSubmit);
+  appDom.creditCardCycleBalances.cancelButtonElement.addEventListener("click", appModules.creditCardCycleBalancesModule.resetForm);
+
   appDom.expenses.formElement.addEventListener("submit", appModules.expensesModule.onSubmit);
   appDom.expenses.cancelButtonElement.addEventListener("click", appModules.expensesModule.resetForm);
 
   appDom.expensePayments.formElement.addEventListener("submit", appModules.expensePaymentsModule.onSubmit);
   appDom.expensePayments.cancelButtonElement.addEventListener("click", appModules.expensePaymentsModule.resetForm);
-
-  appDom.creditCardCycleBalances.formElement.addEventListener("submit", appModules.creditCardCyclesModule.onBalanceSubmit);
-  appDom.creditCardCycleBalances.cancelButtonElement.addEventListener("click", appModules.creditCardCyclesModule.resetBalanceForm);
 }

@@ -52,6 +52,7 @@ test("credit card installment CRUD flow works end-to-end", async ({ page }) => {
   await openApp(page);
 
   await openSettingsSection(page, "Banks");
+  await page.getByRole("button", { name: "Create bank" }).click();
   const bankForm = page.locator("#bank-form");
   await bankForm.getByLabel("Name").fill(bankName);
   await bankForm.getByLabel("Country").selectOption("US");
@@ -59,20 +60,24 @@ test("credit card installment CRUD flow works end-to-end", async ({ page }) => {
   await expect(page.locator("#bank-form-message")).toHaveText("Bank created");
 
   await openSettingsSection(page, "People");
-  const peopleForm = page.locator("#people-form");
+  await page.getByRole("button", { name: "Create person" }).click();
+  const peopleForm = page.locator("#person-form");
   await peopleForm.getByLabel("Name").fill(personName);
   await peopleForm.getByRole("button", { name: "Create" }).click();
   await expect(page.locator("#person-form-message")).toHaveText("Person created");
 
-  await openSettingsSection(page, "Currency");
+  await openSettingsSection(page, "Currencies");
+  await page.getByRole("button", { name: "Create currency" }).click();
   const currencyForm = page.locator("#currency-form");
   await currencyForm.getByLabel("Name").fill(currencyName);
   await currencyForm.getByLabel("Code").fill(currencyCode);
   await currencyForm.getByRole("button", { name: "Create" }).click();
-  await expect(page.locator("#form-message")).toHaveText("Currency created");
+  await expect(page.locator("#currency-form-message")).toHaveText("Currency created");
 
   await page.getByRole("button", { name: "Credit Cards" }).click();
   await page.locator('[data-credit-card-tab="cards"]').click();
+
+  await page.getByRole("button", { name: "Create credit card" }).click();
 
   const creditCardForm = page.locator("#credit-card-form");
   await creditCardForm.getByLabel("Bank").selectOption({ label: `${bankName} (US)` });
@@ -83,6 +88,8 @@ test("credit card installment CRUD flow works end-to-end", async ({ page }) => {
   await expect(page.locator("#credit-card-form-message")).toHaveText("Credit card created");
 
   await page.locator('[data-credit-card-tab="installments"]').click();
+
+  await page.getByRole("button", { name: "Create credit card installment" }).click();
 
   const installmentForm = page.locator("#credit-card-installment-form");
   await selectOptionContaining(installmentForm.getByLabel("Credit Card"), cardNumber);
@@ -132,6 +139,7 @@ test("duplicate credit card installment concept per card is blocked", async ({ p
   await openApp(page);
 
   await openSettingsSection(page, "Banks");
+  await page.getByRole("button", { name: "Create bank" }).click();
   const bankForm = page.locator("#bank-form");
   await bankForm.getByLabel("Name").fill(bankName);
   await bankForm.getByLabel("Country").selectOption("US");
@@ -139,20 +147,24 @@ test("duplicate credit card installment concept per card is blocked", async ({ p
   await expect(page.locator("#bank-form-message")).toHaveText("Bank created");
 
   await openSettingsSection(page, "People");
-  const peopleForm = page.locator("#people-form");
+  await page.getByRole("button", { name: "Create person" }).click();
+  const peopleForm = page.locator("#person-form");
   await peopleForm.getByLabel("Name").fill(personName);
   await peopleForm.getByRole("button", { name: "Create" }).click();
   await expect(page.locator("#person-form-message")).toHaveText("Person created");
 
-  await openSettingsSection(page, "Currency");
+  await openSettingsSection(page, "Currencies");
+  await page.getByRole("button", { name: "Create currency" }).click();
   const currencyForm = page.locator("#currency-form");
   await currencyForm.getByLabel("Name").fill(currencyName);
   await currencyForm.getByLabel("Code").fill(currencyCode);
   await currencyForm.getByRole("button", { name: "Create" }).click();
-  await expect(page.locator("#form-message")).toHaveText("Currency created");
+  await expect(page.locator("#currency-form-message")).toHaveText("Currency created");
 
   await page.getByRole("button", { name: "Credit Cards" }).click();
   await page.locator('[data-credit-card-tab="cards"]').click();
+
+  await page.getByRole("button", { name: "Create credit card" }).click();
 
   const creditCardForm = page.locator("#credit-card-form");
   await creditCardForm.getByLabel("Bank").selectOption({ label: `${bankName} (US)` });
@@ -163,6 +175,8 @@ test("duplicate credit card installment concept per card is blocked", async ({ p
 
   await page.locator('[data-credit-card-tab="installments"]').click();
 
+  await page.getByRole("button", { name: "Create credit card installment" }).click();
+
   const installmentForm = page.locator("#credit-card-installment-form");
   await selectOptionContaining(installmentForm.getByLabel("Credit Card"), cardNumber);
   await installmentForm.getByLabel("Currency").selectOption({ label: `${currencyCode} (${currencyName})` });
@@ -172,6 +186,8 @@ test("duplicate credit card installment concept per card is blocked", async ({ p
   await installmentForm.getByLabel("Count").fill("5");
   await installmentForm.getByRole("button", { name: "Create" }).click();
   await expect(page.locator("#credit-card-installment-form-message")).toHaveText("Credit card installment created");
+
+  await page.getByRole("button", { name: "Create credit card installment" }).click();
 
   await selectOptionContaining(installmentForm.getByLabel("Credit Card"), cardNumber);
   await installmentForm.getByLabel("Currency").selectOption({ label: `${currencyCode} (${currencyName})` });
@@ -184,5 +200,5 @@ test("duplicate credit card installment concept per card is blocked", async ({ p
   await expect(page.locator("#credit-card-installment-form-message")).toHaveText(
     "A credit card installment with this concept already exists for the selected credit card and currency"
   );
-  await expect(page.locator("#credit-card-installment-form-message")).toHaveClass(/error/);
+  await expect(page.locator("#credit-card-installment-form-toast")).toHaveClass(/danger/);
 });

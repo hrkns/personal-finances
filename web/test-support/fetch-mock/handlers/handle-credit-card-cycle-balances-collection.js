@@ -7,25 +7,12 @@ const {
 } = require("../helpers.js");
 
 function handleCreditCardCycleBalancesCollection(pathname, method, options, stores) {
-  const collectionMatch = pathname.match(/^\/api\/credit-card-cycles\/(\d+)\/balances$/);
-  if (!collectionMatch) {
+  if (pathname !== "/api/credit-card-cycle-balances") {
     return null;
   }
 
-  const cycleID = Number(collectionMatch[1]);
-
   if (method === "GET") {
-    if (!stores.creditCardCyclesStore.some((item) => item.id === cycleID)) {
-      return createResponse(404, {
-        error: {
-          code: "not_found",
-          message: "credit card cycle not found",
-        },
-      });
-    }
-
-    const items = stores.creditCardCycleBalancesStore.filter((item) => item.credit_card_cycle_id === cycleID);
-    return createResponse(200, cloneItems(items));
+    return createResponse(200, cloneItems(stores.creditCardCycleBalancesStore));
   }
 
   if (method === "POST") {
@@ -47,9 +34,6 @@ function handleCreditCardCycleBalancesCollection(pathname, method, options, stor
 
     if (!Number.isInteger(creditCardCycleID) || creditCardCycleID <= 0) {
       return invalidPayload("credit_card_cycle_id must be a positive integer");
-    }
-    if (creditCardCycleID !== cycleID) {
-      return invalidPayload("credit_card_cycle_id must match route id");
     }
     if (!Number.isInteger(currencyID) || currencyID <= 0) {
       return invalidPayload("currency_id must be a positive integer");

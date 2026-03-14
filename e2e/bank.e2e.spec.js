@@ -13,6 +13,7 @@ test("bank CRUD flow works end-to-end", async ({ page }) => {
 
   await openApp(page);
   await openSettingsSection(page, "Banks");
+  await page.getByRole("button", { name: "Create bank" }).click();
 
   await bankForm.getByLabel("Name").fill(initialName);
   await bankForm.getByLabel("Country").selectOption("US");
@@ -47,16 +48,19 @@ test("duplicate bank per country shows backend conflict message", async ({ page 
 
   await openApp(page);
   await openSettingsSection(page, "Banks");
+  await page.getByRole("button", { name: "Create bank" }).click();
 
   await bankForm.getByLabel("Name").fill(name);
   await bankForm.getByLabel("Country").selectOption("US");
   await bankForm.getByRole("button", { name: "Create" }).click();
   await expect(page.locator("#bank-form-message")).toHaveText("Bank created");
 
+  await page.getByRole("button", { name: "Create bank" }).click();
+
   await bankForm.getByLabel("Name").fill(name);
   await bankForm.getByLabel("Country").selectOption("US");
   await bankForm.getByRole("button", { name: "Create" }).click();
 
   await expect(page.locator("#bank-form-message")).toHaveText("name and country combination must be unique");
-  await expect(page.locator("#bank-form-message")).toHaveClass(/error/);
+  await expect(page.locator("#bank-form-toast")).toHaveClass(/danger/);
 });

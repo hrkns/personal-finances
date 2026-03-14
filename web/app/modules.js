@@ -26,6 +26,7 @@
    *   expensesModule: object,
    *   expensePaymentsModule: object,
    *   creditCardsModule: object,
+   *   creditCardCycleBalancesModule: object,
    *   creditCardInstallmentsModule: object,
    *   creditCardSubscriptionsModule: object,
    *   creditCardCyclesModule: object
@@ -37,6 +38,7 @@
       createCreditCardsModule,
       createCreditCardInstallmentsModule,
       createCreditCardCyclesModule,
+      createCreditCardCycleBalancesModule,
       createCreditCardSubscriptionsModule,
       createCurrenciesModule,
       createBanksModule,
@@ -52,6 +54,7 @@
       createCreditCardsModule,
       createCreditCardInstallmentsModule,
       createCreditCardCyclesModule,
+      createCreditCardCycleBalancesModule,
       createCreditCardSubscriptionsModule,
       createCurrenciesModule,
       createBanksModule,
@@ -92,10 +95,12 @@
       normalizeExpensePaymentInput,
       isValidISODate,
       escapeHtml,
+      generateActionsCell,
     } = frontendUtils;
 
     let transactionsModule = null;
     let creditCardCyclesModule = null;
+    let creditCardCycleBalancesModule = null;
     let creditCardInstallmentsModule = null;
     let creditCardSubscriptionsModule = null;
 
@@ -114,6 +119,7 @@
           transactionsModule.render();
         }
       },
+      generateActionsCell,
     });
 
     const creditCardsModule = createCreditCardsModule({
@@ -132,10 +138,14 @@
         if (creditCardInstallmentsModule) {
           await creditCardInstallmentsModule.load();
         }
+        if (creditCardCycleBalancesModule) {
+          await creditCardCycleBalancesModule.load();
+        }
         if (creditCardSubscriptionsModule) {
           await creditCardSubscriptionsModule.load();
         }
       },
+      generateActionsCell,
     });
 
     creditCardInstallmentsModule = createCreditCardInstallmentsModule({
@@ -147,21 +157,31 @@
       getCurrencies: state.getCurrencies,
       getCreditCardInstallments: state.getCreditCardInstallments,
       setCreditCardInstallments: state.setCreditCardInstallments,
+      generateActionsCell,
     });
 
     creditCardCyclesModule = createCreditCardCyclesModule({
       elements: dom.creditCardCycles,
-      balanceElements: dom.creditCardCycleBalances,
       apiRequest,
       normalizeCreditCardCycleInput,
+      escapeHtml,
+      getCreditCards: state.getCreditCards,
+      getCreditCardCycles: state.getCreditCardCycles,
+      setCreditCardCycles: state.setCreditCardCycles,
+      generateActionsCell,
+    });
+
+    creditCardCycleBalancesModule = createCreditCardCycleBalancesModule({
+      elements: dom.creditCardCycleBalances,
+      apiRequest,
       normalizeCreditCardCycleBalanceInput,
       escapeHtml,
       getCreditCards: state.getCreditCards,
-      getCurrencies: state.getCurrencies,
       getCreditCardCycles: state.getCreditCardCycles,
-      setCreditCardCycles: state.setCreditCardCycles,
+      getCurrencies: state.getCurrencies,
       getCreditCardCycleBalances: state.getCreditCardCycleBalances,
       setCreditCardCycleBalances: state.setCreditCardCycleBalances,
+      generateActionsCell,
     });
 
     creditCardSubscriptionsModule = createCreditCardSubscriptionsModule({
@@ -173,6 +193,7 @@
       getCurrencies: state.getCurrencies,
       getCreditCardSubscriptions: state.getCreditCardSubscriptions,
       setCreditCardSubscriptions: state.setCreditCardSubscriptions,
+      generateActionsCell,
     });
 
     const currenciesModule = createCurrenciesModule({
@@ -189,8 +210,8 @@
         creditCardInstallmentsModule.render();
         creditCardSubscriptionsModule.populateCurrencyOptions();
         creditCardSubscriptionsModule.render();
-        creditCardCyclesModule.populateBalanceCurrencyOptions();
-        creditCardCyclesModule.renderBalances();
+        creditCardCycleBalancesModule.populateCurrencyOptions();
+        creditCardCycleBalancesModule.render();
         expensePaymentsModule.populateCurrencyOptions();
         expensePaymentsModule.render();
         if (transactionsModule) {
@@ -198,6 +219,7 @@
           transactionsModule.render();
         }
       },
+      generateActionsCell,
     });
 
     const banksModule = createBanksModule({
@@ -217,6 +239,7 @@
           transactionsModule.render();
         }
       },
+      generateActionsCell,
     });
 
     const peopleModule = createPeopleModule({
@@ -234,6 +257,7 @@
           transactionsModule.render();
         }
       },
+      generateActionsCell,
     });
 
     const transactionCategoriesModule = createTransactionCategoriesModule({
@@ -249,6 +273,7 @@
           transactionsModule.render();
         }
       },
+      generateActionsCell,
     });
 
     const expensesModule = createExpensesModule({
@@ -262,6 +287,7 @@
         expensePaymentsModule.populateExpenseOptions();
         expensePaymentsModule.render();
       },
+      generateActionsCell,
     });
 
     const expensePaymentsModule = createExpensePaymentsModule({
@@ -274,6 +300,7 @@
       getCurrencies: state.getCurrencies,
       getExpensePayments: state.getExpensePayments,
       setExpensePayments: state.setExpensePayments,
+      generateActionsCell,
     });
 
     transactionsModule = createTransactionsModule({
@@ -288,6 +315,7 @@
       getTransactionCategories: state.getTransactionCategories,
       getTransactions: state.getTransactions,
       setTransactions: state.setTransactions,
+      generateActionsCell,
     });
 
     return {
@@ -300,6 +328,7 @@
       expensesModule,
       expensePaymentsModule,
       creditCardsModule,
+      creditCardCycleBalancesModule,
       creditCardInstallmentsModule,
       creditCardSubscriptionsModule,
       creditCardCyclesModule,

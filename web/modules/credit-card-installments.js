@@ -18,7 +18,8 @@
    *   getCreditCards: () => any[],
    *   getCurrencies: () => any[],
    *   getCreditCardInstallments: () => any[],
-   *   setCreditCardInstallments: (items: any[]) => void
+   *   setCreditCardInstallments: (items: any[]) => void,
+   *   generateActionsCell: (item: any) => string
    * }} config
    * @returns {{load: Function, render: Function, onSubmit: Function, onRowAction: Function, resetForm: Function, setMessage: Function, populateCreditCardOptions: Function, populateCurrencyOptions: Function}}
    */
@@ -32,12 +33,15 @@
       getCurrencies,
       getCreditCardInstallments,
       setCreditCardInstallments,
+      generateActionsCell,
     } = config;
 
-    function setMessage(message, isError) {
-      elements.messageElement.textContent = message;
-      elements.messageElement.className = isError ? "error" : "success";
-    }
+    const {
+      setMessage,
+      showModal,
+      hideModal,
+      initModalBindings,
+    } = globalScope.createUIFeedback({ elements, globalScope });
 
     function formatCreditCardLabel(creditCardID) {
       const creditCard = getCreditCards().find((item) => item.id === creditCardID);
@@ -132,10 +136,7 @@
           <td>${escapeHtml(installment.amount)}</td>
           <td>${escapeHtml(installment.start_date)}</td>
           <td>${escapeHtml(installment.count)}</td>
-          <td>
-            <button type="button" data-action="edit" data-id="${installment.id}">Edit</button>
-            <button type="button" data-action="delete" data-id="${installment.id}">Delete</button>
-          </td>
+          ${generateActionsCell(installment)}
         `;
         elements.bodyElement.appendChild(row);
       }
@@ -146,6 +147,8 @@
     }
 
     async function load() {
+      initModalBindings(resetForm);
+
       try {
         const installments = await apiRequest("/api/credit-card-installments", { method: "GET" });
         setCreditCardInstallments(installments);
@@ -200,6 +203,7 @@
           setMessage("Credit card installment created", false);
         }
 
+        hideModal();
         resetForm();
         await load();
       } catch (error) {
@@ -240,7 +244,10 @@
         elements.countElement.value = String(installment.count);
         elements.submitButtonElement.textContent = "Update";
         elements.cancelButtonElement.hidden = false;
-        setMessage(`Editing credit card installment #${installment.id}`, false);
+        if (elements.modalTitleElement) {
+          elements.modalTitleElement.textContent = "Edit credit card installment";
+        }
+        showModal();
         return;
       }
 

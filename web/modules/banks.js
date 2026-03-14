@@ -17,7 +17,8 @@
    *   escapeHtml: (value: any) => string,
    *   getBanks: () => any[],
    *   setBanks: (items: any[]) => void,
-   *   onBanksChanged?: () => void
+   *   onBanksChanged?: () => void,
+   *   generateActionsCell: (item: any) => string
    * }} config
    * @returns {{load: Function, loadCountryOptions: Function, render: Function, onSubmit: Function, onRowAction: Function, resetForm: Function, setMessage: Function}}
    */
@@ -30,18 +31,24 @@
       getBanks,
       setBanks,
       onBanksChanged,
+      generateActionsCell,
     } = config;
 
-    function setMessage(message, isError) {
-      elements.messageElement.textContent = message;
-      elements.messageElement.className = isError ? "error" : "success";
-    }
+    const {
+      setMessage,
+      showModal,
+      hideModal,
+      initModalBindings,
+    } = globalScope.createUIFeedback({ elements, globalScope });
 
     function resetForm() {
       elements.formElement.reset();
       elements.idElement.value = "";
       elements.submitButtonElement.textContent = "Create";
       elements.cancelButtonElement.hidden = true;
+      if (elements.modalTitleElement) {
+        elements.modalTitleElement.textContent = "Create bank";
+      }
     }
 
     function populateCountryOptions(countries) {
@@ -84,10 +91,7 @@
           <td>${bank.id}</td>
           <td>${escapeHtml(bank.name)}</td>
           <td>${escapeHtml(bank.country)}</td>
-          <td>
-            <button type="button" data-action="edit" data-id="${bank.id}">Edit</button>
-            <button type="button" data-action="delete" data-id="${bank.id}">Delete</button>
-          </td>
+          ${generateActionsCell(bank)}
         `;
         elements.bodyElement.appendChild(row);
       }
@@ -98,6 +102,8 @@
     }
 
     async function load() {
+      initModalBindings(resetForm);
+
       try {
         const banks = await apiRequest("/api/banks", { method: "GET" });
         setBanks(banks);
@@ -131,6 +137,7 @@
           setMessage("Bank created", false);
         }
 
+        hideModal();
         resetForm();
         await load();
       } catch (error) {
@@ -167,7 +174,10 @@
         elements.countryElement.value = bank.country;
         elements.submitButtonElement.textContent = "Update";
         elements.cancelButtonElement.hidden = false;
-        setMessage(`Editing bank #${bank.id}`, false);
+        if (elements.modalTitleElement) {
+          elements.modalTitleElement.textContent = "Edit bank";
+        }
+        showModal();
         return;
       }
 

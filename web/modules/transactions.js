@@ -22,7 +22,8 @@
    *   getBankAccounts: () => any[],
    *   getTransactionCategories: () => any[],
    *   getTransactions: () => any[],
-   *   setTransactions: (items: any[]) => void
+   *   setTransactions: (items: any[]) => void,
+   *   generateActionsCell: (item: any) => string
    * }} config
    * @returns {{load: Function, render: Function, onSubmit: Function, onRowAction: Function, resetForm: Function, setMessage: Function, populatePersonOptions: Function, populateBankAccountOptions: Function, populateCategoryOptions: Function}}
    */
@@ -39,11 +40,18 @@
       getTransactionCategories,
       getTransactions,
       setTransactions,
+      generateActionsCell,
     } = config;
 
-    function setMessage(message, isError) {
-      elements.messageElement.textContent = message;
-      elements.messageElement.className = isError ? "error" : "success";
+    const {
+      setMessage,
+      showModal,
+      hideModal,
+      initModalBindings,
+    } = globalScope.createUIFeedback({ elements, globalScope });
+
+    function initializeModalBindings() {
+      initModalBindings(resetForm);
     }
 
     function formatPersonLabel(personID) {
@@ -147,10 +155,7 @@
           <td>${escapeHtml(nextBalance.toFixed(2))}</td>
           <td>${escapeHtml(formatCategoryLabel(transaction.category_id))}</td>
           <td>${escapeHtml(transaction.notes || "—")}</td>
-          <td>
-            <button type="button" data-action="edit" data-id="${transaction.id}">Edit</button>
-            <button type="button" data-action="delete" data-id="${transaction.id}">Delete</button>
-          </td>
+          ${generateActionsCell(transaction)}
         `;
         elements.bodyElement.appendChild(row);
       }
@@ -218,6 +223,8 @@
     }
 
     async function load() {
+      initializeModalBindings();
+
       try {
         const transactions = await apiRequest("/api/transactions", { method: "GET" });
         setTransactions(transactions);
@@ -259,6 +266,7 @@
           setMessage("Transaction created", false);
         }
 
+        hideModal();
         resetForm();
         await load();
       } catch (error) {
@@ -300,7 +308,10 @@
         elements.categoryIdElement.value = String(transaction.category_id);
         elements.submitButtonElement.textContent = "Update";
         elements.cancelButtonElement.hidden = false;
-        setMessage(`Editing transaction #${transaction.id}`, false);
+        if (elements.modalTitleElement) {
+          elements.modalTitleElement.textContent = "Edit transaction";
+        }
+        showModal();
         return;
       }
 

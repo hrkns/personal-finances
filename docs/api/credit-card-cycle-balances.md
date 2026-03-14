@@ -1,6 +1,6 @@
 # Credit Card Cycle Balances API
 
-Credit card cycle balances are child resources under a credit card cycle.
+Credit card cycle balances are top-level resources linked to a credit card cycle through `credit_card_cycle_id`.
 
 ### Credit Card Cycle Balance Object
 
@@ -33,7 +33,9 @@ Validation rules:
 - `balance` optional number (float); if omitted, defaults to `0`
 - `paid` optional boolean; if omitted, defaults to `false`
 
-### `GET /api/credit-card-cycles/{cycle_id}/balances`
+### `GET /api/credit-card-cycle-balances`
+
+Lists all credit card cycle balances across all cycles.
 
 #### Success (`200 OK`)
 
@@ -45,28 +47,18 @@ Validation rules:
     "currency_id": 1,
     "balance": 500.25,
     "paid": false
+  },
+  {
+    "id": 2,
+    "credit_card_cycle_id": 2,
+    "currency_id": 1,
+    "balance": 125.0,
+    "paid": true
   }
 ]
 ```
 
-### `GET /api/credit-card-cycles/{cycle_id}/balances/{id}`
-
-#### Success (`200 OK`)
-
-Body: Credit Card Cycle Balance Object.
-
-#### Not Found (`404 Not Found`)
-
-```json
-{
-  "error": {
-    "code": "not_found",
-    "message": "credit card cycle balance not found"
-  }
-}
-```
-
-### `POST /api/credit-card-cycles/{cycle_id}/balances`
+### `POST /api/credit-card-cycle-balances`
 
 Request body: Credit Card Cycle Balance Payload.
 
@@ -74,7 +66,7 @@ Request body: Credit Card Cycle Balance Payload.
 
 Headers:
 
-- `Location: /api/credit-card-cycles/{cycle_id}/balances/{id}`
+- `Location: /api/credit-card-cycle-balances/{id}`
 
 Body: Credit Card Cycle Balance Object.
 
@@ -86,7 +78,7 @@ Examples:
 {
   "error": {
     "code": "invalid_payload",
-    "message": "credit_card_cycle_id must match route id"
+    "message": "credit_card_cycle_id must be a positive integer"
   }
 }
 ```
@@ -111,7 +103,7 @@ Examples:
 }
 ```
 
-### `PUT /api/credit-card-cycles/{cycle_id}/balances/{id}`
+### `PUT /api/credit-card-cycle-balances/{id}`
 
 Request body: Credit Card Cycle Balance Payload.
 
@@ -141,7 +133,7 @@ Body: Credit Card Cycle Balance Object.
 }
 ```
 
-### `DELETE /api/credit-card-cycles/{cycle_id}/balances/{id}`
+### `DELETE /api/credit-card-cycle-balances/{id}`
 
 #### Success (`204 No Content`)
 

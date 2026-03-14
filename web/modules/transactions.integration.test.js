@@ -12,11 +12,11 @@ async function seedTransactionDependencies(window, document) {
   document.querySelector('[data-route-tab="settings"]').click();
   document.querySelector('[data-settings-tab="people"]').click();
   document.getElementById("person-name").value = "Jane Doe";
-  document.getElementById("people-form").dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+  document.getElementById("person-form").dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
   await flush();
 
-  document.querySelector('[data-route-tab="settings"]').click();
-  document.querySelector('[data-settings-tab="transaction-categories"]').click();
+  document.querySelector('[data-route-tab="transactions"]').click();
+  document.querySelector('[data-transactions-tab="transaction-categories"]').click();
   document.getElementById("transaction-category-name").value = "Salary";
   document
     .getElementById("transaction-category-form")
@@ -24,7 +24,7 @@ async function seedTransactionDependencies(window, document) {
   await flush();
 
   document.querySelector('[data-route-tab="settings"]').click();
-  document.querySelector('[data-settings-tab="currency"]').click();
+  document.querySelector('[data-settings-tab="currencies"]').click();
   document.getElementById("currency-name").value = "US Dollar";
   document.getElementById("currency-code").value = "USD";
   document.getElementById("currency-form").dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
@@ -175,7 +175,13 @@ test("frontend shows validation error for invalid transaction payload", async ()
 
   const message = document.getElementById("transaction-form-message");
   assert.equal(message.textContent, "transaction_date must be a valid date in YYYY-MM-DD format");
-  assert.equal(message.className, "error");
+
+  const toastElement = document.getElementById("transaction-form-toast");
+  if (window.bootstrap?.Toast) {
+    assert.match(toastElement.className, /text-bg-danger/);
+  } else {
+    assert.equal(message.className, "error");
+  }
 
   dom.window.close();
 });

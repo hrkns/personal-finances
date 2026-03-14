@@ -18,7 +18,8 @@
    *   getCurrencies: () => any[],
    *   getBankAccounts: () => any[],
    *   setBankAccounts: (items: any[]) => void,
-   *   onBankAccountsChanged?: () => void
+   *   onBankAccountsChanged?: () => void,
+   *   generateActionsCell: (item: any) => string
    * }} config
    * @returns {{load: Function, render: Function, onSubmit: Function, onRowAction: Function, resetForm: Function, setMessage: Function, populateBankOptions: Function, populateCurrencyOptions: Function}}
    */
@@ -33,18 +34,24 @@
       getBankAccounts,
       setBankAccounts,
       onBankAccountsChanged,
+      generateActionsCell,
     } = config;
 
-    function setMessage(message, isError) {
-      elements.messageElement.textContent = message;
-      elements.messageElement.className = isError ? "error" : "success";
-    }
+    const {
+      setMessage,
+      showModal,
+      hideModal,
+      initModalBindings,
+    } = globalScope.createUIFeedback({ elements, globalScope });
 
     function resetForm() {
       elements.formElement.reset();
       elements.idElement.value = "";
       elements.submitButtonElement.textContent = "Create";
       elements.cancelButtonElement.hidden = true;
+      if (elements.modalTitleElement) {
+        elements.modalTitleElement.textContent = "Create bank account";
+      }
     }
 
     function formatBankLabel(bankID) {
@@ -87,10 +94,7 @@
           <td>${escapeHtml(formatCurrencyLabel(bankAccount.currency_id))}</td>
           <td>${escapeHtml(bankAccount.account_number)}</td>
           <td>${escapeHtml(Number(bankAccount.balance).toFixed(2))}</td>
-          <td>
-            <button type="button" data-action="edit" data-id="${bankAccount.id}">Edit</button>
-            <button type="button" data-action="delete" data-id="${bankAccount.id}">Delete</button>
-          </td>
+          ${generateActionsCell(bankAccount)}
         `;
         elements.bodyElement.appendChild(row);
       }
@@ -101,6 +105,8 @@
     }
 
     async function load() {
+      initModalBindings(resetForm);
+
       try {
         const bankAccounts = await apiRequest("/api/bank-accounts", { method: "GET" });
         setBankAccounts(bankAccounts);
@@ -139,6 +145,7 @@
           setMessage("Bank account created", false);
         }
 
+        hideModal();
         resetForm();
         await load();
       } catch (error) {
@@ -177,7 +184,10 @@
         elements.balanceElement.value = String(bankAccount.balance);
         elements.submitButtonElement.textContent = "Update";
         elements.cancelButtonElement.hidden = false;
-        setMessage(`Editing bank account #${bankAccount.id}`, false);
+        if (elements.modalTitleElement) {
+          elements.modalTitleElement.textContent = "Edit bank account";
+        }
+        showModal();
         return;
       }
 

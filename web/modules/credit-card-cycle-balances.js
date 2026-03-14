@@ -1,37 +1,32 @@
 /**
- * Credit Card Subscriptions feature module.
- *
- * Analogy:
- * - React: comparable to a CRUD slice/controller for recurring charges.
- * - Angular/Vue: similar to a feature component/composable with dependent selects.
+ * Credit Card Cycle Balances feature module.
  */
-(function initCreditCardSubscriptionsModule(globalScope) {
+(function initCreditCardCycleBalancesModule(globalScope) {
   /**
-   * Creates subscriptions controller with CRUD and card/currency lookup rendering.
-   *
    * @param {{
    *   elements: object,
    *   apiRequest: (url: string, options?: RequestInit) => Promise<any>,
-   *   normalizeCreditCardSubscriptionInput: Function,
+   *   normalizeCreditCardCycleBalanceInput: Function,
    *   escapeHtml: (value: any) => string,
    *   getCreditCards: () => any[],
+   *   getCreditCardCycles: () => any[],
    *   getCurrencies: () => any[],
-   *   getCreditCardSubscriptions: () => any[],
-   *   setCreditCardSubscriptions: (items: any[]) => void,
+   *   getCreditCardCycleBalances: () => any[],
+   *   setCreditCardCycleBalances: (items: any[]) => void,
    *   generateActionsCell: (item: any) => string
    * }} config
-   * @returns {{load: Function, render: Function, onSubmit: Function, onRowAction: Function, resetForm: Function, setMessage: Function, populateCreditCardOptions: Function, populateCurrencyOptions: Function}}
    */
-  function createCreditCardSubscriptionsModule(config) {
+  function createCreditCardCycleBalancesModule(config) {
     const {
       elements,
       apiRequest,
-      normalizeCreditCardSubscriptionInput,
+      normalizeCreditCardCycleBalanceInput,
       escapeHtml,
       getCreditCards,
+      getCreditCardCycles,
       getCurrencies,
-      getCreditCardSubscriptions,
-      setCreditCardSubscriptions,
+      getCreditCardCycleBalances,
+      setCreditCardCycleBalances,
       generateActionsCell,
     } = config;
 
@@ -55,6 +50,15 @@
       return creditCard.number;
     }
 
+    function formatCycleLabel(cycleID) {
+      const cycle = getCreditCardCycles().find((item) => item.id === cycleID);
+      if (!cycle) {
+        return `#${cycleID}`;
+      }
+
+      return `${formatCreditCardLabel(cycle.credit_card_id)} (${cycle.closing_date} → ${cycle.due_date})`;
+    }
+
     function formatCurrencyLabel(currencyID) {
       const currency = getCurrencies().find((item) => item.id === currencyID);
       if (!currency) {
@@ -64,23 +68,23 @@
       return `${currency.code} (${currency.name})`;
     }
 
-    function populateCreditCardOptions() {
-      const selectedValue = elements.creditCardIdElement.value;
-      elements.creditCardIdElement.innerHTML = "";
+    function populateCycleOptions() {
+      const selectedValue = elements.cycleIdElement.value;
+      elements.cycleIdElement.innerHTML = "";
 
       const defaultOption = document.createElement("option");
       defaultOption.value = "";
-      defaultOption.textContent = "Select credit card";
-      elements.creditCardIdElement.appendChild(defaultOption);
+      defaultOption.textContent = "Select credit card cycle";
+      elements.cycleIdElement.appendChild(defaultOption);
 
-      for (const creditCard of getCreditCards()) {
+      for (const cycle of getCreditCardCycles()) {
         const option = document.createElement("option");
-        option.value = String(creditCard.id);
-        option.textContent = formatCreditCardLabel(creditCard.id);
-        elements.creditCardIdElement.appendChild(option);
+        option.value = String(cycle.id);
+        option.textContent = formatCycleLabel(cycle.id);
+        elements.cycleIdElement.appendChild(option);
       }
 
-      elements.creditCardIdElement.value = selectedValue;
+      elements.cycleIdElement.value = selectedValue;
     }
 
     function populateCurrencyOptions() {
@@ -95,7 +99,7 @@
       for (const currency of getCurrencies()) {
         const option = document.createElement("option");
         option.value = String(currency.id);
-        option.textContent = `${currency.code} (${currency.name})`;
+        option.textContent = formatCurrencyLabel(currency.id);
         elements.currencyIdElement.appendChild(option);
       }
 
@@ -106,34 +110,36 @@
       elements.formElement.reset();
       elements.idElement.value = "";
       elements.submitButtonElement.textContent = "Create";
-      elements.cancelButtonElement.hidden = true;
-      populateCreditCardOptions();
+      if (elements.modalTitleElement) {
+        elements.modalTitleElement.textContent = "Create credit card cycle balance";
+      }
+      populateCycleOptions();
       populateCurrencyOptions();
     }
 
     function render() {
-      const subscriptions = getCreditCardSubscriptions();
+      const balances = getCreditCardCycleBalances();
       elements.bodyElement.innerHTML = "";
 
-      if (subscriptions.length === 0) {
+      if (balances.length === 0) {
         const row = document.createElement("tr");
         const cell = document.createElement("td");
         cell.colSpan = 6;
-        cell.textContent = "No credit card subscriptions yet";
+        cell.textContent = "No credit card cycle balances yet";
         row.appendChild(cell);
         elements.bodyElement.appendChild(row);
         return;
       }
 
-      for (const subscription of subscriptions) {
+      for (const balance of balances) {
         const row = document.createElement("tr");
         row.innerHTML = `
-          <td>${subscription.id}</td>
-          <td>${escapeHtml(formatCreditCardLabel(subscription.credit_card_id))}</td>
-          <td>${escapeHtml(formatCurrencyLabel(subscription.currency_id))}</td>
-          <td>${escapeHtml(subscription.concept)}</td>
-          <td>${escapeHtml(subscription.amount)}</td>
-          ${generateActionsCell(subscription)}
+          <td>${balance.id}</td>
+          <td>${escapeHtml(formatCycleLabel(balance.credit_card_cycle_id))}</td>
+          <td>${escapeHtml(formatCurrencyLabel(balance.currency_id))}</td>
+          <td>${escapeHtml(balance.balance)}</td>
+          <td>${balance.paid ? "Yes" : "No"}</td>
+          ${generateActionsCell(balance)}
         `;
         elements.bodyElement.appendChild(row);
       }
@@ -147,9 +153,9 @@
       initModalBindings(resetForm);
 
       try {
-        const subscriptions = await apiRequest("/api/credit-card-subscriptions", { method: "GET" });
-        setCreditCardSubscriptions(subscriptions);
-        populateCreditCardOptions();
+        const balances = await apiRequest("/api/credit-card-cycle-balances", { method: "GET" });
+        setCreditCardCycleBalances(balances);
+        populateCycleOptions();
         populateCurrencyOptions();
         render();
       } catch (error) {
@@ -157,66 +163,62 @@
       }
     }
 
-    function hasDuplicateCardCurrencyConcept(payload, id) {
-      return getCreditCardSubscriptions().some((item) => {
-        if (id && String(item.id) === id) {
-          return false;
-        }
-
-        return (
-          item.credit_card_id === payload.credit_card_id &&
-          item.currency_id === payload.currency_id &&
-          item.concept === payload.concept
-        );
-      });
-    }
-
     async function onSubmit(event) {
       event.preventDefault();
 
       const id = elements.idElement.value.trim();
-      const payload = normalizeCreditCardSubscriptionInput(
-        elements.creditCardIdElement.value,
+      const payload = normalizeCreditCardCycleBalanceInput(
+        elements.cycleIdElement.value,
         elements.currencyIdElement.value,
-        elements.conceptElement.value,
-        elements.amountElement.value
+        elements.balanceElement.value,
+        elements.paidElement.checked
       );
 
-      if (hasDuplicateCardCurrencyConcept(payload, id)) {
-        setMessage(
-          "A credit card subscription with this concept already exists for the selected credit card and currency",
-          true
-        );
+      if (!Number.isInteger(payload.credit_card_cycle_id) || payload.credit_card_cycle_id <= 0) {
+        setMessage("credit_card_cycle_id must be a positive integer", true);
+        return;
+      }
+
+      const hasDuplicateCurrency = getCreditCardCycleBalances().some((item) => {
+        if (id && String(item.id) === id) {
+          return false;
+        }
+
+        return item.credit_card_cycle_id === payload.credit_card_cycle_id && item.currency_id === payload.currency_id;
+      });
+
+      if (hasDuplicateCurrency) {
+        setMessage("A balance with this currency already exists for the selected cycle", true);
         return;
       }
 
       try {
         if (id) {
-          await apiRequest(`/api/credit-card-subscriptions/${id}`, {
+          await apiRequest(`/api/credit-card-cycle-balances/${id}`, {
             method: "PUT",
             body: JSON.stringify(payload),
           });
-          setMessage("Credit card subscription updated", false);
+          setMessage("Credit card cycle balance updated", false);
         } else {
-          await apiRequest("/api/credit-card-subscriptions", {
+          await apiRequest(`/api/credit-card-cycle-balances`, {
             method: "POST",
             body: JSON.stringify(payload),
           });
-          setMessage("Credit card subscription created", false);
+          setMessage("Credit card cycle balance created", false);
         }
 
-        hideModal();
         resetForm();
+        hideModal();
         await load();
       } catch (error) {
         setMessage(error.message, true);
       }
     }
 
-    async function deleteCreditCardSubscription(id) {
+    async function deleteBalance(balance) {
       try {
-        await apiRequest(`/api/credit-card-subscriptions/${id}`, { method: "DELETE" });
-        setMessage("Credit card subscription deleted", false);
+        await apiRequest(`/api/credit-card-cycle-balances/${balance.id}`, { method: "DELETE" });
+        setMessage("Credit card cycle balance deleted", false);
         resetForm();
         await load();
       } catch (error) {
@@ -231,28 +233,28 @@
         return;
       }
 
-      const subscription = getCreditCardSubscriptions().find((item) => String(item.id) === id);
-      if (!subscription) {
+      const balance = getCreditCardCycleBalances().find((item) => String(item.id) === id);
+      if (!balance) {
         return;
       }
 
       if (action === "edit") {
-        elements.idElement.value = String(subscription.id);
-        elements.creditCardIdElement.value = String(subscription.credit_card_id);
-        elements.currencyIdElement.value = String(subscription.currency_id);
-        elements.conceptElement.value = subscription.concept;
-        elements.amountElement.value = String(subscription.amount);
+        elements.idElement.value = String(balance.id);
+        elements.cycleIdElement.value = String(balance.credit_card_cycle_id);
+        elements.currencyIdElement.value = String(balance.currency_id);
+        elements.balanceElement.value = String(balance.balance);
+        elements.paidElement.checked = Boolean(balance.paid);
         elements.submitButtonElement.textContent = "Update";
         elements.cancelButtonElement.hidden = false;
         if (elements.modalTitleElement) {
-          elements.modalTitleElement.textContent = "Edit credit card subscription";
+          elements.modalTitleElement.textContent = `Edit credit card cycle balance #${balance.id}`;
         }
         showModal();
         return;
       }
 
       if (action === "delete") {
-        deleteCreditCardSubscription(subscription.id);
+        deleteBalance(balance);
       }
     }
 
@@ -263,15 +265,15 @@
       onRowAction,
       resetForm,
       setMessage,
-      populateCreditCardOptions,
+      populateCycleOptions,
       populateCurrencyOptions,
     };
   }
 
   if (typeof module !== "undefined" && module.exports) {
-    module.exports = { createCreditCardSubscriptionsModule };
+    module.exports = { createCreditCardCycleBalancesModule };
     return;
   }
 
-  globalScope.createCreditCardSubscriptionsModule = createCreditCardSubscriptionsModule;
+  globalScope.createCreditCardCycleBalancesModule = createCreditCardCycleBalancesModule;
 })(typeof globalThis !== "undefined" ? globalThis : window);

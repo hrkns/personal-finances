@@ -17,7 +17,8 @@
    *   escapeHtml: (value: any) => string,
    *   getTransactionCategories: () => any[],
    *   setTransactionCategories: (items: any[]) => void,
-   *   onTransactionCategoriesChanged?: () => void
+   *   onTransactionCategoriesChanged?: () => void,
+   *   generateActionsCell: (item: any) => string
    * }} config
    * @returns {{load: Function, render: Function, onSubmit: Function, onRowAction: Function, resetForm: Function, setMessage: Function, populateParentOptions: Function}}
    */
@@ -30,18 +31,23 @@
       getTransactionCategories,
       setTransactionCategories,
       onTransactionCategoriesChanged,
+      generateActionsCell,
     } = config;
 
-    function setMessage(message, isError) {
-      elements.messageElement.textContent = message;
-      elements.messageElement.className = isError ? "error" : "success";
-    }
+    const {
+      setMessage,
+      showModal,
+      hideModal,
+      initModalBindings,
+    } = globalScope.createUIFeedback({ elements, globalScope });
 
     function resetForm() {
       elements.formElement.reset();
       elements.idElement.value = "";
       elements.submitButtonElement.textContent = "Create";
-      elements.cancelButtonElement.hidden = true;
+      if (elements.modalTitleElement) {
+        elements.modalTitleElement.textContent = "Create transaction category";
+      }
       populateParentOptions();
     }
 
@@ -66,10 +72,7 @@
           <td>${category.id}</td>
           <td>${escapeHtml(category.name)}</td>
           <td>${escapeHtml(parentLabel)}</td>
-          <td>
-            <button type="button" data-action="edit" data-id="${category.id}">Edit</button>
-            <button type="button" data-action="delete" data-id="${category.id}">Delete</button>
-          </td>
+          ${generateActionsCell(category)}
         `;
         elements.bodyElement.appendChild(row);
       }
@@ -103,6 +106,8 @@
     }
 
     async function load() {
+      initModalBindings(resetForm);
+
       try {
         const categories = await apiRequest("/api/transaction-categories", { method: "GET" });
         setTransactionCategories(categories);
@@ -140,6 +145,7 @@
           setMessage("Transaction category created", false);
         }
 
+        hideModal();
         resetForm();
         await load();
       } catch (error) {
@@ -177,7 +183,10 @@
         elements.parentIdElement.value = category.parent_id ? String(category.parent_id) : "";
         elements.submitButtonElement.textContent = "Update";
         elements.cancelButtonElement.hidden = false;
-        setMessage(`Editing transaction category #${category.id}`, false);
+        if (elements.modalTitleElement) {
+          elements.modalTitleElement.textContent = "Edit transaction category";
+        }
+        showModal();
         return;
       }
 

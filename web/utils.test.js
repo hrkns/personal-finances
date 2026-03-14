@@ -18,6 +18,7 @@ const {
   isValidISODate,
   escapeHtml,
   parseApiResponse,
+  generateActionsCell,
 } = require("./utils.js");
 
 test("normalizeCurrencyInput trims and uppercases code", () => {
@@ -230,4 +231,32 @@ test("parseApiResponse throws formatted API error", async () => {
     () => parseApiResponse(response),
     /name and code must be unique/
   );
+});
+
+test("generateActionsCell includes accessible labels for icon-only buttons", () => {
+  const html = generateActionsCell({ id: 123 });
+
+  assert.match(html, /data-action="edit"/);
+  assert.match(html, /aria-label="Edit"/);
+  assert.match(html, /title="Edit"/);
+  assert.match(html, /data-action="delete"/);
+  assert.match(html, /aria-label="Delete"/);
+  assert.match(html, /title="Delete"/);
+});
+
+test("generateActionsCell normalizes numeric-string id", () => {
+  const html = generateActionsCell({ id: "42" });
+
+  assert.match(html, /data-id="42"/);
+});
+
+test("generateActionsCell rejects non-positive or non-integer ids", () => {
+  const invalidIDs = ["", 0, -1, 1.5, "Infinity", Infinity, "abc", null, undefined];
+
+  for (const id of invalidIDs) {
+    assert.throws(
+      () => generateActionsCell({ id }),
+      /Invalid item id for actions cell/
+    );
+  }
 });

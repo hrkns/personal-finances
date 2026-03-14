@@ -27,25 +27,30 @@ test("transaction CRUD flow works end-to-end", async ({ page }) => {
   await openApp(page);
 
   await openSettingsSection(page, "People");
-  const peopleForm = page.locator("#people-form");
+  await page.getByRole("button", { name: "Create person" }).click();
+  const peopleForm = page.locator("#person-form");
   await peopleForm.getByLabel("Name").fill(personName);
   await peopleForm.getByRole("button", { name: "Create" }).click();
   await expect(page.locator("#person-form-message")).toHaveText("Person created");
 
-  await openSettingsSection(page, "Transaction Categories");
+  await page.getByRole("button", { name: "Transactions" }).click();
+  await page.getByRole("button", { name: "Transaction Categories" }).click();
+  await page.getByRole("button", { name: "Create transaction category" }).click();
   const categoryForm = page.locator("#transaction-category-form");
   await categoryForm.getByLabel("Name").fill(categoryName);
   await categoryForm.getByRole("button", { name: "Create" }).click();
   await expect(page.locator("#transaction-category-form-message")).toHaveText("Transaction category created");
 
-  await openSettingsSection(page, "Currency");
+  await openSettingsSection(page, "Currencies");
+  await page.getByRole("button", { name: "Create currency" }).click();
   const currencyForm = page.locator("#currency-form");
   await currencyForm.getByLabel("Name").fill(currencyName);
   await currencyForm.getByLabel("Code").fill(currencyCode);
   await currencyForm.getByRole("button", { name: "Create" }).click();
-  await expect(page.locator("#form-message")).toHaveText("Currency created");
+  await expect(page.locator("#currency-form-message")).toHaveText("Currency created");
 
   await openSettingsSection(page, "Banks");
+  await page.getByRole("button", { name: "Create bank" }).click();
   const bankForm = page.locator("#bank-form");
   await bankForm.getByLabel("Name").fill(bankName);
   await bankForm.getByLabel("Country").selectOption("US");
@@ -53,6 +58,7 @@ test("transaction CRUD flow works end-to-end", async ({ page }) => {
   await expect(page.locator("#bank-form-message")).toHaveText("Bank created");
 
   await openSettingsSection(page, "Bank Accounts");
+  await page.getByRole("button", { name: "Create bank account" }).click();
   const bankAccountForm = page.locator("#bank-account-form");
   await bankAccountForm.getByLabel("Bank").selectOption({ label: `${bankName} (US)` });
   await bankAccountForm.getByLabel("Currency").selectOption({ label: `${currencyCode} - ${currencyName}` });
@@ -62,6 +68,9 @@ test("transaction CRUD flow works end-to-end", async ({ page }) => {
   await expect(page.locator("#bank-account-form-message")).toHaveText("Bank account created");
 
   await page.getByRole("button", { name: "Transactions" }).click();
+
+  await page.getByRole("button", { name: "Create transaction" }).click();
+
   const transactionForm = page.locator("#transaction-form");
   await transactionForm.getByLabel("Date").fill("2026-02-18");
   await transactionForm.getByLabel("Type").selectOption("income");
@@ -110,25 +119,30 @@ test("transaction list shows running balance after each transaction", async ({ p
   await openApp(page);
 
   await openSettingsSection(page, "People");
-  const peopleForm = page.locator("#people-form");
+  await page.getByRole("button", { name: "Create person" }).click();
+  const peopleForm = page.locator("#person-form");
   await peopleForm.getByLabel("Name").fill(personName);
   await peopleForm.getByRole("button", { name: "Create" }).click();
   await expect(page.locator("#person-form-message")).toHaveText("Person created");
 
-  await openSettingsSection(page, "Transaction Categories");
+  await page.getByRole("button", { name: "Transactions" }).click();
+  await page.getByRole("button", { name: "Transaction Categories" }).click();
+  await page.getByRole("button", { name: "Create transaction category" }).click();
   const categoryForm = page.locator("#transaction-category-form");
   await categoryForm.getByLabel("Name").fill(categoryName);
   await categoryForm.getByRole("button", { name: "Create" }).click();
   await expect(page.locator("#transaction-category-form-message")).toHaveText("Transaction category created");
 
-  await openSettingsSection(page, "Currency");
+  await openSettingsSection(page, "Currencies");
+  await page.getByRole("button", { name: "Create currency" }).click();
   const currencyForm = page.locator("#currency-form");
   await currencyForm.getByLabel("Name").fill(currencyName);
   await currencyForm.getByLabel("Code").fill(currencyCode);
   await currencyForm.getByRole("button", { name: "Create" }).click();
-  await expect(page.locator("#form-message")).toHaveText("Currency created");
+  await expect(page.locator("#currency-form-message")).toHaveText("Currency created");
 
   await openSettingsSection(page, "Banks");
+  await page.getByRole("button", { name: "Create bank" }).click();
   const bankForm = page.locator("#bank-form");
   await bankForm.getByLabel("Name").fill(bankName);
   await bankForm.getByLabel("Country").selectOption("US");
@@ -136,6 +150,7 @@ test("transaction list shows running balance after each transaction", async ({ p
   await expect(page.locator("#bank-form-message")).toHaveText("Bank created");
 
   await openSettingsSection(page, "Bank Accounts");
+  await page.getByRole("button", { name: "Create bank account" }).click();
   const bankAccountForm = page.locator("#bank-account-form");
   await bankAccountForm.getByLabel("Bank").selectOption({ label: `${bankName} (US)` });
   await bankAccountForm.getByLabel("Currency").selectOption({ label: `${currencyCode} - ${currencyName}` });
@@ -147,6 +162,8 @@ test("transaction list shows running balance after each transaction", async ({ p
   await page.getByRole("button", { name: "Transactions" }).click();
   await expect(page.locator("#view-transactions thead tr th").nth(6)).toHaveText("Balance");
 
+  await page.getByRole("button", { name: "Create transaction" }).click();
+
   const transactionForm = page.locator("#transaction-form");
 
   await transactionForm.getByLabel("Date").fill("2026-02-18");
@@ -157,6 +174,8 @@ test("transaction list shows running balance after each transaction", async ({ p
   await selectOptionContaining(transactionForm.getByLabel("Category"), categoryName);
   await transactionForm.getByRole("button", { name: "Create" }).click();
   await expect(page.locator("#transaction-form-message")).toHaveText("Transaction created");
+
+  await page.getByRole("button", { name: "Create transaction" }).click();
 
   await transactionForm.getByLabel("Date").fill("2026-02-19");
   await transactionForm.getByLabel("Type").selectOption("expense");

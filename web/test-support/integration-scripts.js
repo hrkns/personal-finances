@@ -9,18 +9,20 @@ const scriptFileNames = [
   "app/api.js",
   "app/routing.js",
   "app/modules.js",
-  "modules/transaction-categories.js",
-  "modules/transactions.js",
-  "modules/people.js",
+  "app/ui-feedback.js",
   "modules/currencies.js",
+  "modules/people.js",
   "modules/banks.js",
   "modules/bank-accounts.js",
+  "modules/transaction-categories.js",
+  "modules/transactions.js",
   "modules/credit-cards.js",
+  "modules/credit-card-cycles.js",
+  "modules/credit-card-cycle-balances.js",
+  "modules/credit-card-installments.js",
+  "modules/credit-card-subscriptions.js",
   "modules/expenses.js",
   "modules/expense-payments.js",
-  "modules/credit-card-installments.js",
-  "modules/credit-card-cycles.js",
-  "modules/credit-card-subscriptions.js",
   "app/index.js",
 ];
 
@@ -33,7 +35,13 @@ function extractScriptFileNamesFromHtml(html) {
   const scriptTagRegex = /<script\s+[^>]*src=["']([^"']+)["'][^>]*>\s*<\/script>/gi;
 
   for (const match of html.matchAll(scriptTagRegex)) {
-    scriptSources.push(match[1]);
+    const source = match[1];
+    const isExternalSource = /^(?:[a-z]+:)?\/\//i.test(source);
+    if (isExternalSource) {
+      continue;
+    }
+
+    scriptSources.push(source);
   }
 
   return scriptSources;

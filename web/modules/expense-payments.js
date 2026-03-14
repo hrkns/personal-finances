@@ -7,6 +7,23 @@
  * - Vue: similar to a composable-backed management section.
  */
 (function initExpensePaymentsModule(globalScope) {
+  /**
+   * Creates the expense payments controller for CRUD UI interactions.
+   *
+   * @param {{
+   *   elements: object,
+   *   apiRequest: (url: string, options?: RequestInit) => Promise<any>,
+   *   normalizeExpensePaymentInput: (expenseId: string, amount: string, currencyId: string, date: string) => object,
+   *   isValidISODate: (date: string) => boolean,
+   *   escapeHtml: (value: any) => string,
+   *   getExpenses: () => any[],
+   *   getCurrencies: () => any[],
+   *   getExpensePayments: () => any[],
+   *   setExpensePayments: (items: any[]) => void,
+   *   generateActionsCell: (item: any) => string
+   * }} config
+   * @returns {{load: Function, render: Function, onSubmit: Function, onRowAction: Function, resetForm: Function, setMessage: Function}}
+   */
   function createExpensePaymentsModule(config) {
     const {
       elements,
@@ -18,18 +35,23 @@
       getCurrencies,
       getExpensePayments,
       setExpensePayments,
+      generateActionsCell,
     } = config;
 
-    function setMessage(message, isError) {
-      elements.messageElement.textContent = message;
-      elements.messageElement.className = isError ? "error" : "success";
-    }
+    const {
+      setMessage,
+      showModal,
+      hideModal,
+      initModalBindings,
+    } = globalScope.createUIFeedback({ elements, globalScope });
 
     function resetForm() {
       elements.formElement.reset();
       elements.idElement.value = "";
       elements.submitButtonElement.textContent = "Create";
-      elements.cancelButtonElement.hidden = true;
+      if (elements.modalTitleElement) {
+        elements.modalTitleElement.textContent = "Create expense payment";
+      }
       populateExpenseOptions();
       populateCurrencyOptions();
     }
@@ -74,10 +96,7 @@
           <td>${escapeHtml(Number(payment.amount).toFixed(2))}</td>
           <td>${escapeHtml(formatCurrencyLabel(payment.currency_id))}</td>
           <td>${escapeHtml(payment.date)}</td>
-          <td>
-            <button type="button" data-action="edit" data-id="${payment.id}">Edit</button>
-            <button type="button" data-action="delete" data-id="${payment.id}">Delete</button>
-          </td>
+          ${generateActionsCell(payment)}
         `;
         elements.bodyElement.appendChild(row);
       }
@@ -201,6 +220,8 @@
     }
 
     async function load() {
+      initModalBindings(resetForm);
+
       try {
         const payments = await apiRequest("/api/expense-payments", { method: "GET" });
         setExpensePayments(payments);
@@ -245,6 +266,7 @@
           setMessage("Expense payment created", false);
         }
 
+        hideModal();
         resetForm();
         await load();
       } catch (error) {
@@ -283,7 +305,10 @@
         elements.dateElement.value = payment.date;
         elements.submitButtonElement.textContent = "Update";
         elements.cancelButtonElement.hidden = false;
-        setMessage(`Editing expense payment #${payment.id}`, false);
+        if (elements.modalTitleElement) {
+          elements.modalTitleElement.textContent = "Edit expense payment";
+        }
+        showModal();
         return;
       }
 

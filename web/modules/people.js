@@ -16,7 +16,8 @@
    *   escapeHtml: (value: any) => string,
    *   getPeople: () => any[],
    *   setPeople: (items: any[]) => void,
-   *   onPeopleChanged?: () => void
+   *   onPeopleChanged?: () => void,
+   *   generateActionsCell: (item: any) => string
    * }} config
    * @returns {{load: Function, render: Function, onSubmit: Function, onRowAction: Function, resetForm: Function, setMessage: Function}}
    */
@@ -29,18 +30,23 @@
       getPeople,
       setPeople,
       onPeopleChanged,
+      generateActionsCell,
     } = config;
 
-    function setMessage(message, isError) {
-      elements.messageElement.textContent = message;
-      elements.messageElement.className = isError ? "error" : "success";
-    }
+    const {
+      setMessage,
+      showModal,
+      hideModal,
+      initModalBindings,
+    } = globalScope.createUIFeedback({ elements, globalScope });
 
     function resetForm() {
       elements.formElement.reset();
       elements.idElement.value = "";
       elements.submitButtonElement.textContent = "Create";
-      elements.cancelButtonElement.hidden = true;
+      if (elements.modalTitleElement) {
+        elements.modalTitleElement.textContent = "Create person";
+      }
     }
 
     function render() {
@@ -62,10 +68,7 @@
         row.innerHTML = `
           <td>${person.id}</td>
           <td>${escapeHtml(person.name)}</td>
-          <td>
-            <button type="button" data-action="edit" data-id="${person.id}">Edit</button>
-            <button type="button" data-action="delete" data-id="${person.id}">Delete</button>
-          </td>
+          ${generateActionsCell(person)}
         `;
         elements.bodyElement.appendChild(row);
       }
@@ -76,6 +79,8 @@
     }
 
     async function load() {
+      initModalBindings(resetForm);
+
       try {
         const people = await apiRequest("/api/people", { method: "GET" });
         setPeople(people);
@@ -109,6 +114,7 @@
           setMessage("Person created", false);
         }
 
+        hideModal();
         resetForm();
         await load();
       } catch (error) {
@@ -144,7 +150,10 @@
         elements.nameElement.value = person.name;
         elements.submitButtonElement.textContent = "Update";
         elements.cancelButtonElement.hidden = false;
-        setMessage(`Editing person #${person.id}`, false);
+        if (elements.modalTitleElement) {
+          elements.modalTitleElement.textContent = "Edit person";
+        }
+        showModal();
         return;
       }
 

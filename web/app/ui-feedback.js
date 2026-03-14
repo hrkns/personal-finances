@@ -19,12 +19,7 @@
    *   setMessage: (message: string, isError: boolean) => void,
    *   showModal: () => void,
    *   hideModal: () => void,
-  *   initModalBindings: (resetForm: () => void, callbacks?: {
-  *     onOpen?: () => void,
-  *     onCancel?: () => void,
-  *     onHidden?: () => void
-  *   }) => void,
-   *   initBindings: (callbacks: {
+   *   initModalBindings: (resetForm: () => void, callbacks?: {
    *     onOpen?: () => void,
    *     onCancel?: () => void,
    *     onHidden?: () => void
@@ -110,7 +105,6 @@
       showModal,
       hideModal,
       initModalBindings,
-      initBindings,
     };
   }
 

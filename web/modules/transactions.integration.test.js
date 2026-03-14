@@ -189,3 +189,84 @@ test("frontend shows validation error for invalid transaction payload", async ()
 
   dom.window.close();
 });
+
+test("frontend applies valid transaction sorting from URL params", async () => {
+  const { dom, window, document } = await setupFrontendApp({
+    initialUrl: "http://localhost:8080/?view=transactions&transactions=list&transactionsSort=amount&transactionsOrder=asc",
+  });
+
+  await seedTransactionDependencies(window, document);
+
+  document.querySelector('[data-route-tab="transactions"]').click();
+
+  document.getElementById("transaction-date").value = "2026-02-20";
+  document.getElementById("transaction-type").value = "income";
+  document.getElementById("transaction-amount").value = "300";
+  document.getElementById("transaction-person-id").value = "1";
+  document.getElementById("transaction-bank-account-id").value = "1";
+  document.getElementById("transaction-category-id-input").value = "1";
+  document.getElementById("transaction-form").dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+  await flush();
+
+  document.getElementById("transaction-date").value = "2026-02-21";
+  document.getElementById("transaction-type").value = "income";
+  document.getElementById("transaction-amount").value = "120";
+  document.getElementById("transaction-person-id").value = "1";
+  document.getElementById("transaction-bank-account-id").value = "1";
+  document.getElementById("transaction-category-id-input").value = "1";
+  document.getElementById("transaction-form").dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+  await flush();
+
+  const rows = document.querySelectorAll("#transactions-body tr");
+  assert.equal(rows.length, 2);
+
+  const firstRowCells = rows[0].querySelectorAll("td");
+  const secondRowCells = rows[1].querySelectorAll("td");
+
+  assert.equal(firstRowCells[3].textContent, "120.00");
+  assert.equal(secondRowCells[3].textContent, "300.00");
+
+  dom.window.close();
+});
+
+test("frontend removes invalid transaction sorting params and falls back to default sorting", async () => {
+  const { dom, window, document } = await setupFrontendApp({
+    initialUrl: "http://localhost:8080/?view=transactions&transactions=list&transactionsSort=invalid&transactionsOrder=sideways",
+  });
+
+  await seedTransactionDependencies(window, document);
+
+  document.querySelector('[data-route-tab="transactions"]').click();
+
+  document.getElementById("transaction-date").value = "2026-02-18";
+  document.getElementById("transaction-type").value = "income";
+  document.getElementById("transaction-amount").value = "300";
+  document.getElementById("transaction-person-id").value = "1";
+  document.getElementById("transaction-bank-account-id").value = "1";
+  document.getElementById("transaction-category-id-input").value = "1";
+  document.getElementById("transaction-form").dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+  await flush();
+
+  document.getElementById("transaction-date").value = "2026-02-19";
+  document.getElementById("transaction-type").value = "income";
+  document.getElementById("transaction-amount").value = "120";
+  document.getElementById("transaction-person-id").value = "1";
+  document.getElementById("transaction-bank-account-id").value = "1";
+  document.getElementById("transaction-category-id-input").value = "1";
+  document.getElementById("transaction-form").dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+  await flush();
+
+  assert.equal(window.location.search.includes("transactionsSort="), false);
+  assert.equal(window.location.search.includes("transactionsOrder="), false);
+
+  const rows = document.querySelectorAll("#transactions-body tr");
+  assert.equal(rows.length, 2);
+
+  const firstRowCells = rows[0].querySelectorAll("td");
+  const secondRowCells = rows[1].querySelectorAll("td");
+
+  assert.equal(firstRowCells[1].textContent, "2026-02-19");
+  assert.equal(secondRowCells[1].textContent, "2026-02-18");
+
+  dom.window.close();
+});

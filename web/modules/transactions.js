@@ -50,7 +50,24 @@
       initModalBindings,
     } = globalScope.createUIFeedback({ elements, globalScope });
 
+    const transactionsSortParamName = "transactionsSort";
+    const transactionsOrderParamName = "transactionsOrder";
+    const sortKeyByField = {
+      transactionDate: "date",
+      amount: "amount",
+    };
+    const sortFieldByKey = {
+      date: "transactionDate",
+      amount: "amount",
+    };
+    const defaultSort = {
+      key: "date",
+      order: "desc",
+    };
+
     let isRowActionBound = false;
+    let isSortChangeBound = false;
+    let currentSort = { ...defaultSort };
 
     function initializeModalBindings() {
       initModalBindings(resetForm);
@@ -81,15 +98,98 @@
         .replace(/<\/td>\s*$/i, "");
     }
 
-    function sortTransactionsByDateDesc(transactions) {
-      return [...transactions].sort((left, right) => {
-        const dateCompare = right.transaction_date.localeCompare(left.transaction_date);
-        if (dateCompare !== 0) {
-          return dateCompare;
+    function normalizeSortKey(value) {
+      const normalizedValue = String(value ?? "").trim().toLowerCase();
+      return sortFieldByKey[normalizedValue] ? normalizedValue : null;
+    }
+
+    function normalizeSortOrder(value) {
+      const normalizedValue = String(value ?? "").trim().toLowerCase();
+      return normalizedValue === "asc" || normalizedValue === "desc" ? normalizedValue : null;
+    }
+
+    function toSortField(sortKey) {
+      return sortFieldByKey[sortKey] || sortFieldByKey[defaultSort.key];
+    }
+
+    function toSortKey(sortField) {
+      return sortKeyByField[sortField] || null;
+    }
+
+    function replaceURLSearchParams(updater) {
+      const url = new URL(globalScope.location.href);
+      updater(url.searchParams);
+      const nextURL = `${url.pathname}${url.search}${url.hash}`;
+      const currentURL = `${globalScope.location.pathname}${globalScope.location.search}${globalScope.location.hash}`;
+      if (nextURL !== currentURL) {
+        globalScope.history.replaceState({}, "", nextURL);
+      }
+    }
+
+    function removeSortParamsFromURL() {
+      replaceURLSearchParams((searchParams) => {
+        searchParams.delete(transactionsSortParamName);
+        searchParams.delete(transactionsOrderParamName);
+      });
+    }
+
+    function setSortParamsInURL(sortKey, sortOrder) {
+      replaceURLSearchParams((searchParams) => {
+        searchParams.set(transactionsSortParamName, sortKey);
+        searchParams.set(transactionsOrderParamName, sortOrder);
+      });
+    }
+
+    function syncSortFromURL() {
+      const params = new URLSearchParams(globalScope.location.search);
+      const sortParam = params.get(transactionsSortParamName);
+      const orderParam = params.get(transactionsOrderParamName);
+
+      if (!sortParam && !orderParam) {
+        currentSort = { ...defaultSort };
+        return;
+      }
+
+      const sortKey = normalizeSortKey(sortParam);
+      const sortOrder = normalizeSortOrder(orderParam);
+
+      if (sortKey && sortOrder) {
+        currentSort = { key: sortKey, order: sortOrder };
+        return;
+      }
+
+      removeSortParamsFromURL();
+      currentSort = { ...defaultSort };
+    }
+
+    function compareTransactionsByDate(left, right) {
+      const dateCompare = left.transaction_date.localeCompare(right.transaction_date);
+      if (dateCompare !== 0) {
+        return dateCompare;
+      }
+
+      return Number(left.id) - Number(right.id);
+    }
+
+    function compareTransactionsByAmount(left, right) {
+      const amountCompare = Number(left.amount) - Number(right.amount);
+      if (amountCompare !== 0) {
+        return amountCompare;
+      }
+
+      return Number(left.id) - Number(right.id);
+    }
+
+    function sortTransactions(transactions, sortKey, sortOrder) {
+      const sorted = [...transactions].sort((left, right) => {
+        if (sortKey === "amount") {
+          return compareTransactionsByAmount(left, right);
         }
 
-        return Number(right.id) - Number(left.id);
+        return compareTransactionsByDate(left, right);
       });
+
+      return sortOrder === "desc" ? sorted.reverse() : sorted;
     }
 
     function computeRunningBalanceByTransactionID(transactions) {
@@ -98,14 +198,7 @@
       );
       const runningBalanceByTransactionID = new Map();
 
-      const orderedForBalance = [...transactions].sort((left, right) => {
-        const dateCompare = left.transaction_date.localeCompare(right.transaction_date);
-        if (dateCompare !== 0) {
-          return dateCompare;
-        }
-
-        return Number(left.id) - Number(right.id);
-      });
+      const orderedForBalance = sortTransactions(transactions, "date", "asc");
 
       for (const transaction of orderedForBalance) {
         const previousBalance = runningBalanceByBankAccountID.get(transaction.bank_account_id) ?? 0;
@@ -120,7 +213,7 @@
 
     function buildRenderRows(transactions) {
       const runningBalanceByTransactionID = computeRunningBalanceByTransactionID(transactions);
-      const orderedTransactions = sortTransactionsByDateDesc(transactions);
+      const orderedTransactions = sortTransactions(transactions, currentSort.key, currentSort.order);
 
       return orderedTransactions.map((transaction) => {
         const amount = Number(transaction.amount);
@@ -144,6 +237,7 @@
 
     function renderWithBootstrapTable(rows) {
       const tableQuery = globalScope.jQuery(elements.tableElement);
+      const currentSortField = toSortField(currentSort.key);
       const columns = [
         { field: "id", title: "ID" },
         { field: "transactionDate", title: "Date", sortable: true },
@@ -170,13 +264,47 @@
           search: false,
           sortReset: true,
           locale: "en-US",
-          sortName: "transactionDate",
-          sortOrder: "desc",
+          sortName: currentSortField,
+          sortOrder: currentSort.order,
           formatNoMatches: () => "No transactions yet",
         });
       } else {
         tableQuery.bootstrapTable("load", rows);
+
+        const options = tableQuery.bootstrapTable("getOptions") || {};
+        if (options.sortName !== currentSortField || options.sortOrder !== currentSort.order) {
+          tableQuery.bootstrapTable("sortBy", {
+            field: currentSortField,
+            sortOrder: currentSort.order,
+          });
+        }
       }
+    }
+
+    function initializeSortChangeBindings() {
+      if (isSortChangeBound || !supportsBootstrapTable()) {
+        return;
+      }
+
+      const tableQuery = globalScope.jQuery(elements.tableElement);
+      tableQuery.on("sort.bs.table", (event, sortField, sortOrder) => {
+        const sortKey = normalizeSortKey(toSortKey(sortField));
+        const normalizedSortOrder = normalizeSortOrder(sortOrder);
+
+        if (!sortKey || !normalizedSortOrder) {
+          removeSortParamsFromURL();
+          currentSort = { ...defaultSort };
+          return;
+        }
+
+        currentSort = {
+          key: sortKey,
+          order: normalizedSortOrder,
+        };
+        setSortParamsInURL(sortKey, normalizedSortOrder);
+      });
+
+      isSortChangeBound = true;
     }
 
     function renderWithTBody(rows) {
@@ -348,6 +476,8 @@
     async function load() {
       initializeModalBindings();
       initializeRowActionBindings();
+      syncSortFromURL();
+      initializeSortChangeBindings();
 
       try {
         const transactions = await apiRequest("/api/transactions", { method: "GET" });

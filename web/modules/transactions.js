@@ -50,8 +50,164 @@
       initModalBindings,
     } = globalScope.createUIFeedback({ elements, globalScope });
 
+    let isRowActionBound = false;
+
     function initializeModalBindings() {
       initModalBindings(resetForm);
+    }
+
+    function initializeRowActionBindings() {
+      if (isRowActionBound || !elements.bodyElement) {
+        return;
+      }
+
+      // Delegate actions so handlers continue working after table redraws.
+      elements.bodyElement.addEventListener("click", onRowAction);
+      isRowActionBound = true;
+    }
+
+    function supportsBootstrapTable() {
+      return Boolean(
+        elements.tableElement
+          && typeof globalScope.jQuery === "function"
+          && globalScope.jQuery.fn
+          && typeof globalScope.jQuery.fn.bootstrapTable === "function"
+      );
+    }
+
+    function normalizeActionsHtml(actionsCellHtml) {
+      return actionsCellHtml
+        .replace(/^\s*<td>/i, "")
+        .replace(/<\/td>\s*$/i, "");
+    }
+
+    function sortTransactionsByDateDesc(transactions) {
+      return [...transactions].sort((left, right) => {
+        const dateCompare = right.transaction_date.localeCompare(left.transaction_date);
+        if (dateCompare !== 0) {
+          return dateCompare;
+        }
+
+        return Number(right.id) - Number(left.id);
+      });
+    }
+
+    function computeRunningBalanceByTransactionID(transactions) {
+      const runningBalanceByBankAccountID = new Map(
+        getBankAccounts().map((bankAccount) => [bankAccount.id, Number(bankAccount.balance)])
+      );
+      const runningBalanceByTransactionID = new Map();
+
+      const orderedForBalance = [...transactions].sort((left, right) => {
+        const dateCompare = left.transaction_date.localeCompare(right.transaction_date);
+        if (dateCompare !== 0) {
+          return dateCompare;
+        }
+
+        return Number(left.id) - Number(right.id);
+      });
+
+      for (const transaction of orderedForBalance) {
+        const previousBalance = runningBalanceByBankAccountID.get(transaction.bank_account_id) ?? 0;
+        const amount = Number(transaction.amount);
+        const nextBalance = transaction.type === "income" ? previousBalance + amount : previousBalance - amount;
+        runningBalanceByBankAccountID.set(transaction.bank_account_id, nextBalance);
+        runningBalanceByTransactionID.set(transaction.id, nextBalance);
+      }
+
+      return runningBalanceByTransactionID;
+    }
+
+    function buildRenderRows(transactions) {
+      const runningBalanceByTransactionID = computeRunningBalanceByTransactionID(transactions);
+      const orderedTransactions = sortTransactionsByDateDesc(transactions);
+
+      return orderedTransactions.map((transaction) => {
+        const amount = Number(transaction.amount);
+        const runningBalance = runningBalanceByTransactionID.get(transaction.id) ?? 0;
+
+        return {
+          id: transaction.id,
+          transactionDate: escapeHtml(transaction.transaction_date),
+          type: escapeHtml(transaction.type),
+          amount: escapeHtml(amount.toFixed(2)),
+          amountValue: amount,
+          person: escapeHtml(formatPersonLabel(transaction.person_id)),
+          bankAccount: escapeHtml(formatBankAccountLabel(transaction.bank_account_id)),
+          balance: escapeHtml(runningBalance.toFixed(2)),
+          category: escapeHtml(formatCategoryLabel(transaction.category_id)),
+          notes: escapeHtml(transaction.notes || "-"),
+          actions: normalizeActionsHtml(generateActionsCell(transaction)),
+        };
+      });
+    }
+
+    function renderWithBootstrapTable(rows) {
+      const tableQuery = globalScope.jQuery(elements.tableElement);
+      const columns = [
+        { field: "id", title: "ID" },
+        { field: "transactionDate", title: "Date", sortable: true },
+        { field: "type", title: "Type" },
+        {
+          field: "amount",
+          title: "Amount",
+          sortable: true,
+          sorter: (leftAmount, rightAmount, leftRow, rightRow) => Number(leftRow.amountValue) - Number(rightRow.amountValue),
+        },
+        { field: "person", title: "Person" },
+        { field: "bankAccount", title: "Bank Account" },
+        { field: "balance", title: "Balance" },
+        { field: "category", title: "Category" },
+        { field: "notes", title: "Notes" },
+        { field: "actions", title: "Actions", escape: false },
+      ];
+
+      if (!tableQuery.data("bootstrap.table")) {
+        tableQuery.bootstrapTable({
+          columns,
+          data: rows,
+          pagination: false,
+          search: false,
+          sortReset: true,
+          locale: "en-US",
+          sortName: "transactionDate",
+          sortOrder: "desc",
+          formatNoMatches: () => "No transactions yet",
+        });
+      } else {
+        tableQuery.bootstrapTable("load", rows);
+      }
+    }
+
+    function renderWithTBody(rows) {
+      elements.bodyElement.innerHTML = "";
+
+      if (rows.length === 0) {
+        const row = document.createElement("tr");
+        const cell = document.createElement("td");
+        cell.colSpan = 10;
+        cell.textContent = "No transactions yet";
+        row.appendChild(cell);
+        elements.bodyElement.appendChild(row);
+        return;
+      }
+
+      for (const rowData of rows) {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${rowData.id}</td>
+          <td>${rowData.transactionDate}</td>
+          <td>${rowData.type}</td>
+          <td>${rowData.amount}</td>
+          <td>${rowData.person}</td>
+          <td>${rowData.bankAccount}</td>
+          <td>${rowData.balance}</td>
+          <td>${rowData.category}</td>
+          <td>${rowData.notes}</td>
+          <td>${rowData.actions}</td>
+        `;
+        elements.bodyElement.appendChild(row);
+      }
     }
 
     function formatPersonLabel(personID) {
@@ -122,47 +278,14 @@
 
     function render() {
       const transactions = getTransactions();
-      elements.bodyElement.innerHTML = "";
+      const rows = buildRenderRows(transactions);
 
-      if (transactions.length === 0) {
-        const row = document.createElement("tr");
-        const cell = document.createElement("td");
-        cell.colSpan = 10;
-        cell.textContent = "No transactions yet";
-        row.appendChild(cell);
-        elements.bodyElement.appendChild(row);
+      if (supportsBootstrapTable()) {
+        renderWithBootstrapTable(rows);
         return;
       }
 
-      const runningBalanceByBankAccountID = new Map(
-        getBankAccounts().map((bankAccount) => [bankAccount.id, Number(bankAccount.balance)])
-      );
-
-      for (const transaction of transactions) {
-        const previousBalance = runningBalanceByBankAccountID.get(transaction.bank_account_id) ?? 0;
-        const amount = Number(transaction.amount);
-        const nextBalance = transaction.type === "income" ? previousBalance + amount : previousBalance - amount;
-        runningBalanceByBankAccountID.set(transaction.bank_account_id, nextBalance);
-
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${transaction.id}</td>
-          <td>${escapeHtml(transaction.transaction_date)}</td>
-          <td>${escapeHtml(transaction.type)}</td>
-          <td>${escapeHtml(transaction.amount.toFixed(2))}</td>
-          <td>${escapeHtml(formatPersonLabel(transaction.person_id))}</td>
-          <td>${escapeHtml(formatBankAccountLabel(transaction.bank_account_id))}</td>
-          <td>${escapeHtml(nextBalance.toFixed(2))}</td>
-          <td>${escapeHtml(formatCategoryLabel(transaction.category_id))}</td>
-          <td>${escapeHtml(transaction.notes || "—")}</td>
-          ${generateActionsCell(transaction)}
-        `;
-        elements.bodyElement.appendChild(row);
-      }
-
-      elements.bodyElement.querySelectorAll("button").forEach((button) => {
-        button.addEventListener("click", onRowAction);
-      });
+      renderWithTBody(rows);
     }
 
     function populatePersonOptions() {
@@ -224,6 +347,7 @@
 
     async function load() {
       initializeModalBindings();
+      initializeRowActionBindings();
 
       try {
         const transactions = await apiRequest("/api/transactions", { method: "GET" });
@@ -286,8 +410,13 @@
     }
 
     function onRowAction(event) {
-      const action = event.target.getAttribute("data-action");
-      const id = event.target.getAttribute("data-id");
+      const button = event.target.closest("button[data-action][data-id]");
+      if (!button) {
+        return;
+      }
+
+      const action = button.getAttribute("data-action");
+      const id = button.getAttribute("data-id");
       if (!id) {
         return;
       }

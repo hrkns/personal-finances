@@ -59,6 +59,7 @@
         cancelButtonElement: documentRef.getElementById("transaction-cancel-button"),
         toastElement: documentRef.getElementById("transaction-form-toast"),
         messageElement: documentRef.getElementById("transaction-form-message"),
+        tableElement: documentRef.getElementById("transactions-table"),
         bodyElement: documentRef.getElementById("transactions-body"),
       },
       creditCards: {

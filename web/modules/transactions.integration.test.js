@@ -108,11 +108,15 @@ test("frontend shows running bank-account balance per transaction row", async ()
   const rows = document.querySelectorAll("#transactions-body tr");
   assert.equal(rows.length, 2);
 
-  const firstRowCells = rows[0].querySelectorAll("td");
-  const secondRowCells = rows[1].querySelectorAll("td");
+  const rowByDate = new Map(
+    Array.from(rows, (row) => {
+      const cells = row.querySelectorAll("td");
+      return [cells[1].textContent, cells[6].textContent];
+    })
+  );
 
-  assert.equal(firstRowCells[6].textContent, "400.00");
-  assert.equal(secondRowCells[6].textContent, "280.00");
+  assert.equal(rowByDate.get("2026-02-18"), "400.00");
+  assert.equal(rowByDate.get("2026-02-19"), "280.00");
 
   dom.window.close();
 });

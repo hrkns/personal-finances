@@ -54,6 +54,7 @@
     const transactionsOrderParamName = "transactionsOrder";
     const transactionsStartDateParamName = "transactionsStartDate";
     const transactionsEndDateParamName = "transactionsEndDate";
+    const transactionsBankAccountsParamName = "transactionsBankAccounts";
     const sortKeyByField = {
       transactionDate: "date",
       amount: "amount",
@@ -70,8 +71,10 @@
     let isRowActionBound = false;
     let isSortChangeBound = false;
     let isDateFilterBound = false;
+    let isBankAccountFilterBound = false;
     let currentSort = { ...defaultSort };
     let currentDateRange = getDefaultDateRange();
+    let currentBankAccountFilterIDs = new Set();
 
     function initializeModalBindings() {
       initModalBindings(resetForm);
@@ -168,6 +171,77 @@
       }
     }
 
+    function syncBankAccountFilterControl() {
+      if (!elements.filterBankAccountsElement) {
+        return;
+      }
+
+      const selectedValues = new Set([...currentBankAccountFilterIDs].map((id) => String(id)));
+      const options = elements.filterBankAccountsElement.options;
+      for (const option of options) {
+        option.selected = selectedValues.has(option.value);
+      }
+    }
+
+    function normalizePositiveIntegerString(value) {
+      const normalizedValue = String(value ?? "").trim();
+      if (!/^\d+$/.test(normalizedValue)) {
+        return null;
+      }
+
+      const numericValue = Number(normalizedValue);
+      if (!Number.isInteger(numericValue) || numericValue <= 0) {
+        return null;
+      }
+
+      return String(numericValue);
+    }
+
+    function getAvailableBankAccountIDSet() {
+      return new Set(getBankAccounts().map((item) => String(item.id)));
+    }
+
+    function getSanitizedBankAccountIDs(ids) {
+      const availableIDs = getAvailableBankAccountIDSet();
+      const uniqueIDs = new Set();
+      const sanitizedIDs = [];
+
+      for (const rawID of ids) {
+        const normalizedID = normalizePositiveIntegerString(rawID);
+        if (!normalizedID || uniqueIDs.has(normalizedID) || !availableIDs.has(normalizedID)) {
+          continue;
+        }
+
+        uniqueIDs.add(normalizedID);
+        sanitizedIDs.push(normalizedID);
+      }
+
+      sanitizedIDs.sort((left, right) => Number(left) - Number(right));
+      return sanitizedIDs;
+    }
+
+    function getCanonicalPositiveIntegerIDs(ids) {
+      const uniqueIDs = new Set();
+      const canonicalIDs = [];
+
+      for (const rawID of ids) {
+        const normalizedID = normalizePositiveIntegerString(rawID);
+        if (!normalizedID || uniqueIDs.has(normalizedID)) {
+          continue;
+        }
+
+        uniqueIDs.add(normalizedID);
+        canonicalIDs.push(normalizedID);
+      }
+
+      canonicalIDs.sort((left, right) => Number(left) - Number(right));
+      return canonicalIDs;
+    }
+
+    function serializeBankAccountIDs(ids) {
+      return ids.join(",");
+    }
+
     function normalizeSortKey(value) {
       const normalizedValue = String(value ?? "").trim().toLowerCase();
       return sortFieldByKey[normalizedValue] ? normalizedValue : null;
@@ -222,6 +296,84 @@
         searchParams.set(transactionsStartDateParamName, startDate);
         searchParams.set(transactionsEndDateParamName, endDate);
       });
+    }
+
+    function removeBankAccountFilterParamFromURL() {
+      replaceURLSearchParams((searchParams) => {
+        searchParams.delete(transactionsBankAccountsParamName);
+      });
+    }
+
+    function setBankAccountFilterParamInURL(ids) {
+      replaceURLSearchParams((searchParams) => {
+        if (ids.length === 0) {
+          searchParams.delete(transactionsBankAccountsParamName);
+          return;
+        }
+
+        searchParams.set(transactionsBankAccountsParamName, serializeBankAccountIDs(ids));
+      });
+    }
+
+    function syncBankAccountFilterFromURL() {
+      const params = new URLSearchParams(globalScope.location.search);
+      const bankAccountsParam = params.get(transactionsBankAccountsParamName);
+
+      if (!bankAccountsParam) {
+        currentBankAccountFilterIDs = new Set();
+        syncBankAccountFilterControl();
+        return;
+      }
+
+      const parsedValues = bankAccountsParam.split(",").map((value) => value.trim()).filter(Boolean);
+      if (parsedValues.length === 0) {
+        currentBankAccountFilterIDs = new Set();
+        removeBankAccountFilterParamFromURL();
+        syncBankAccountFilterControl();
+        return;
+      }
+
+      const containsInvalidToken = parsedValues.some((value) => !normalizePositiveIntegerString(value));
+      const availableIDs = getAvailableBankAccountIDSet();
+      const sanitizedIDs = availableIDs.size > 0
+        ? getSanitizedBankAccountIDs(parsedValues)
+        : getCanonicalPositiveIntegerIDs(parsedValues);
+      const isValidParam = !containsInvalidToken && sanitizedIDs.length === getCanonicalPositiveIntegerIDs(parsedValues).length;
+
+      if (!isValidParam) {
+        currentBankAccountFilterIDs = new Set();
+        removeBankAccountFilterParamFromURL();
+        syncBankAccountFilterControl();
+        return;
+      }
+
+      currentBankAccountFilterIDs = new Set(sanitizedIDs);
+      setBankAccountFilterParamInURL(sanitizedIDs);
+      syncBankAccountFilterControl();
+    }
+
+    function onBankAccountFilterChange() {
+      if (!elements.filterBankAccountsElement) {
+        return;
+      }
+
+      const selectedIDs = getSanitizedBankAccountIDs(
+        Array.from(elements.filterBankAccountsElement.selectedOptions, (option) => option.value)
+      );
+
+      currentBankAccountFilterIDs = new Set(selectedIDs);
+      setBankAccountFilterParamInURL(selectedIDs);
+      syncBankAccountFilterControl();
+      render();
+    }
+
+    function initializeBankAccountFilterBindings() {
+      if (isBankAccountFilterBound || !elements.filterBankAccountsElement) {
+        return;
+      }
+
+      elements.filterBankAccountsElement.addEventListener("change", onBankAccountFilterChange);
+      isBankAccountFilterBound = true;
     }
 
     function syncDateRangeFromURL() {
@@ -360,6 +512,14 @@
       });
     }
 
+    function filterTransactionsByBankAccounts(transactions) {
+      if (currentBankAccountFilterIDs.size === 0) {
+        return transactions;
+      }
+
+      return transactions.filter((transaction) => currentBankAccountFilterIDs.has(String(transaction.bank_account_id)));
+    }
+
     function computeRunningBalanceByTransactionID(transactions) {
       const runningBalanceByBankAccountID = new Map(
         getBankAccounts().map((bankAccount) => [bankAccount.id, Number(bankAccount.balance)])
@@ -380,7 +540,8 @@
     }
 
     function buildRenderRows(transactions) {
-      const filteredTransactions = filterTransactionsByDateRange(transactions);
+      const filteredByDateTransactions = filterTransactionsByDateRange(transactions);
+      const filteredTransactions = filterTransactionsByBankAccounts(filteredByDateTransactions);
       const runningBalanceByTransactionID = computeRunningBalanceByTransactionID(filteredTransactions);
       const orderedTransactions = sortTransactions(filteredTransactions, currentSort.key, currentSort.order);
 
@@ -621,6 +782,26 @@
       }
 
       elements.bankAccountIdElement.value = selectedValue;
+
+      if (elements.filterBankAccountsElement) {
+        const previousSelectedFilterIDs = [...currentBankAccountFilterIDs];
+        elements.filterBankAccountsElement.innerHTML = "";
+
+        for (const bankAccount of getBankAccounts()) {
+          const option = document.createElement("option");
+          option.value = String(bankAccount.id);
+          option.textContent = formatBankAccountLabel(bankAccount.id);
+          elements.filterBankAccountsElement.appendChild(option);
+        }
+
+        const availableIDs = getAvailableBankAccountIDSet();
+        const sanitizedFilterIDs = availableIDs.size > 0
+          ? getSanitizedBankAccountIDs(previousSelectedFilterIDs)
+          : getCanonicalPositiveIntegerIDs(previousSelectedFilterIDs);
+        currentBankAccountFilterIDs = new Set(sanitizedFilterIDs);
+        setBankAccountFilterParamInURL(sanitizedFilterIDs);
+        syncBankAccountFilterControl();
+      }
     }
 
     function populateCategoryOptions() {
@@ -647,8 +828,10 @@
       initializeRowActionBindings();
       syncSortFromURL();
       syncDateRangeFromURL();
+      syncBankAccountFilterFromURL();
       initializeSortChangeBindings();
       initializeDateFilterBindings();
+      initializeBankAccountFilterBindings();
 
       try {
         const transactions = await apiRequest("/api/transactions", { method: "GET" });
@@ -692,6 +875,7 @@
         }
 
         hideModal();
+        syncBankAccountFilterFromURL();
         resetForm();
         await load();
       } catch (error) {
@@ -703,6 +887,7 @@
       try {
         await apiRequest(`/api/transactions/${id}`, { method: "DELETE" });
         setMessage("Transaction deleted", false);
+        syncBankAccountFilterFromURL();
         resetForm();
         await load();
       } catch (error) {

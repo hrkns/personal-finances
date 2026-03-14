@@ -63,6 +63,7 @@
         filterStartDateElement: documentRef.getElementById("transactions-filter-start-date"),
         filterEndDateElement: documentRef.getElementById("transactions-filter-end-date"),
         filterClearButtonElement: documentRef.getElementById("transactions-filter-clear-button"),
+        filterBankAccountsElement: documentRef.getElementById("transactions-filter-bank-accounts"),
         bodyElement: documentRef.getElementById("transactions-body"),
       },
       creditCards: {

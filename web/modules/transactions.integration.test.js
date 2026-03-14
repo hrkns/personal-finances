@@ -96,6 +96,36 @@ async function seedTransactionDependencies(window, document) {
   await flush();
 }
 
+async function createAdditionalBankAccount(window, document, values = {}) {
+  const {
+    bankID = "1",
+    currencyID = "1",
+    accountNumber = "ACC-002",
+    balance = "50",
+  } = values;
+
+  document.querySelector('[data-route-tab="settings"]').click();
+  document.querySelector('[data-settings-tab="bank-accounts"]').click();
+  document.getElementById("bank-account-bank-id").value = bankID;
+  document.getElementById("bank-account-currency-id").value = currencyID;
+  document.getElementById("bank-account-number").value = accountNumber;
+  document.getElementById("bank-account-balance").value = balance;
+  document.getElementById("bank-account-form").dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+  await flush();
+}
+
+async function setBankAccountFilterSelection(window, document, selectedIDs) {
+  const filterElement = document.getElementById("transactions-filter-bank-accounts");
+  const selectedSet = new Set(selectedIDs.map(String));
+
+  for (const option of filterElement.options) {
+    option.selected = selectedSet.has(option.value);
+  }
+
+  filterElement.dispatchEvent(new window.Event("change", { bubbles: true }));
+  await flush();
+}
+
 test("frontend can create and list a transaction", async () => {
   const dates = getCurrentMonthDateFixtures();
   const { dom, window, document } = await setupFrontendApp();
@@ -438,6 +468,156 @@ test("frontend clear date-range control removes filter and shows all transaction
   const rowsText = document.getElementById("transactions-body").textContent;
   assert.match(rowsText, new RegExp(dates.firstInMonth));
   assert.match(rowsText, new RegExp(dates.previousMonthLast));
+
+  dom.window.close();
+});
+
+test("frontend bank account filter defaults to empty and shows all bank accounts", async () => {
+  const dates = getCurrentMonthDateFixtures();
+  const { dom, window, document } = await setupFrontendApp();
+
+  await seedTransactionDependencies(window, document);
+  await createAdditionalBankAccount(window, document);
+
+  document.querySelector('[data-route-tab="transactions"]').click();
+
+  await submitTransaction(window, document, {
+    date: dates.firstInMonth,
+    type: "income",
+    amount: 40,
+    bankAccountID: "1",
+  });
+
+  await submitTransaction(window, document, {
+    date: dates.secondInMonth,
+    type: "income",
+    amount: 60,
+    bankAccountID: "2",
+  });
+
+  const filterElement = document.getElementById("transactions-filter-bank-accounts");
+  const selectedOptions = Array.from(filterElement.selectedOptions);
+  assert.equal(selectedOptions.length, 0);
+  assert.equal(window.location.search.includes("transactionsBankAccounts="), false);
+
+  const rows = document.querySelectorAll("#transactions-body tr");
+  assert.equal(rows.length, 2);
+
+  dom.window.close();
+});
+
+test("frontend applies valid bank account filter from URL params", async () => {
+  const dates = getCurrentMonthDateFixtures();
+  const { dom, window, document } = await setupFrontendApp();
+
+  await seedTransactionDependencies(window, document);
+  await createAdditionalBankAccount(window, document);
+
+  document.querySelector('[data-route-tab="transactions"]').click();
+
+  const url = new URL(window.location.href);
+  url.searchParams.set("transactionsBankAccounts", "1");
+  window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+
+  await submitTransaction(window, document, {
+    date: dates.firstInMonth,
+    type: "income",
+    amount: 40,
+    bankAccountID: "1",
+  });
+
+  await submitTransaction(window, document, {
+    date: dates.secondInMonth,
+    type: "income",
+    amount: 60,
+    bankAccountID: "2",
+  });
+
+  const rows = document.querySelectorAll("#transactions-body tr");
+  assert.equal(rows.length, 1);
+
+  const rowCells = rows[0].querySelectorAll("td");
+  assert.match(rowCells[5].textContent, /ACC-001/);
+
+  const selectedOptions = Array.from(document.getElementById("transactions-filter-bank-accounts").selectedOptions);
+  assert.deepEqual(selectedOptions.map((option) => option.value), ["1"]);
+  assert.equal(new window.URLSearchParams(window.location.search).get("transactionsBankAccounts"), "1");
+
+  dom.window.close();
+});
+
+test("frontend falls back to empty bank account filter when URL param is invalid", async () => {
+  const dates = getCurrentMonthDateFixtures();
+  const { dom, window, document } = await setupFrontendApp({
+    initialUrl: "http://localhost:8080/?view=transactions&transactions=list&transactionsBankAccounts=2,invalid",
+  });
+
+  await seedTransactionDependencies(window, document);
+  await createAdditionalBankAccount(window, document);
+
+  document.querySelector('[data-route-tab="transactions"]').click();
+
+  await submitTransaction(window, document, {
+    date: dates.firstInMonth,
+    type: "income",
+    amount: 40,
+    bankAccountID: "1",
+  });
+
+  await submitTransaction(window, document, {
+    date: dates.secondInMonth,
+    type: "income",
+    amount: 60,
+    bankAccountID: "2",
+  });
+
+  const selectedOptions = Array.from(document.getElementById("transactions-filter-bank-accounts").selectedOptions);
+  assert.equal(selectedOptions.length, 0);
+  assert.equal(window.location.search.includes("transactionsBankAccounts="), false);
+
+  const rows = document.querySelectorAll("#transactions-body tr");
+  assert.equal(rows.length, 2);
+
+  dom.window.close();
+});
+
+test("frontend bank account multi-select filter updates URL and supports all-accounts fallback", async () => {
+  const dates = getCurrentMonthDateFixtures();
+  const { dom, window, document } = await setupFrontendApp();
+
+  await seedTransactionDependencies(window, document);
+  await createAdditionalBankAccount(window, document);
+
+  document.querySelector('[data-route-tab="transactions"]').click();
+
+  await submitTransaction(window, document, {
+    date: dates.firstInMonth,
+    type: "income",
+    amount: 40,
+    bankAccountID: "1",
+  });
+
+  await submitTransaction(window, document, {
+    date: dates.secondInMonth,
+    type: "income",
+    amount: 60,
+    bankAccountID: "2",
+  });
+
+  await setBankAccountFilterSelection(window, document, ["1", "2"]);
+  assert.equal(new window.URLSearchParams(window.location.search).get("transactionsBankAccounts"), "1,2");
+  assert.equal(document.querySelectorAll("#transactions-body tr").length, 2);
+
+  await setBankAccountFilterSelection(window, document, ["1"]);
+  assert.equal(new window.URLSearchParams(window.location.search).get("transactionsBankAccounts"), "1");
+  assert.equal(document.querySelectorAll("#transactions-body tr").length, 1);
+
+  const singleRowCells = document.querySelectorAll("#transactions-body tr")[0].querySelectorAll("td");
+  assert.match(singleRowCells[5].textContent, /ACC-001/);
+
+  await setBankAccountFilterSelection(window, document, []);
+  assert.equal(window.location.search.includes("transactionsBankAccounts="), false);
+  assert.equal(document.querySelectorAll("#transactions-body tr").length, 2);
 
   dom.window.close();
 });

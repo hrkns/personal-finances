@@ -69,7 +69,7 @@
 
     function normalizeActionsHtml(actionsCellHtml) {
       return actionsCellHtml
-        .replace(/^\s*<td>/i, "")
+        .replace(/^\s*<td\b[^>]*>/i, "")
         .replace(/<\/td>\s*$/i, "");
     }
 
@@ -92,8 +92,8 @@
     }
 
     function buildRenderRows(transactions) {
+      const runningBalanceByTransactionID = computeRunningBalanceByTransactionID(transactions);
       const filteredTransactions = filtering.filterTransactions(transactions);
-      const runningBalanceByTransactionID = computeRunningBalanceByTransactionID(filteredTransactions);
       const orderedTransactions = sorting.sortTransactions(filteredTransactions);
 
       return orderedTransactions.map((transaction) => {

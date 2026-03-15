@@ -190,6 +190,36 @@ test("frontend shows running bank-account balance per transaction row", async ()
   dom.window.close();
 });
 
+test("frontend keeps running balance accurate when prior transactions are outside active filters", async () => {
+  const dates = getCurrentMonthDateFixtures();
+  const { dom, window, document } = await setupFrontendApp();
+
+  await seedTransactionDependencies(window, document);
+
+  document.querySelector('[data-route-tab="transactions"]').click();
+
+  await submitTransaction(window, document, {
+    date: dates.previousMonthLast,
+    type: "income",
+    amount: 50,
+  });
+
+  await submitTransaction(window, document, {
+    date: dates.firstInMonth,
+    type: "income",
+    amount: 20,
+  });
+
+  const rows = document.querySelectorAll("#transactions-body tr");
+  assert.equal(rows.length, 1);
+
+  const firstRowCells = rows[0].querySelectorAll("td");
+  assert.equal(firstRowCells[1].textContent, dates.firstInMonth);
+  assert.equal(firstRowCells[6].textContent, "170.00");
+
+  dom.window.close();
+});
+
 test("frontend supports transaction edit and delete actions", async () => {
   const dates = getCurrentMonthDateFixtures();
   const { dom, window, document } = await setupFrontendApp();

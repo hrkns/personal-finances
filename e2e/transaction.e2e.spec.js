@@ -49,12 +49,39 @@ async function getOptionValueContaining(selectLocator, expectedText) {
   return value;
 }
 
+async function createPersonWithRetry(page, baseName, maxAttempts = 3) {
+  let lastError = null;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    const personName = attempt === 1 ? baseName : `${baseName} Retry ${attempt}`;
+
+    await openSettingsSection(page, "People");
+    await page.getByRole("button", { name: "Create person" }).click();
+
+    const peopleForm = page.locator("#person-form");
+    await peopleForm.getByLabel("Name").fill(personName);
+    await peopleForm.getByRole("button", { name: "Create" }).click();
+
+    try {
+      await expect(page.locator("#person-form-message")).toHaveText("Person created", { timeout: 7000 });
+      return personName;
+    } catch (error) {
+      lastError = error;
+      if (attempt < maxAttempts) {
+        await page.waitForTimeout(400);
+      }
+    }
+  }
+
+  throw lastError || new Error("Could not create person");
+}
+
 async function createTransactionDependencies(page, suffix, options = {}) {
   const {
     createSecondBankAccount = false,
   } = options;
 
-  const personName = `Transaction Person ${suffix}`;
+  const basePersonName = `Transaction Person ${suffix}`;
   const categoryName = `Transaction Category ${suffix}`;
   const currencyName = `Transaction Currency ${suffix}`;
   const currencyCode = uniqueCurrencyCode("T");
@@ -62,12 +89,7 @@ async function createTransactionDependencies(page, suffix, options = {}) {
   const accountNumber = `TX-${suffix}`;
   const secondAccountNumber = `TX2-${suffix}`;
 
-  await openSettingsSection(page, "People");
-  await page.getByRole("button", { name: "Create person" }).click();
-  const peopleForm = page.locator("#person-form");
-  await peopleForm.getByLabel("Name").fill(personName);
-  await peopleForm.getByRole("button", { name: "Create" }).click();
-  await expect(page.locator("#person-form-message")).toHaveText("Person created");
+  const personName = await createPersonWithRetry(page, basePersonName);
 
   await page.getByRole("button", { name: "Transactions" }).click();
   await page.getByRole("button", { name: "Transaction Categories" }).click();

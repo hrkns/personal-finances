@@ -445,6 +445,34 @@ test("frontend sets default transactions date params when transactions list is a
   dom.window.close();
 });
 
+test("frontend sets transactions default date params on app:route-changed without tab click", async () => {
+  const dates = getCurrentMonthDateFixtures();
+  const { dom, window } = await setupFrontendApp({
+    initialUrl: "http://localhost:8080/?view=home",
+  });
+
+  assert.equal(window.location.search.includes("transactionsStartDate="), false);
+  assert.equal(window.location.search.includes("transactionsEndDate="), false);
+
+  window.history.pushState({}, "", "http://localhost:8080/?view=transactions&transactions=list");
+  window.dispatchEvent(new window.CustomEvent("app:route-changed", {
+    detail: {
+      route: "transactions",
+      transactionSection: "list",
+      settingsSection: null,
+      creditCardSection: null,
+      expenseSection: null,
+    },
+  }));
+  await flush();
+
+  const searchParams = new window.URLSearchParams(window.location.search);
+  assert.equal(searchParams.get("transactionsStartDate"), dates.start);
+  assert.equal(searchParams.get("transactionsEndDate"), dates.end);
+
+  dom.window.close();
+});
+
 test("frontend applies valid date-range filter from URL params", async () => {
   const dates = getCurrentMonthDateFixtures();
   const { dom, window, document } = await setupFrontendApp({

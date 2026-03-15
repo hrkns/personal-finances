@@ -212,21 +212,30 @@
       render();
     }
 
+    function isTransactionsListRouteState(routeState) {
+      return routeState?.route === "transactions" && routeState?.transactionSection === "list";
+    }
+
+    function onRouteStateChanged(routeState) {
+      if (!isTransactionsListRouteState(routeState) && !isTransactionsListRouteActive()) {
+        return;
+      }
+
+      onTransactionsListActivated();
+    }
+
     function initializeRouteActivationBindings() {
       if (isRouteActivationBound) {
         return;
       }
 
-      const transactionsRouteButton = document.querySelector('[data-route-tab="transactions"]');
-      const transactionsListButton = document.querySelector('[data-transactions-tab="list"]');
+      runtimeScope.addEventListener("app:route-changed", (event) => {
+        onRouteStateChanged(event.detail || null);
+      });
 
-      if (transactionsRouteButton) {
-        transactionsRouteButton.addEventListener("click", onTransactionsListActivated);
-      }
-
-      if (transactionsListButton) {
-        transactionsListButton.addEventListener("click", onTransactionsListActivated);
-      }
+      runtimeScope.addEventListener("popstate", () => {
+        onRouteStateChanged(null);
+      });
 
       isRouteActivationBound = true;
     }

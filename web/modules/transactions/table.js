@@ -28,10 +28,17 @@
       onFiltersChanged: () => {
         render();
       },
+      shouldPersistDefaultDateRange: isTransactionsListRouteActive,
     });
 
     let isRowActionBound = false;
     let isSortChangeBound = false;
+    let isRouteActivationBound = false;
+
+    function isTransactionsListRouteActive() {
+      const searchParams = new URLSearchParams(runtimeScope.location.search);
+      return searchParams.get("view") === "transactions" && searchParams.get("transactions") === "list";
+    }
 
     function initializeRowActionBindings() {
       if (isRowActionBound || !elements.bodyElement) {
@@ -95,7 +102,7 @@
           bankAccount: escapeHtml(formatBankAccountLabel(transaction.bank_account_id)),
           balance: escapeHtml(runningBalance.toFixed(2)),
           category: escapeHtml(formatCategoryLabel(transaction.category_id)),
-          notes: escapeHtml(transaction.notes || "-"),
+          notes: escapeHtml(transaction.notes || "—"),
           actions: normalizeActionsHtml(generateActionsCell(transaction)),
         };
       });
@@ -192,10 +199,35 @@
       isSortChangeBound = true;
     }
 
+    function onTransactionsListActivated() {
+      syncFromURL();
+      render();
+    }
+
+    function initializeRouteActivationBindings() {
+      if (isRouteActivationBound) {
+        return;
+      }
+
+      const transactionsRouteButton = document.querySelector('[data-route-tab="transactions"]');
+      const transactionsListButton = document.querySelector('[data-transactions-tab="list"]');
+
+      if (transactionsRouteButton) {
+        transactionsRouteButton.addEventListener("click", onTransactionsListActivated);
+      }
+
+      if (transactionsListButton) {
+        transactionsListButton.addEventListener("click", onTransactionsListActivated);
+      }
+
+      isRouteActivationBound = true;
+    }
+
     function initialize() {
       initializeRowActionBindings();
       syncFromURL();
       initializeSortChangeBindings();
+      initializeRouteActivationBindings();
       filtering.bindControlListeners();
     }
 

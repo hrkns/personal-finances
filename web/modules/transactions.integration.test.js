@@ -228,6 +228,28 @@ test("frontend supports transaction edit and delete actions", async () => {
   dom.window.close();
 });
 
+test("frontend renders em dash for empty transaction notes", async () => {
+  const dates = getCurrentMonthDateFixtures();
+  const { dom, window, document } = await setupFrontendApp();
+
+  await seedTransactionDependencies(window, document);
+
+  document.querySelector('[data-route-tab="transactions"]').click();
+
+  await submitTransaction(window, document, {
+    date: dates.secondInMonth,
+    type: "income",
+    amount: 210,
+    notes: "",
+  });
+
+  const row = document.querySelector("#transactions-body tr");
+  const cells = row.querySelectorAll("td");
+  assert.equal(cells[8].textContent.trim(), "—");
+
+  dom.window.close();
+});
+
 test("frontend shows validation error for invalid transaction payload", async () => {
   const { dom, window, document } = await setupFrontendApp();
 
@@ -359,6 +381,36 @@ test("frontend applies default current-month date range filter and records it in
   assert.match(window.location.search, new RegExp(`transactionsEndDate=${dates.end}`));
   assert.equal(document.getElementById("transactions-filter-start-date").value, dates.start);
   assert.equal(document.getElementById("transactions-filter-end-date").value, dates.end);
+
+  dom.window.close();
+});
+
+test("frontend does not add transactions date params while outside transactions list", async () => {
+  const { dom, window } = await setupFrontendApp({
+    initialUrl: "http://localhost:8080/?view=settings&settings=people",
+  });
+
+  assert.equal(window.location.search.includes("transactionsStartDate="), false);
+  assert.equal(window.location.search.includes("transactionsEndDate="), false);
+
+  dom.window.close();
+});
+
+test("frontend sets default transactions date params when transactions list is activated", async () => {
+  const dates = getCurrentMonthDateFixtures();
+  const { dom, window, document } = await setupFrontendApp({
+    initialUrl: "http://localhost:8080/?view=home",
+  });
+
+  assert.equal(window.location.search.includes("transactionsStartDate="), false);
+  assert.equal(window.location.search.includes("transactionsEndDate="), false);
+
+  document.querySelector('[data-route-tab="transactions"]').click();
+  await flush();
+
+  const searchParams = new window.URLSearchParams(window.location.search);
+  assert.equal(searchParams.get("transactionsStartDate"), dates.start);
+  assert.equal(searchParams.get("transactionsEndDate"), dates.end);
 
   dom.window.close();
 });

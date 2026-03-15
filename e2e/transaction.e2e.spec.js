@@ -151,8 +151,9 @@ async function readQueryParam(page, key) {
 
 async function setDateFilterInput(page, selector, value) {
   await page.locator(selector).evaluate((element, nextValue) => {
+    const EventConstructor = element.ownerDocument.defaultView.Event;
     element.value = nextValue;
-    element.dispatchEvent(new Event("change", { bubbles: true }));
+    element.dispatchEvent(new EventConstructor("change", { bubbles: true }));
   }, value);
 }
 

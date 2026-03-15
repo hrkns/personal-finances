@@ -9,6 +9,7 @@
       getBankAccounts,
       formatBankAccountLabel,
       onFiltersChanged,
+      shouldPersistDefaultDateRange = () => true,
     } = config;
 
     const transactionsStartDateParamName = "transactionsStartDate";
@@ -237,7 +238,9 @@
       if (!startDateParam && !endDateParam) {
         currentDateRange = defaultDateRange;
         currentDateRangeInput = { ...defaultDateRange };
-        setDateRangeParamsInURL(defaultDateRange.start, defaultDateRange.end);
+        if (shouldPersistDefaultDateRange()) {
+          setDateRangeParamsInURL(defaultDateRange.start, defaultDateRange.end);
+        }
         clearFilterMessage();
         syncDateRangeControls();
         return;

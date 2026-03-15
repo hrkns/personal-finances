@@ -15,6 +15,10 @@
     rel="stylesheet"
     href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
   />
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-table@1.24.2/dist/bootstrap-table.min.css"
+  />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -75,7 +79,49 @@
           <h2 class="mb-0">List of transactions</h2>
           <button class="btn btn-success" id="transaction-open-modal-button" type="button">Create transaction</button>
         </div>
-        <table>
+        <div class="d-flex flex-wrap align-items-end gap-2 mb-3" aria-label="Transaction filters">
+          <div>
+            <label class="form-label mb-1" for="transactions-filter-start-date">Start date</label>
+            <input class="form-control" id="transactions-filter-start-date" type="date" />
+          </div>
+          <div>
+            <label class="form-label mb-1" for="transactions-filter-end-date">End date</label>
+            <input class="form-control" id="transactions-filter-end-date" type="date" />
+          </div>
+          <button
+            class="btn btn-outline-secondary"
+            id="transactions-filter-clear-button"
+            type="button"
+            aria-label="Clear date filter"
+            title="Clear date filter"
+          >
+            X
+          </button>
+          <div>
+            <label class="form-label mb-1" for="transactions-filter-bank-accounts">Bank accounts</label>
+            <select class="form-select" id="transactions-filter-bank-accounts" multiple aria-label="Filter by bank accounts"></select>
+          </div>
+          <button
+            class="btn btn-outline-secondary"
+            id="transactions-filter-clear-bank-accounts-button"
+            type="button"
+            aria-label="Clear bank accounts filter"
+            title="Clear bank accounts filter"
+          >
+            X
+          </button>
+          <button
+            class="btn btn-outline-secondary"
+            id="transactions-filter-clear-all-button"
+            type="button"
+            aria-label="Clear all filters"
+            title="Clear all filters"
+          >
+            Clear filters
+          </button>
+        </div>
+        <div id="transactions-filter-message" class="text-danger small mb-2" role="status" aria-live="polite"></div>
+        <table id="transactions-table">
           <thead>
             <tr>
               <th>ID</th>
@@ -892,6 +938,10 @@
   <script src="modules/banks.js"></script>
   <script src="modules/bank-accounts.js"></script>
   <script src="modules/transaction-categories.js"></script>
+  <script src="modules/transactions/url-state.js"></script>
+  <script src="modules/transactions/table-sorting.js"></script>
+  <script src="modules/transactions/table-filtering.js"></script>
+  <script src="modules/transactions/table.js"></script>
   <script src="modules/transactions.js"></script>
   <script src="modules/credit-cards.js"></script>
   <script src="modules/credit-card-cycles.js"></script>
@@ -900,11 +950,13 @@
   <script src="modules/credit-card-subscriptions.js"></script>
   <script src="modules/expenses.js"></script>
   <script src="modules/expense-payments.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
   <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
     crossorigin="anonymous"
   ></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.24.2/dist/bootstrap-table.min.js"></script>
   <script src="app/index.js"></script>
 </body>
 </html>

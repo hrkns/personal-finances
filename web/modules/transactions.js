@@ -50,6 +50,19 @@
       initModalBindings,
     } = globalScope.createUIFeedback({ elements, globalScope });
 
+    const tableModule = globalScope.createTransactionsTableModule({
+      globalScope,
+      elements,
+      escapeHtml,
+      generateActionsCell,
+      getTransactions,
+      getBankAccounts,
+      formatPersonLabel,
+      formatBankAccountLabel,
+      formatCategoryLabel,
+      onRowAction,
+    });
+
     function initializeModalBindings() {
       initModalBindings(resetForm);
     }
@@ -121,48 +134,7 @@
     }
 
     function render() {
-      const transactions = getTransactions();
-      elements.bodyElement.innerHTML = "";
-
-      if (transactions.length === 0) {
-        const row = document.createElement("tr");
-        const cell = document.createElement("td");
-        cell.colSpan = 10;
-        cell.textContent = "No transactions yet";
-        row.appendChild(cell);
-        elements.bodyElement.appendChild(row);
-        return;
-      }
-
-      const runningBalanceByBankAccountID = new Map(
-        getBankAccounts().map((bankAccount) => [bankAccount.id, Number(bankAccount.balance)])
-      );
-
-      for (const transaction of transactions) {
-        const previousBalance = runningBalanceByBankAccountID.get(transaction.bank_account_id) ?? 0;
-        const amount = Number(transaction.amount);
-        const nextBalance = transaction.type === "income" ? previousBalance + amount : previousBalance - amount;
-        runningBalanceByBankAccountID.set(transaction.bank_account_id, nextBalance);
-
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${transaction.id}</td>
-          <td>${escapeHtml(transaction.transaction_date)}</td>
-          <td>${escapeHtml(transaction.type)}</td>
-          <td>${escapeHtml(transaction.amount.toFixed(2))}</td>
-          <td>${escapeHtml(formatPersonLabel(transaction.person_id))}</td>
-          <td>${escapeHtml(formatBankAccountLabel(transaction.bank_account_id))}</td>
-          <td>${escapeHtml(nextBalance.toFixed(2))}</td>
-          <td>${escapeHtml(formatCategoryLabel(transaction.category_id))}</td>
-          <td>${escapeHtml(transaction.notes || "—")}</td>
-          ${generateActionsCell(transaction)}
-        `;
-        elements.bodyElement.appendChild(row);
-      }
-
-      elements.bodyElement.querySelectorAll("button").forEach((button) => {
-        button.addEventListener("click", onRowAction);
-      });
+      tableModule.render();
     }
 
     function populatePersonOptions() {
@@ -201,6 +173,7 @@
       }
 
       elements.bankAccountIdElement.value = selectedValue;
+      tableModule.populateBankAccountFilterOptions();
     }
 
     function populateCategoryOptions() {
@@ -224,6 +197,7 @@
 
     async function load() {
       initializeModalBindings();
+      tableModule.initialize();
 
       try {
         const transactions = await apiRequest("/api/transactions", { method: "GET" });
@@ -267,6 +241,7 @@
         }
 
         hideModal();
+        tableModule.syncFromURL();
         resetForm();
         await load();
       } catch (error) {
@@ -278,6 +253,7 @@
       try {
         await apiRequest(`/api/transactions/${id}`, { method: "DELETE" });
         setMessage("Transaction deleted", false);
+        tableModule.syncFromURL();
         resetForm();
         await load();
       } catch (error) {
@@ -286,8 +262,13 @@
     }
 
     function onRowAction(event) {
-      const action = event.target.getAttribute("data-action");
-      const id = event.target.getAttribute("data-id");
+      const button = event.target.closest("button[data-action][data-id]");
+      if (!button) {
+        return;
+      }
+
+      const action = button.getAttribute("data-action");
+      const id = button.getAttribute("data-id");
       if (!id) {
         return;
       }

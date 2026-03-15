@@ -4,12 +4,16 @@ const { readAppHtml, readScriptSources, evaluateScripts } = require("./test-supp
 
 const webDir = __dirname;
 
-async function setupFrontendApp() {
+async function setupFrontendApp(options = {}) {
+  const {
+    initialUrl = "http://localhost:8080",
+  } = options;
+
   const html = readAppHtml(webDir);
   const scriptSources = readScriptSources(webDir);
 
   const dom = new JSDOM(html, {
-    url: "http://localhost:8080",
+    url: initialUrl,
     runScripts: "outside-only",
   });
 

@@ -16,8 +16,14 @@
       onRowAction,
     } = config;
 
+    const urlState = runtimeScope.createTransactionsURLState({
+      globalScope: runtimeScope,
+    });
+    const { replaceURLSearchParams } = urlState;
+
     const sorting = runtimeScope.createTransactionsTableSorting({
       globalScope: runtimeScope,
+      replaceURLSearchParams,
     });
 
     const filtering = runtimeScope.createTransactionsTableFiltering({
@@ -29,6 +35,8 @@
         render();
       },
       shouldPersistDefaultDateRange: isTransactionsListRouteActive,
+      replaceURLSearchParams,
+      isValidISODate: runtimeScope.frontendUtils.isValidISODate,
     });
 
     let isRowActionBound = false;

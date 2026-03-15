@@ -10,6 +10,8 @@
       formatBankAccountLabel,
       onFiltersChanged,
       shouldPersistDefaultDateRange = () => true,
+      replaceURLSearchParams,
+      isValidISODate,
     } = config;
 
     const transactionsStartDateParamName = "transactionsStartDate";
@@ -39,27 +41,12 @@
       };
     }
 
-    function isValidISODate(value) {
-      if (typeof value !== "string") {
-        return false;
-      }
+    if (typeof replaceURLSearchParams !== "function") {
+      throw new Error("createTransactionsTableFiltering requires replaceURLSearchParams");
+    }
 
-      const trimmedValue = value.trim();
-      const matchedDate = /^(\d{4})-(\d{2})-(\d{2})$/.exec(trimmedValue);
-      if (!matchedDate) {
-        return false;
-      }
-
-      const year = Number(matchedDate[1]);
-      const month = Number(matchedDate[2]);
-      const day = Number(matchedDate[3]);
-
-      const parsedDate = new Date(Date.UTC(year, month - 1, day));
-      return (
-        parsedDate.getUTCFullYear() === year
-        && parsedDate.getUTCMonth() + 1 === month
-        && parsedDate.getUTCDate() === day
-      );
+    if (typeof isValidISODate !== "function") {
+      throw new Error("createTransactionsTableFiltering requires isValidISODate");
     }
 
     function normalizeDateValue(value) {
@@ -90,16 +77,6 @@
 
     function serializeBankAccountIDs(ids) {
       return ids.join(",");
-    }
-
-    function replaceURLSearchParams(updater) {
-      const url = new URL(runtimeScope.location.href);
-      updater(url.searchParams);
-      const nextURL = `${url.pathname}${url.search}${url.hash}`;
-      const currentURL = `${runtimeScope.location.pathname}${runtimeScope.location.search}${runtimeScope.location.hash}`;
-      if (nextURL !== currentURL) {
-        runtimeScope.history.replaceState({}, "", nextURL);
-      }
     }
 
     function removeDateRangeParamsFromURL() {

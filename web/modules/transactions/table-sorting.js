@@ -5,6 +5,7 @@
   function createTransactionsTableSorting(config) {
     const {
       globalScope: runtimeScope = globalScope,
+      replaceURLSearchParams,
     } = config;
 
     const transactionsSortParamName = "transactionsSort";
@@ -42,14 +43,8 @@
       return sortKeyByField[sortField] || null;
     }
 
-    function replaceURLSearchParams(updater) {
-      const url = new URL(runtimeScope.location.href);
-      updater(url.searchParams);
-      const nextURL = `${url.pathname}${url.search}${url.hash}`;
-      const currentURL = `${runtimeScope.location.pathname}${runtimeScope.location.search}${runtimeScope.location.hash}`;
-      if (nextURL !== currentURL) {
-        runtimeScope.history.replaceState({}, "", nextURL);
-      }
+    if (typeof replaceURLSearchParams !== "function") {
+      throw new Error("createTransactionsTableSorting requires replaceURLSearchParams");
     }
 
     function removeSortParamsFromURL() {
